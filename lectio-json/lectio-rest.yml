@@ -1,0 +1,13 @@
+studio: Simon Illyan
+brandName: Pianoforte
+
+
+server:
+  applicationConnectors:
+    - type: http
+      port: 8888
+      bindHost: 127.0.0.1 # only bind to loopback
+  adminConnectors:
+    - type: http
+      port: 8889
+      bindHost: 127.0.0.1 # only bind to loopback
