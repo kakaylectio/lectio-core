@@ -1,16 +1,16 @@
-package com.kktam.lectio.test;
+package com.kakay.lectio.test;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.kktam.lectio.control.LectioControlById;
+import com.kakay.lectio.test.scenarios.SeedData;
+import com.kktam.lectio.control.LectioControl;
 import com.kktam.lectio.control.LectioPersistence;
 import com.kktam.lectio.control.exception.LectioConstraintException;
 import com.kktam.lectio.control.exception.LectioException;
 import com.kktam.lectio.model.User;
-import com.kktam.lectio.test.scenarios.SeedData;
 
 public class TestLectioControlSeedData {
 
@@ -32,7 +32,7 @@ public class TestLectioControlSeedData {
 		User teacher = seedData.getTeacher();
 		int teacherId = teacher.getId();
 		LectioPersistence lectioPersistence = new LectioPersistence();
-		LectioControlById control = lectioPersistence.getLectioControlById();
+		LectioControl control = lectioPersistence.getLectioControlById();
 		
 		User teacherEntity = control.findUserById(adminId, teacherId);
 		Assert.assertNotNull("User should have been added to database.", teacherEntity);

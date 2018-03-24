@@ -1,4 +1,4 @@
-package test.com.kakay.lectio.rest;
+package com.kakay.lectio.test.rest;
 
 import java.io.IOException;
 
@@ -11,10 +11,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kakay.lectio.rest.LectioRestControl;
 import com.kakay.lectio.rest.representation.NotebookRep;
 import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
+import com.kakay.lectio.test.scenarios.SeedData;
 import com.kktam.lectio.control.LectioPersistence;
 import com.kktam.lectio.model.Notebook;
 import com.kktam.lectio.model.User;
-import com.kktam.lectio.test.scenarios.SeedData;
 
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.testing.junit.ResourceTestRule;
@@ -32,7 +32,7 @@ public class TestLectioRestNotebookResources {
 	}
 
     @Test
-    public void helloWorldDropwizard() throws IOException {
+    public void testNotebookJsonRest() throws IOException {
     	int numTopics = 6;
 		SeedData seedData = new SeedData();
 		seedData.generateSeed(1 ,1, 5, 1, numTopics, 0);

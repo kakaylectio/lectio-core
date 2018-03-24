@@ -1,10 +1,10 @@
-package com.kktam.lectio.test.scenarios;
+package com.kakay.lectio.test.scenarios;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.log4j.Logger;
 
-import com.kktam.lectio.control.LectioControlById;
+import com.kktam.lectio.control.LectioControl;
 import com.kktam.lectio.control.LectioPersistence;
 import com.kktam.lectio.control.exception.LectioException;
 import com.kktam.lectio.model.LessonNote;
@@ -34,33 +34,33 @@ public class SeedData {
 
 	public void generateSeed(int numTeachers, int numStudios, int numNotebooks, int numStudents, int numTopics, int numLessonNotes) {
 		LectioPersistence lectioPersistence = new LectioPersistence();
-		LectioControlById lectioControlById = lectioPersistence.getLectioControlById();
+		LectioControl lectioControl = lectioPersistence.getLectioControlById();
 		try {
-			adminId = lectioControlById.addRootAdmin("secret");
+			adminId = lectioControl.addRootAdmin("secret");
 			
 			for (int i=0; i<numTeachers; i++) {
 				User randomUser = createRandomUser();
-				teacher = lectioControlById.addNewUser(adminId, randomUser.getName(),
+				teacher = lectioControl.addNewUser(adminId, randomUser.getName(),
 						randomUser.getEmail(), randomUser.getPassword());
 
 				for (int j=0; j<numStudios; j++) {
 					Studio randomStudio = createRandomStudio();
-					studio = lectioControlById.addNewStudio(teacher.getId(), randomStudio.getName());
+					studio = lectioControl.addNewStudio(teacher.getId(), randomStudio.getName());
 					for (int k=0; k<numNotebooks; k++) {
 						Notebook randomNotebook = createRandomNotebook();
-						notebook = lectioControlById.addNewNotebook(teacher.getId(), studio.getId(), randomNotebook.getName());
+						notebook = lectioControl.addNewNotebook(teacher.getId(), studio.getId(), randomNotebook.getName());
 						for (int p=0; p<numStudents; p++) {
 							User randomStudent = createRandomUser();
-							student = lectioControlById.addNewUser(adminId,  randomStudent.getName(),
+							student = lectioControl.addNewUser(adminId,  randomStudent.getName(),
 									randomStudent.getEmail(), randomStudent.getPassword());
-							lectioControlById.addNewNotebookUser(teacher.getId(),  notebook.getId(), student.getId(),  Role.student);
+							lectioControl.addNewNotebookUser(teacher.getId(),  notebook.getId(), student.getId(),  Role.student);
 						}
 						for (int m=0; m<numTopics; m++) {
 							Topic randomTopic = createRandomTopic();
-							topic = lectioControlById.addNewTopic(teacher.getId(), notebook.getId(), randomTopic.getName());
+							topic = lectioControl.addNewTopic(teacher.getId(), notebook.getId(), randomTopic.getName());
 							for (int n=0; n<numLessonNotes; n++) {
 								LessonNote randomLessonNote = createRandomLessonNote();
-								lessonNote = lectioControlById.addNewLessonNote(teacher.getId(), topic.getId(), randomLessonNote.getContent());
+								lessonNote = lectioControl.addNewLessonNote(teacher.getId(), topic.getId(), randomLessonNote.getContent());
 
 							}
 						}

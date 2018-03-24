@@ -27,18 +27,18 @@ import com.kktam.lectio.model.Topic;
 import com.kktam.lectio.model.TopicState;
 import com.kktam.lectio.model.User;
 
-public class LectioControlById {
-	private final static Logger logger = Logger.getLogger(LectioControlById.class);
+public class LectioControl {
+	private final static Logger logger = Logger.getLogger(LectioControl.class);
 
 	private final Clock clock;
 	EntityManager em;
 
-	public LectioControlById(EntityManager em, Clock clock) {
+	public LectioControl(EntityManager em, Clock clock) {
 		this.em = em;
 		this.clock = clock;
 	}
 
-	public LectioControlById(EntityManager myEntityManager) {
+	public LectioControl(EntityManager myEntityManager) {
 		this(myEntityManager, Clock.systemDefaultZone());
 	}
 

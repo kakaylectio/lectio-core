@@ -8,20 +8,20 @@ public class LectioPersistence {
 	
 	EntityManager em;
 	protected static final String PERSISTENCE_UNIT_NAME = "lectio-tests";
-	LectioControlById lectioControl;
+	LectioControl lectioControl;
 
 	public LectioPersistence() {
 		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
 		em = factory.createEntityManager();
 
-		lectioControl = new LectioControlById(em);
+		lectioControl = new LectioControl(em);
 	}
 	
 	public void close() {
 		em.close();
 	}
 	
-	public LectioControlById getLectioControlById() {
+	public LectioControl getLectioControlById() {
 		return lectioControl;
 	}
 	

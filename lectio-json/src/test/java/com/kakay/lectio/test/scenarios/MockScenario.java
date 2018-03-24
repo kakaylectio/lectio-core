@@ -1,4 +1,4 @@
-package com.kktam.lectio.test.scenarios;
+package com.kakay.lectio.test.scenarios;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;

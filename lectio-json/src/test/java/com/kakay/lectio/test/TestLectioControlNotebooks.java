@@ -1,4 +1,4 @@
-package com.kktam.lectio.test;
+package com.kakay.lectio.test;
 
 import java.util.List;
 
@@ -7,7 +7,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.kktam.lectio.control.LectioControlById;
+import com.kakay.lectio.test.scenarios.SeedData;
+import com.kktam.lectio.control.LectioControl;
 import com.kktam.lectio.control.LectioPersistence;
 import com.kktam.lectio.control.exception.LectioConstraintException;
 import com.kktam.lectio.control.exception.LectioException;
@@ -15,7 +16,6 @@ import com.kktam.lectio.model.Notebook;
 import com.kktam.lectio.model.Topic;
 import com.kktam.lectio.model.TopicState;
 import com.kktam.lectio.model.User;
-import com.kktam.lectio.test.scenarios.SeedData;
 
 
 
@@ -40,7 +40,7 @@ public class TestLectioControlNotebooks {
 		Notebook notebook = seedData.getNotebook();
 		
 		LectioPersistence lectioPersistence = new LectioPersistence();
-		LectioControlById lectioControl = lectioPersistence.getLectioControlById();
+		LectioControl lectioControl = lectioPersistence.getLectioControlById();
 		
 		try {
 			lectioControl.addNewNotebook(teacher.getId(), seedData.getStudio().getId(), notebook.getName());
@@ -61,7 +61,7 @@ public class TestLectioControlNotebooks {
 		Notebook notebook = seedData.getNotebook();
 		
 		LectioPersistence lectioPersistence = new LectioPersistence();
-		LectioControlById lectioControl = lectioPersistence.getLectioControlById();
+		LectioControl lectioControl = lectioPersistence.getLectioControlById();
 
 		
 		List<Notebook> notebooksByTeacher = lectioControl.findNotebooksByUser(teacher.getId());
@@ -108,7 +108,7 @@ public class TestLectioControlNotebooks {
 		Notebook notebook = seedData.getNotebook();
 
 		LectioPersistence lectioPersistence = new LectioPersistence();
-		LectioControlById lectioControl = lectioPersistence.getLectioControlById();
+		LectioControl lectioControl = lectioPersistence.getLectioControlById();
 
 		try {
 			lectioControl.addNewTopic(teacher.getId(), notebook.getId(), seedData.getTopic().getName());
@@ -137,7 +137,7 @@ public class TestLectioControlNotebooks {
 		User student = seedData.getStudent();
 
 		LectioPersistence lectioPersistence = new LectioPersistence();
-		LectioControlById lectioControl = lectioPersistence.getLectioControlById();
+		LectioControl lectioControl = lectioPersistence.getLectioControlById();
 		
 		List<Topic> activeTopicList = lectioControl.findActiveTopicsByNotebook(student.getId(), notebook.getId());
 		// Make sure topics are all active and in active order.

@@ -1,4 +1,4 @@
-package com.kktam.lectio.test.scenarios;
+package com.kakay.lectio.test.scenarios;
 
 import java.util.HashMap;
 import java.util.HashSet;
