@@ -31,7 +31,11 @@ public class SeedData {
 	public SeedData() {
 
 	}
-
+	
+	public static void main(String[] args) {
+		SeedData seedData = new SeedData();
+		seedData.generateSeed(3, 1, 4, 1, 3, 5);
+	}
 	public void generateSeed(int numTeachers, int numStudios, int numNotebooks, int numStudents, int numTopics, int numLessonNotes) {
 		LectioPersistence lectioPersistence = new LectioPersistence();
 		LectioControl lectioControl = lectioPersistence.getLectioControlById();

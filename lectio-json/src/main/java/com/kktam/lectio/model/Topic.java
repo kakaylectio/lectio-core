@@ -7,6 +7,8 @@ import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.kakay.lectio.rest.resources.views.Views;
 
 
 
@@ -173,10 +175,9 @@ public class Topic
 
 	@javax.persistence.ManyToOne
 	@javax.persistence.JoinColumn(nullable = true) 
-	@JsonProperty 
 	protected LessonNote lastLessonNote;
 	 
-	@JsonProperty 
+	@JsonView(Views.LastLessonNotes.class)
 	public LessonNote getLastLessonNote() {
 		return lastLessonNote;
 	}

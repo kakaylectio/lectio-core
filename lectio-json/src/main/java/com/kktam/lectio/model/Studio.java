@@ -1,9 +1,7 @@
 package com.kktam.lectio.model;
-import java.util.HashSet;
-import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.kakay.lectio.rest.resources.views.Views;
 
 
 
@@ -127,7 +125,7 @@ public class Studio
 	 * @generated
 	 * @ordered
 	 */
-	@JsonIgnore
+	@JsonView(Views.StudioDetails.class)
 	public User getOwner() {
 		return this.owner;
 	}

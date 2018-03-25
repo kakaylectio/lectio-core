@@ -4,6 +4,8 @@ import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.kakay.lectio.rest.resources.views.Views;
 
 
 
@@ -167,7 +169,7 @@ public class User
 	 * @generated
 	 * @ordered
 	 */
-	@JsonProperty 
+	@JsonView(Views.UserDetails.class)
 	public String getEmail() {
 		return this.email;
 	}
