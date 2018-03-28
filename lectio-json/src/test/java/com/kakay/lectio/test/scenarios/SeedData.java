@@ -31,53 +31,57 @@ public class SeedData {
 	public SeedData() {
 
 	}
-	
+
 	public static void main(String[] args) {
 		SeedData seedData = new SeedData();
 		seedData.generateSeed(3, 1, 4, 1, 3, 5);
 	}
-	public void generateSeed(int numTeachers, int numStudios, int numNotebooks, int numStudents, int numTopics, int numLessonNotes) {
+
+	public void generateSeed(int numTeachers, int numStudios, int numNotebooks, int numStudents, int numTopics,
+			int numLessonNotes) {
 		LectioPersistence lectioPersistence = new LectioPersistence();
 		LectioControl lectioControl = lectioPersistence.getLectioControlById();
 		try {
 			adminId = lectioControl.addRootAdmin("secret");
-			
-			for (int i=0; i<numTeachers; i++) {
-				User randomUser = createRandomUser();
-				teacher = lectioControl.addNewUser(adminId, randomUser.getName(),
-						randomUser.getEmail(), randomUser.getPassword());
 
-				for (int j=0; j<numStudios; j++) {
+			for (int i = 0; i < numTeachers; i++) {
+				User randomUser = createRandomUser();
+				teacher = lectioControl.addNewUser(adminId, randomUser.getName(), randomUser.getEmail(),
+						createRandomPassword());
+
+				for (int j = 0; j < numStudios; j++) {
 					Studio randomStudio = createRandomStudio();
 					studio = lectioControl.addNewStudio(teacher.getId(), randomStudio.getName());
-					for (int k=0; k<numNotebooks; k++) {
+					for (int k = 0; k < numNotebooks; k++) {
 						Notebook randomNotebook = createRandomNotebook();
-						notebook = lectioControl.addNewNotebook(teacher.getId(), studio.getId(), randomNotebook.getName());
-						for (int p=0; p<numStudents; p++) {
+						notebook = lectioControl.addNewNotebook(teacher.getId(), studio.getId(),
+								randomNotebook.getName());
+						for (int p = 0; p < numStudents; p++) {
 							User randomStudent = createRandomUser();
-							student = lectioControl.addNewUser(adminId,  randomStudent.getName(),
-									randomStudent.getEmail(), randomStudent.getPassword());
-							lectioControl.addNewNotebookUser(teacher.getId(),  notebook.getId(), student.getId(),  Role.student);
+							student = lectioControl.addNewUser(adminId, randomStudent.getName(),
+									randomStudent.getEmail(), createRandomPassword());
+							lectioControl.addNewNotebookUser(teacher.getId(), notebook.getId(), student.getId(),
+									Role.student);
 						}
-						for (int m=0; m<numTopics; m++) {
+						for (int m = 0; m < numTopics; m++) {
 							Topic randomTopic = createRandomTopic();
 							topic = lectioControl.addNewTopic(teacher.getId(), notebook.getId(), randomTopic.getName());
-							for (int n=0; n<numLessonNotes; n++) {
+							for (int n = 0; n < numLessonNotes; n++) {
 								LessonNote randomLessonNote = createRandomLessonNote();
-								lessonNote = lectioControl.addNewLessonNote(teacher.getId(), topic.getId(), randomLessonNote.getContent());
+								lessonNote = lectioControl.addNewLessonNote(teacher.getId(), topic.getId(),
+										randomLessonNote.getContent());
 
 							}
 						}
-					}	
+					}
 				}
 			}
 			lectioPersistence.close();
-		}
-		catch(LectioException ex) {
+		} catch (LectioException ex) {
 			logger.error("Exception while generating seed.", ex);
 			lectioPersistence.close();
 		}
-	
+
 	}
 
 	String createRandomEmail() {
@@ -157,13 +161,17 @@ public class SeedData {
 		User user = new User();
 		String userName = RandomStringUtils.randomAlphabetic(3, 15);
 		String email = createRandomEmail();
-		String password = RandomStringUtils.randomGraph(6, 15);
 		user.setName(userName);
 		;
 		user.setEmail(email);
-		user.setPassword(password);
+
 		;
 		return user;
+	}
+
+	String createRandomPassword() {
+		String password = RandomStringUtils.randomGraph(6, 15);
+		return password;
 	}
 
 	public User getTeacher() {

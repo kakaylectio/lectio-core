@@ -8,6 +8,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
+import com.kakay.lectio.auth.UserIdentity;
 import com.kktam.lectio.model.Comment;
 import com.kktam.lectio.model.LessonNote;
 import com.kktam.lectio.model.Notebook;
@@ -35,6 +36,9 @@ public class ClearData {
 			em.getTransaction().rollback();
 		}
 		em.getTransaction().begin();
+
+		RemoveTableRows<UserIdentity> userIdentityRemover = new RemoveTableRows<UserIdentity>(UserIdentity.class);
+		userIdentityRemover.removeTableRows("UserIdentity");
 
 		RemoveTableRows<Comment> contentRemover = new RemoveTableRows<Comment>(Comment.class);
 		contentRemover.removeTableRows("Comment");

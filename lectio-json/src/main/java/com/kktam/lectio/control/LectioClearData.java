@@ -8,6 +8,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
+import com.kakay.lectio.test.scenarios.ClearData;
 import com.kktam.lectio.model.Comment;
 import com.kktam.lectio.model.LessonNote;
 import com.kktam.lectio.model.Notebook;
@@ -26,38 +27,40 @@ class LectioClearData {
 	}
 
 	void clearData() {
-		if (em.getTransaction().isActive()) {
-			em.getTransaction().rollback();
-		}
-		em.getTransaction().begin();
+		ClearData.main(new String[]{});
 
-		RemoveTableRows<Comment> contentRemover = new RemoveTableRows<Comment>(Comment.class);
-		contentRemover.removeTableRows("Comment");
-
-		RemoveTableRows<LessonNote> notesRemover = new RemoveTableRows<LessonNote>(LessonNote.class);
-		notesRemover.removeTableRows("LessonNote");
-
-		RemoveTableRows<Topic> topicRemover = new RemoveTableRows<Topic>(Topic.class);
-		;
-		topicRemover.removeTableRows("Topic");
-
-		RemoveTableRows<NotebookUserRole> repUserRoleRemover = new RemoveTableRows<NotebookUserRole>(
-				NotebookUserRole.class);
-		;
-		repUserRoleRemover.removeTableRows("NotebookUserRole");
-
-		RemoveTableRows<Notebook> notebookRemover = new RemoveTableRows<Notebook>(Notebook.class);
-		notebookRemover.removeTableRows("Notebook");
-		;
-
-		RemoveTableRows<Studio> studioRemover = new RemoveTableRows<Studio>(Studio.class);
-		studioRemover.removeTableRows("Studio");
-
-		RemoveTableRows<User> userRemover = new RemoveTableRows<User>(User.class);
-		userRemover.removeTableRows("User");
-
-		em.getTransaction().commit();
-		em.close();
+		//		if (em.getTransaction().isActive()) {
+//			em.getTransaction().rollback();
+//		}
+//		em.getTransaction().begin();
+//
+//		RemoveTableRows<Comment> contentRemover = new RemoveTableRows<Comment>(Comment.class);
+//		contentRemover.removeTableRows("Comment");
+//
+//		RemoveTableRows<LessonNote> notesRemover = new RemoveTableRows<LessonNote>(LessonNote.class);
+//		notesRemover.removeTableRows("LessonNote");
+//
+//		RemoveTableRows<Topic> topicRemover = new RemoveTableRows<Topic>(Topic.class);
+//		;
+//		topicRemover.removeTableRows("Topic");
+//
+//		RemoveTableRows<NotebookUserRole> repUserRoleRemover = new RemoveTableRows<NotebookUserRole>(
+//				NotebookUserRole.class);
+//		;
+//		repUserRoleRemover.removeTableRows("NotebookUserRole");
+//
+//		RemoveTableRows<Notebook> notebookRemover = new RemoveTableRows<Notebook>(Notebook.class);
+//		notebookRemover.removeTableRows("Notebook");
+//		;
+//
+//		RemoveTableRows<Studio> studioRemover = new RemoveTableRows<Studio>(Studio.class);
+//		studioRemover.removeTableRows("Studio");
+//
+//		RemoveTableRows<User> userRemover = new RemoveTableRows<User>(User.class);
+//		userRemover.removeTableRows("User");
+//
+//		em.getTransaction().commit();
+//		em.close();
 
 	}
 	private class RemoveTableRows<T> {

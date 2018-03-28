@@ -15,6 +15,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import org.hibernate.exception.ConstraintViolationException;
 import org.jboss.logging.Logger;
 
+import com.kakay.lectio.auth.IdentityAuthentication;
 import com.kktam.lectio.control.exception.LectioAuthorizationException;
 import com.kktam.lectio.control.exception.LectioConstraintException;
 import com.kktam.lectio.control.exception.LectioException;
@@ -69,8 +70,8 @@ public class LectioControl {
 			User rootAdmin = new User();
 			rootAdmin.setName("admin");
 			rootAdmin.setEmail("admin@lectio.com");
-			rootAdmin.setPassword("pwdadmin");
 			em.persist(rootAdmin);
+			IdentityAuthentication.setupNewIdentity(em,  rootAdmin,  "secret");
 			;
 			em.getTransaction().commit();
 			adminId = rootAdmin.getId();
@@ -97,18 +98,19 @@ public class LectioControl {
 
 	}
 
+	
 	public User addNewUser(int executorId, String name, String email, String password) throws LectioException {
 		if (!authCheckUserManagement(executorId)) {
 			throw new LectioAuthorizationException("You are not authorized to add users.");
 		}
-		logger.debug("Adding new user " + name + ":" + email + ":" + password);
+		logger.debug("Adding new user " + name + ":" + email );
 		try {
 			em.getTransaction().begin();
 			User theUser = new User();
 			theUser.setName(name);
 			theUser.setEmail(email);
-			theUser.setPassword(password);
 			em.persist(theUser);
+			IdentityAuthentication.setupNewIdentity(em,  theUser,  password);
 			em.getTransaction().commit();
 			logger.info("User " + name + " added.");
 			return theUser;

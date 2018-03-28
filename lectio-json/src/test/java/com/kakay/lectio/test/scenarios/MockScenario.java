@@ -147,7 +147,6 @@ public class MockScenario extends Scenario{
 		user.setName(userName);
 		;
 		user.setEmail(email);
-		user.setPassword(password);
 		;
 		return user;
 	}

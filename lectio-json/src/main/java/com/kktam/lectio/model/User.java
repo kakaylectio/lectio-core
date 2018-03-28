@@ -2,7 +2,6 @@ package com.kktam.lectio.model;
 import javax.persistence.Column;
 import javax.persistence.UniqueConstraint;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.kakay.lectio.rest.resources.views.Views;
@@ -76,19 +75,12 @@ public class User
 	 * @generated
 	 * @ordered
 	 */
-	 
-	@javax.persistence.Column(nullable = false) 
-	protected String password;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	@javax.persistence.Id 
 	@javax.persistence.GeneratedValue(strategy=javax.persistence.GenerationType.IDENTITY)
 	protected int id;
+	
+	
+	
 	
 	/**
 	 * <!-- begin-user-doc -->
@@ -174,19 +166,6 @@ public class User
 		return this.email;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
-	@JsonIgnore
-	public String getPassword() {
-		return this.password;
-	}
-
-
-
 
 
 
@@ -210,15 +189,6 @@ public class User
 		this.email = myEmail;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
-	public void setPassword(String myPassword) {
-		this.password = myPassword;
-	}
 
 	
 
@@ -232,24 +202,8 @@ public class User
 		this.name = "";
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	public void unsetEmail() {
 		this.email = "";
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
-	public void unsetPassword() {
-		this.password = "";
 	}
 
 
