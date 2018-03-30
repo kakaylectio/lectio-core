@@ -8,9 +8,16 @@ import javax.persistence.Convert;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kktam.lectio.model.User;
 
-@javax.persistence.Entity 
+@javax.persistence.Entity
+@javax.persistence.NamedQueries({
+	@javax.persistence.NamedQuery(name="UserIdentity.byUserId",
+			query="select uid FROM UserIdentity as uid where uid.user.id = :id"
+			)
+})
 public class UserIdentity {
 
+	public static final String QUERY_USERIDENTITY_BYUSERID = "UserIdentity.byUserId";
+	public static final String QUERYPARAM_USERIDENTITY_USERID = "id";
 	public UserIdentity() {
 	}
 	
@@ -21,6 +28,7 @@ public class UserIdentity {
 	
 	@javax.persistence.OneToOne 
 	@javax.persistence.JoinColumn(nullable = false) 
+	@JsonIgnore
 	protected User user;
 
 	@Column
@@ -32,7 +40,8 @@ public class UserIdentity {
 	protected byte[] password;
 
 
-	@javax.persistence.Column(columnDefinition = "binary(128) not null")
+	@Column
+	@JsonIgnore
 	protected String salt;
 
 	@JsonIgnore

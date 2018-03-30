@@ -40,6 +40,13 @@ public class TestLectioControlSeedData {
 		User teacherEntityByName = control.findUserByExactName(adminId,  teacher.getName());
 		Assert.assertNotNull("User should have been found by name. " + teacher.getName(), teacherEntityByName);
 		
+		User bogusTeacher = control.findUserByExactName(adminId, "bogusname");
+		Assert.assertNull("Finding non-existent user should return a null user.", bogusTeacher);
+		
+		User teacherEntityByEmail = control.findUserByEmail(adminId,  teacher.getEmail());
+		Assert.assertNotNull("User should have been found by name. " + teacher.getEmail(), teacherEntityByEmail);
+		Assert.assertEquals("Wrong user found when searching by email.", teacher.getId(), teacherEntityByEmail.getId());
+		
 		// Try adding duplicate teacher.
 		try {
 			control.addNewUser(adminId,  teacher.getName(), "bogusemail", "boguspassword");

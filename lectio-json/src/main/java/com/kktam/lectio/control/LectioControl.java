@@ -43,74 +43,35 @@ public class LectioControl {
 		this(myEntityManager, Clock.systemDefaultZone());
 	}
 
-	protected boolean authCheckUserManagement(int executorId) throws LectioException {
-		// Change this: Check for root admin here.
-		TypedQuery<User> userQuery = em.createNamedQuery(User.QUERY_USER_BYNAME, User.class);
-		userQuery.setParameter(User.QUERYPARAM_USER_NAME, "admin");
-		List<User> userList = userQuery.getResultList();
-		if (userList.size() != 1) {
-			throw new LectioException("No root admin user in database.");
-		}
-
-		User adminUser = userList.get(0);
-
-		return adminUser.getId() == executorId;
-	}
-
 	protected boolean authCheckFindUsers(int executorId) throws LectioException {
 		return true;
 	}
 
-	public int addRootAdmin(String secret) throws LectioException {
-		// Add secret check here
-		int adminId = getAdminId(secret);
-		if (adminId == -1) {
-
-			em.getTransaction().begin();
-			User rootAdmin = new User();
-			rootAdmin.setName("admin");
-			rootAdmin.setEmail("admin@lectio.com");
-			em.persist(rootAdmin);
-			IdentityAuthentication.setupNewIdentity(em,  rootAdmin,  "secret");
-			;
-			em.getTransaction().commit();
-			adminId = rootAdmin.getId();
-		}
-		return adminId;
-	}
-
 	public User findUserByExactName(int executorId, String name) throws LectioException {
-		if (authCheckFindUsers(executorId)) {
-			// Change this: Check for root admin here.
-			TypedQuery<User> userQuery = em.createNamedQuery(User.QUERY_USER_BYNAME, User.class);
-			userQuery.setParameter(User.QUERYPARAM_USER_NAME, name);
-			List<User> userList = userQuery.getResultList();
-			if (userList.size() != 1) {
-				throw new LectioException("Duplicate user names " + name + " in database.");
-			}
-
-			User adminUser = userList.get(0);
-			return adminUser;
-
+		// Change this: Check for root admin here.
+		TypedQuery<User> userQuery = em.createNamedQuery(User.QUERY_USER_BYNAME, User.class);
+		userQuery.setParameter(User.QUERYPARAM_USER_NAME, name);
+		List<User> userList = userQuery.getResultList();
+		if (userList.size() > 1) {
+			throw new LectioException("Duplicate user names " + name + " in database.");
+		} else if (userList.size() < 1) {
+			return null;
 		}
-		throw new LectioAuthorizationException(
-				"User with ID " + executorId + " is not authorized to find other users.");
+
+		User adminUser = userList.get(0);
+		return adminUser;
 
 	}
 
-	
 	public User addNewUser(int executorId, String name, String email, String password) throws LectioException {
-		if (!authCheckUserManagement(executorId)) {
-			throw new LectioAuthorizationException("You are not authorized to add users.");
-		}
-		logger.debug("Adding new user " + name + ":" + email );
+		logger.debug("Adding new user " + name + ":" + email);
 		try {
 			em.getTransaction().begin();
 			User theUser = new User();
 			theUser.setName(name);
 			theUser.setEmail(email);
 			em.persist(theUser);
-			IdentityAuthentication.setupNewIdentity(em,  theUser,  password);
+			IdentityAuthentication.setupNewIdentity(em, theUser, password);
 			em.getTransaction().commit();
 			logger.info("User " + name + " added.");
 			return theUser;
@@ -153,18 +114,6 @@ public class LectioControl {
 	}
 
 	public Studio findStudioById(int executorId, int studioId) throws LectioException {
-		// TypedQuery<Studio> studioQuery =
-		// em.createNamedQuery(Studio.QUERY_FINDSTUDIOBYID, Studio.class);
-		// studioQuery.setParameter(Studio.QUERYPARAM_FINDSTUDIOBYID, studioId);
-		// List<Studio> studioList = studioQuery.getResultList();
-		// if (studioList.size() < 1) {
-		// return null;
-		// } else if (studioList.size() > 1) {
-		// throw new LectioException("Inconsistent database with more than one studio
-		// with the same ID.");
-		// }
-		//
-		// Studio studio = studioList.get(0);
 		Studio studio = em.find(Studio.class, studioId);
 		return studio;
 	}
@@ -391,15 +340,15 @@ public class LectioControl {
 			notebookList.add(notebookEntity);
 
 		}
-//		notebookList.sort(new Comparator<Notebook> () {
-//
-//			@Override
-//			public int compare(Notebook nb1, Notebook nb2) {
-//				
-//				return nb1.getName().compareTo(nb2.getName());
-//			}
-//			
-//		});;
+		// notebookList.sort(new Comparator<Notebook> () {
+		//
+		// @Override
+		// public int compare(Notebook nb1, Notebook nb2) {
+		//
+		// return nb1.getName().compareTo(nb2.getName());
+		// }
+		//
+		// });;
 		return notebookList;
 
 	}
@@ -426,20 +375,27 @@ public class LectioControl {
 	}
 
 	public int getUserCount(int rootAdminId) {
-		try {
-			if (authCheckUserManagement(rootAdminId)) {
-				CriteriaBuilder qb = em.getCriteriaBuilder();
-				CriteriaQuery<Long> cq = qb.createQuery(Long.class);
-				cq.select(qb.count(cq.from(User.class)));
+		CriteriaBuilder qb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+		cq.select(qb.count(cq.from(User.class)));
 
-				Long count = em.createQuery(cq).getSingleResult();
-				return count.intValue();
-			}
-		} catch (LectioException ex) {
-			return 0;
+		Long count = em.createQuery(cq).getSingleResult();
+		return count.intValue();
+
+	}
+
+	public User findUserByEmail(int executorId, String email) throws LectioException {
+		TypedQuery<User> userQuery = em.createNamedQuery(User.QUERY_USER_BYEMAIL, User.class);
+		userQuery.setParameter(User.QUERYPARAM_USER_EMAIL, email);
+		List<User> userList = userQuery.getResultList();
+		if (userList.size() > 1) {
+			throw new LectioException("More than one email " + email + " in database.");
+		} else if (userList.size() == 0) {
+			return null;
 		}
 
-		return 0;
+		User user = userList.get(0);
+		return user;
 	}
 
 }

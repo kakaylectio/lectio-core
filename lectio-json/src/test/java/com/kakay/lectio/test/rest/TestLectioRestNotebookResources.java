@@ -9,7 +9,9 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kakay.lectio.auth.LectioAuthorizer;
 import com.kakay.lectio.rest.representation.NotebookRep;
+import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
 import com.kakay.lectio.rest.resources.NotebookActiveTopicsWithLessonsResource;
 import com.kakay.lectio.test.scenarios.SeedData;
 import com.kktam.lectio.control.LectioPersistence;
@@ -25,8 +27,9 @@ public class TestLectioRestNotebookResources {
 
     @Rule
     public final ResourceTestRule resources = ResourceTestRule.builder()
-            .addResource(new NotebookActiveTopicsWithLessonsResource(new LectioPersistence().getLectioControlById()))
-            .build();
+    	    .addResource(new NotebookActiveTopicsResource(new LectioPersistence().getLectioControlById()))
+    		.addProvider(new LectioAuthorizer())
+    	        .build();
 
 	@After
 	public void tearDown() throws Exception {

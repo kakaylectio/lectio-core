@@ -31,6 +31,10 @@ public class LectioPersistence {
 		LectioClearData clearDataObj = new LectioClearData();
 		clearDataObj.clearData();
 	}
+
+	public EntityManager getEm() {
+		return em;
+	}
 	
 
 }

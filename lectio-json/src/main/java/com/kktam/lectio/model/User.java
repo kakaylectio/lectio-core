@@ -35,9 +35,13 @@ import com.kakay.lectio.rest.resources.views.Views;
 	@javax.persistence.NamedQuery(name="User.byExactName",
 			query="select u FROM User as u where u.name = :name"
 			),
-	@javax.persistence.NamedQuery(name="User.byId",
-	query="select u FROM User as u where  u.id = :id"
-	),
+//	@javax.persistence.NamedQuery(name="User.byId",
+//		query="select u FROM User as u where  u.id = :id"
+//			),
+
+	@javax.persistence.NamedQuery(name="User.byEmail",
+		query="select u FROM User as u where  u.email = :email"
+			),
 
 })
 
@@ -46,10 +50,11 @@ public class User
 	public static final String UNIQUE_NAME = "UniqueUserName";
 	public static final String UNIQUE_EMAIL = "UniqueUserEmail";
 	public static final String QUERY_USER_BYNAME = "User.byExactName";
-	public static final String QUERY_USER_BYID = "User.byId";
+//	public static final String QUERY_USER_BYID = "User.byId";
 	public static final String QUERYPARAM_USER_NAME = "name";
 	public static final String QUERYPARAM_USER_ID = "id";
-	
+	public static final String QUERY_USER_BYEMAIL = "User.byEmail";
+	public static final String QUERYPARAM_USER_EMAIL = "email";
 	
 	/**
 	 * <!-- begin-user-doc -->

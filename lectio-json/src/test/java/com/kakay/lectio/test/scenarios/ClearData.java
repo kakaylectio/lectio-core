@@ -67,6 +67,7 @@ public class ClearData {
 
 		em.getTransaction().commit();
 		em.close();
+	
 
 	}
 	private class RemoveTableRows<T> {

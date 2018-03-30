@@ -42,7 +42,7 @@ public class SeedData {
 		LectioPersistence lectioPersistence = new LectioPersistence();
 		LectioControl lectioControl = lectioPersistence.getLectioControlById();
 		try {
-			adminId = lectioControl.addRootAdmin("secret");
+			adminId = 0;
 
 			for (int i = 0; i < numTeachers; i++) {
 				User randomUser = createRandomUser();

@@ -8,6 +8,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.hibernate.cfg.Environment;
@@ -42,13 +44,17 @@ public class AppGenSql {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("javax.persistence.schema-database.action",  "drop");
 //		Persistence.generateSchema(PERSISTENCE_UNIT_NAME_TABLES, properties);
-		Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME_TABLES);
-
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME_TABLES);
+		EntityManager em = emf.createEntityManager();
+		em.close();
 	}
 	static void createTable(String[] args) {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("javax.persistence.schema-database.action",  "create");
 		Persistence.generateSchema(PERSISTENCE_UNIT_NAME_TABLES, properties);
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME_TABLES);
+		EntityManager em = emf.createEntityManager();
+		em.close();
 		
 	}
 	
@@ -76,7 +82,7 @@ public class AppGenSql {
 			Persistence.generateSchema(PERSISTENCE_UNIT_NAME_SCRIPT, properties);
 
 			System.out.println("SQL create and drop scripts generated.");
-
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
