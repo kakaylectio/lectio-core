@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.kakay.lectio.test.scenarios.SeedData;
+import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kktam.lectio.control.LectioControl;
 import com.kktam.lectio.control.LectioPersistence;
 import com.kktam.lectio.control.exception.LectioConstraintException;
@@ -33,17 +33,17 @@ public class TestLectioControlNotebooks {
 
 	@Test
 	public void testDuplicateNotebook() throws LectioException {
-		SeedData seedData = new SeedData();
-		seedData.generateSeed(1 ,1, 1, 0, 0, 0);
+		RandomSeedData randomSeedData = new RandomSeedData();
+		randomSeedData.generateSeed(1 ,1, 1, 0, 0, 0);
 		
-		User teacher = seedData.getTeacher();
-		Notebook notebook = seedData.getNotebook();
+		User teacher = randomSeedData.getTeacher();
+		Notebook notebook = randomSeedData.getNotebook();
 		
 		LectioPersistence lectioPersistence = new LectioPersistence();
 		LectioControl lectioControl = lectioPersistence.getLectioControlById();
 		
 		try {
-			lectioControl.addNewNotebook(teacher.getId(), seedData.getStudio().getId(), notebook.getName());
+			lectioControl.addNewNotebook(teacher.getId(), randomSeedData.getStudio().getId(), notebook.getName());
 			Assert.fail("Adding duplicate notebook to same studio should fail.");
 		}
 		catch(LectioConstraintException ex) {
@@ -54,11 +54,11 @@ public class TestLectioControlNotebooks {
 	
 	@Test
 	public void testNotebookData() throws LectioException{
-		SeedData seedData = new SeedData();
-		seedData.generateSeed(1 ,1, 5, 1, 0, 0);
+		RandomSeedData randomSeedData = new RandomSeedData();
+		randomSeedData.generateSeed(1 ,1, 5, 1, 0, 0);
 		
-		User teacher = seedData.getTeacher();
-		Notebook notebook = seedData.getNotebook();
+		User teacher = randomSeedData.getTeacher();
+		Notebook notebook = randomSeedData.getNotebook();
 		
 		LectioPersistence lectioPersistence = new LectioPersistence();
 		LectioControl lectioControl = lectioPersistence.getLectioControlById();
@@ -79,7 +79,7 @@ public class TestLectioControlNotebooks {
 		Assert.assertTrue("Notebook needs to be in list returned by findNotebooksByUser.",
 				notebookFound);
 
-		User student = seedData.getStudent();
+		User student = randomSeedData.getStudent();
 		List<Notebook> notebooksByStudent = lectioControl.findNotebooksByUser(student.getId());
 		boolean studentNotebookFound = false;
 		String lastStudentNotebookName = "";
@@ -101,27 +101,27 @@ public class TestLectioControlNotebooks {
 	
 	@Test
 	public void testDuplicateTopic() throws LectioException {
-		SeedData seedData = new SeedData();
-		seedData.generateSeed(1 ,1, 1, 0, 1, 0);
+		RandomSeedData randomSeedData = new RandomSeedData();
+		randomSeedData.generateSeed(1 ,1, 1, 0, 1, 0);
 		
-		User teacher = seedData.getTeacher();
-		Notebook notebook = seedData.getNotebook();
+		User teacher = randomSeedData.getTeacher();
+		Notebook notebook = randomSeedData.getNotebook();
 
 		LectioPersistence lectioPersistence = new LectioPersistence();
 		LectioControl lectioControl = lectioPersistence.getLectioControlById();
 
 		try {
-			lectioControl.addNewTopic(teacher.getId(), notebook.getId(), seedData.getTopic().getName());
+			lectioControl.addNewTopic(teacher.getId(), notebook.getId(), randomSeedData.getTopic().getName());
 			Assert.fail("Adding duplicate topic in same notebook should fail.");
 		}
 		catch(LectioConstraintException ex) {
 			Assert.assertTrue("Exception thrown when adding duplicate topic should show topic name.",
-					ex.getMessage().contains(seedData.getTopic().getName()));
+					ex.getMessage().contains(randomSeedData.getTopic().getName()));
 		}
 		
 		// Adding duplicate topic to different notebook should succeed.
-		Notebook newNotebook = lectioControl.addNewNotebook(teacher.getId(), seedData.getStudio().getId(), "New Notebook");
-		Topic newTopic = lectioControl.addNewTopic(teacher.getId(), newNotebook.getId(), seedData.getTopic().getName());
+		Notebook newNotebook = lectioControl.addNewNotebook(teacher.getId(), randomSeedData.getStudio().getId(), "New Notebook");
+		Topic newTopic = lectioControl.addNewTopic(teacher.getId(), newNotebook.getId(), randomSeedData.getTopic().getName());
 		Assert.assertNotNull("Adding duplicate topic name to another notebook should succeed.",
 				newTopic);
 		
@@ -129,12 +129,12 @@ public class TestLectioControlNotebooks {
 	
 	@Test 
 	public void testNotebookTopics() throws LectioException {
-		SeedData seedData = new SeedData();
-		seedData.generateSeed(1 ,1, 1, 1, 5, 0);
+		RandomSeedData randomSeedData = new RandomSeedData();
+		randomSeedData.generateSeed(1 ,1, 1, 1, 5, 0);
 		
-		User teacher = seedData.getTeacher();
-		Notebook notebook = seedData.getNotebook();
-		User student = seedData.getStudent();
+		User teacher = randomSeedData.getTeacher();
+		Notebook notebook = randomSeedData.getNotebook();
+		User student = randomSeedData.getStudent();
 
 		LectioPersistence lectioPersistence = new LectioPersistence();
 		LectioControl lectioControl = lectioPersistence.getLectioControlById();

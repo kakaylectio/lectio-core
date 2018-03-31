@@ -94,7 +94,7 @@ public class IdentityAuthentication implements Authenticator<BasicCredentials, L
 			}
 
 			if (checkIdentity(lectioPersistence.getEm(), user.getId(), password)) {
-				LectioPrincipal principal = new LectioPrincipal(user.getName(), user.getId(), 
+				LectioPrincipal principal = new LectioPrincipal(user.getEmail(), user.getId(), 
 						new HashSet<Privilege>());
 				return Optional.of(principal);
 			}

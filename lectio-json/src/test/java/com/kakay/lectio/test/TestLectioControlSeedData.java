@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.kakay.lectio.test.scenarios.SeedData;
+import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kktam.lectio.control.LectioControl;
 import com.kktam.lectio.control.LectioPersistence;
 import com.kktam.lectio.control.exception.LectioConstraintException;
@@ -25,11 +25,11 @@ public class TestLectioControlSeedData {
 
 	@Test
 	public void test() throws LectioException {
-		SeedData seedData = new SeedData();
-		seedData.generateSeed(10,  0,  0,  0,  0,  0);
+		RandomSeedData randomSeedData = new RandomSeedData();
+		randomSeedData.generateSeed(10,  0,  0,  0,  0,  0);
 		
-		int adminId = seedData.getAdminId("secret");
-		User teacher = seedData.getTeacher();
+		int adminId = randomSeedData.getAdminId("secret");
+		User teacher = randomSeedData.getTeacher();
 		int teacherId = teacher.getId();
 		LectioPersistence lectioPersistence = new LectioPersistence();
 		LectioControl control = lectioPersistence.getLectioControlById();
