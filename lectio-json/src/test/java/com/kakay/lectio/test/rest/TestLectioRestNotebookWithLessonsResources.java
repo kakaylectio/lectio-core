@@ -3,26 +3,19 @@ package com.kakay.lectio.test.rest;
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kakay.lectio.rest.representation.NotebookRep;
 import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
-import com.kakay.lectio.rest.resources.NotebookActiveTopicsWithLessonsResource;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kakay.lectio.test.scenarios.SeedData;
 import com.kktam.lectio.control.LectioPersistence;
 import com.kktam.lectio.model.LessonNote;
-import com.kktam.lectio.model.Notebook;
 import com.kktam.lectio.model.Topic;
-import com.kktam.lectio.model.User;
 
 import io.dropwizard.jackson.Jackson;
-import io.dropwizard.testing.junit.ResourceTestRule;
 
 public class TestLectioRestNotebookWithLessonsResources extends TestRestResources{
 
