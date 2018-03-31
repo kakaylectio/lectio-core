@@ -1,11 +1,9 @@
 package com.kakay.lectio.rest;
 
 import com.kakay.lectio.auth.IdentityAuthentication;
-import com.kakay.lectio.auth.LectioAuthorizer;
 import com.kakay.lectio.auth.LectioPrincipal;
 import com.kakay.lectio.rest.health.BrandNameHealthCheck;
 import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
-import com.kakay.lectio.rest.resources.NotebookActiveTopicsWithLessonsResource;
 import com.kktam.lectio.control.LectioControl;
 import com.kktam.lectio.control.LectioPersistence;
 
@@ -33,7 +31,6 @@ public class LectioRestApplication extends Application<LectioRestConfiguration> 
 		NotebookActiveTopicsResource notebookActiveTopicResource = new NotebookActiveTopicsResource();
 		notebookActiveTopicResource.setLectioControl(lectioControl);
         environment.jersey().register(notebookActiveTopicResource);
-        environment.jersey().register(new NotebookActiveTopicsWithLessonsResource(lectioControl));
 
         environment.jersey().register(new AuthDynamicFeature(
         		new BasicCredentialAuthFilter.Builder<LectioPrincipal>()
