@@ -2,6 +2,7 @@ package com.kakay.lectio.rest.resources;
 
 import java.util.List;
 
+import javax.annotation.security.PermitAll;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -18,13 +19,18 @@ import com.kktam.lectio.model.Notebook;
 import com.kktam.lectio.model.Topic;
 
 import io.dropwizard.auth.Auth;
+@PermitAll
 @Path("/lectio/notebook/{notebook-id}/activetopics")
 @Produces(MediaType.APPLICATION_JSON)
 public class NotebookActiveTopicsResource {
 
 	LectioControl lectioControl;
 	int bogusId = 20;
-	public NotebookActiveTopicsResource(LectioControl control) {
+	public NotebookActiveTopicsResource() {
+
+	}
+	
+	public void setLectioControl(LectioControl control) {
 		lectioControl = control;
 	}
 	
@@ -42,7 +48,22 @@ public class NotebookActiveTopicsResource {
     }
     
    
-    
+	/* Get the active topic names and ids for a notebook. */
+    @GET
+    @Path("/withlessons")
+    @Timed
+    @JsonView(Views.LastLessonNotes.class)
+    public NotebookRep getTopicsAndLessons(@Auth LectioPrincipal principal, @PathParam("notebook-id") int notebookId) {
+    	int bogusId = 20;
+    	List<Topic> topicList = lectioControl.findActiveTopicsAndLessonNotesByNotebook(bogusId, notebookId);
+		Notebook notebook = lectioControl.findNotebookById(bogusId,  notebookId);
+		
+		NotebookRep notebookRep = new NotebookRep(notebook, topicList);
+		
+			    
+	    return notebookRep;
+   }
+
     
 
 }

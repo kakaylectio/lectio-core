@@ -1,4 +1,4 @@
-package com.kakay.lectio.test.rest;
+package com.kakay.lectio.test.rest.authentication;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -11,37 +11,46 @@ import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.client.Client;
 
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kakay.lectio.rest.representation.NotebookRep;
+import com.kakay.lectio.test.rest.TestRestResources;
 import com.kakay.lectio.test.scenarios.SeedData;
 import com.kakay.lectio.test.scenarios.VorkosiganSeedData;
 import com.kktam.lectio.control.exception.LectioException;
-import com.kktam.lectio.model.Notebook;
 import com.kktam.lectio.model.User;
 
-import io.dropwizard.jackson.Jackson;
+import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.testing.junit.ResourceTestRule;
 
-/* This test uses known username and passwords so that I can debug some functionality.
- * 
- */
-public class TestLectioUserAuthentication extends TestRestResources {
+public abstract class TestUserAuth extends TestRestResources {
+	@Rule
+	public ResourceTestRule noCredentialResource = ResourceTestRule.builder()
+				.addResource(getResource())
+				.addProvider(new AuthDynamicFeature(BASIC_AUTH_HANDLER))
+				// .addProvider(new LectioAuthorizer())
+				.build();
+
+	@Rule
+	public ResourceTestRule wrongPasswordResource = ResourceTestRule.builder()
+				.addResource(getResource())
+				.addProvider(new AuthDynamicFeature(BASIC_AUTH_HANDLER))
+				// .addProvider(new LectioAuthorizer())
+				.build();
+
+	public TestUserAuth() {
+		super();
+	}
+	abstract protected String getTargetString();
 
 	@Test
 	public void testUserLogin() throws LectioException, JsonParseException, JsonMappingException, IOException {
 
-		User teacher = seedData.getTeacher();
-		Notebook notebook = seedData.getNotebook();
-
 		String teacherEmail = teacher.getEmail();
-		int notebookId = notebook.getId();
-
-		String targetString = "/lectio/notebook/" + notebookId + "/activetopics";
-
+		String targetString = getTargetString();
+	
 		// Create authentication parameters
 		Map<String, String> emailToPasswordMap = seedData.getEmailToPasswordMap();
 		String teacherPassword = emailToPasswordMap.get(teacher.getEmail());
@@ -50,35 +59,44 @@ public class TestLectioUserAuthentication extends TestRestResources {
 		Client client = resources.client();
 		client.register(authFeature);
 		String resp = client.target(targetString).request().get(String.class);
-
-		ObjectMapper objectMapper = Jackson.newObjectMapper();
-        NotebookRep notebookRep = objectMapper.readValue(resp,  NotebookRep.class);
-        Assert.assertNotNull("NotebookRep retrieved should have had a notebook name.", notebookRep.getNotebook());
-        assertNotNull("Notebook retrieved was null", notebookRep);;
-	}
 	
+		assertNotNull("With valid login, returned value should be non-null.", resp);
+	}
+
+	@Test
+	public void testNoCredentials() throws Exception {
+		Client noCredentialClient = noCredentialResource.client();
+	
+		String targetString = getTargetString();
+	
+		try {
+			String resp = noCredentialClient.target(targetString).request()
+				    .get(String.class);
+			fail("Not authorized exception should have been thrown.");
+		} catch (NotAuthorizedException e) {
+			assertTrue("This exception is supposed to be thrown when using no credentials.", true);
+		}
+	
+	}
+
 	@Test
 	public void testWrongPassword() throws IOException {
-
-		
+	
 		HttpAuthenticationFeature wrongAuthFeature = HttpAuthenticationFeature.basic(teacher.getName(),
 				"bogusPassword");
-		Client wrongClient = resources.client();
+		Client wrongClient = wrongPasswordResource.client();
 		wrongClient.register(wrongAuthFeature);
-
-		int notebookId = notebook.getId();
-		String targetString = "/lectio/notebook/" + notebookId + "/activetopics";
-
+	
+		String targetString = getTargetString();
+	
 		try {
 			String resp = wrongClient.target(targetString).request()
-					.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_USERNAME, teacher.getName())
-				    .property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_PASSWORD, "boguspassword")
 				    .get(String.class);
 			fail("Not authorized exception should have been thrown.");
 		} catch (NotAuthorizedException e) {
 			assertTrue("This exception is supposed to be thrown when using wrong password.", true);
 		}
-
+	
 	}
 
 	@Override
@@ -87,8 +105,7 @@ public class TestLectioUserAuthentication extends TestRestResources {
 		vorkosiganSeedData.seedData();
 		
 		return vorkosiganSeedData;
-
+	
 	}
-
 
 }

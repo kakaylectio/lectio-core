@@ -11,8 +11,6 @@ import org.junit.Rule;
 
 import com.kakay.lectio.auth.IdentityAuthentication;
 import com.kakay.lectio.auth.LectioPrincipal;
-import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
-import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kakay.lectio.test.scenarios.SeedData;
 import com.kktam.lectio.control.LectioPersistence;
 import com.kktam.lectio.model.Notebook;
@@ -29,8 +27,8 @@ public abstract class TestRestResources {
 				// .setAuthorizer(new ExampleAuthorizer())
 				.setPrefix("Basic").setRealm("SUPER SECRET STUFF").buildAuthFilter();
 	@Rule
-	public final ResourceTestRule resources = ResourceTestRule.builder()
-				.addResource(new NotebookActiveTopicsResource(new LectioPersistence().getLectioControlById()))
+	public ResourceTestRule resources = ResourceTestRule.builder()
+				.addResource(getResource())
 				.addProvider(new AuthDynamicFeature(BASIC_AUTH_HANDLER))
 				// .addProvider(new LectioAuthorizer())
 				.build();
@@ -44,6 +42,8 @@ public abstract class TestRestResources {
 	}
 	abstract protected SeedData getSeedData();
 
+	abstract protected Object getResource();
+	
 	@Before
 	public void setUp() throws Exception {
 	

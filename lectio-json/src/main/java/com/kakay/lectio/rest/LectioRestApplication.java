@@ -30,7 +30,9 @@ public class LectioRestApplication extends Application<LectioRestConfiguration> 
 		BrandNameHealthCheck brandNameHealthCheck = new BrandNameHealthCheck();
 		environment.healthChecks().register("brandName", brandNameHealthCheck);
 		
-        environment.jersey().register(new NotebookActiveTopicsResource(lectioControl));
+		NotebookActiveTopicsResource notebookActiveTopicResource = new NotebookActiveTopicsResource();
+		notebookActiveTopicResource.setLectioControl(lectioControl);
+        environment.jersey().register(notebookActiveTopicResource);
         environment.jersey().register(new NotebookActiveTopicsWithLessonsResource(lectioControl));
 
         environment.jersey().register(new AuthDynamicFeature(

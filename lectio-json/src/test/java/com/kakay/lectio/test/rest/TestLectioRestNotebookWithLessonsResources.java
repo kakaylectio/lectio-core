@@ -11,8 +11,10 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kakay.lectio.rest.representation.NotebookRep;
+import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
 import com.kakay.lectio.rest.resources.NotebookActiveTopicsWithLessonsResource;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
+import com.kakay.lectio.test.scenarios.SeedData;
 import com.kktam.lectio.control.LectioPersistence;
 import com.kktam.lectio.model.LessonNote;
 import com.kktam.lectio.model.Notebook;
@@ -22,35 +24,18 @@ import com.kktam.lectio.model.User;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.testing.junit.ResourceTestRule;
 
-public class TestLectioRestNotebookWithLessonsResources {
+public class TestLectioRestNotebookWithLessonsResources extends TestRestResources{
 
-    @Rule
-    public final ResourceTestRule resources = ResourceTestRule.builder()
-    	    .addResource(new NotebookActiveTopicsWithLessonsResource(new LectioPersistence().getLectioControlById()))
-//    		.addProvider(new LectioAuthorizer())
-    	        .build();
-	@Before
-	public void setUp() throws Exception {
-	}
+	int numTopics = 6;
+	int numLessonNotes = 10;
 
-	@After
-	public void tearDown() throws Exception {
-		LectioPersistence.clearData("secret");
-	}
 
     @Test
     public void testNotebookActiveTopicsLessonNotesJsonRest() throws IOException {
-    	int numTopics = 6;
-    	int numLessonNotes = 10;
-		RandomSeedData randomSeedData = new RandomSeedData();
-		randomSeedData.generateSeed(1 ,1, 1, 1, numTopics, numLessonNotes);
 		
-		User teacher = randomSeedData.getTeacher();
-		Notebook notebook = randomSeedData.getNotebook();
 
 		int notebookId = notebook.getId();
-		
-		String targetString = "/lectio/notebook/" + notebookId + "/activetopicswithlessons";
+		String targetString = "/lectio/notebook/" + notebookId + "/activetopics/withlessons";
 		
 		// Hit the endpoint and get the raw json string
         String resp = resources.client().target(targetString)
@@ -72,5 +57,22 @@ public class TestLectioRestNotebookWithLessonsResources {
         	Assert.assertNotNull("Date of last lesson should not be null.", lastLessonNote.getDate());
         }
     }
+
+	@Override
+	protected SeedData getSeedData() {
+		RandomSeedData randomSeedData = new RandomSeedData();
+		randomSeedData.generateSeed(1 ,1, 1, 1, numTopics, numLessonNotes);
+
+		return randomSeedData;
+	}
+
+	@Override
+	protected Object getResource() {
+		NotebookActiveTopicsResource notebookActiveTopicResource = new NotebookActiveTopicsResource();
+		notebookActiveTopicResource.setLectioControl(new LectioPersistence().getLectioControlById());
+
+		Object resource = notebookActiveTopicResource;
+		return resource;
+	}
 
 }
