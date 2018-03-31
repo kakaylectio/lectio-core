@@ -9,8 +9,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 
-import com.kakay.lectio.auth.IdentityAuthentication;
+import com.kakay.lectio.auth.IdentityAuthenticator;
 import com.kakay.lectio.auth.LectioPrincipal;
+import com.kakay.lectio.rest.LectioRestApplication;
 import com.kakay.lectio.test.scenarios.SeedData;
 import com.kktam.lectio.control.LectioPersistence;
 import com.kktam.lectio.model.Notebook;
@@ -23,9 +24,9 @@ import io.dropwizard.testing.junit.ResourceTestRule;
 public abstract class TestRestResources {
 
 	protected static final BasicCredentialAuthFilter<LectioPrincipal> BASIC_AUTH_HANDLER = new BasicCredentialAuthFilter.Builder<LectioPrincipal>()
-				.setAuthenticator(new IdentityAuthentication())
+				.setAuthenticator(new IdentityAuthenticator())
 				// .setAuthorizer(new ExampleAuthorizer())
-				.setPrefix("Basic").setRealm("SUPER SECRET STUFF").buildAuthFilter();
+				.setPrefix("Basic").setRealm(LectioRestApplication.ORDINARY_REALM).buildAuthFilter();
 	@Rule
 	public ResourceTestRule resources = ResourceTestRule.builder()
 				.addResource(getResource())

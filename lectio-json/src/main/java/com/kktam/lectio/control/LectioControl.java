@@ -15,7 +15,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import org.hibernate.exception.ConstraintViolationException;
 import org.jboss.logging.Logger;
 
-import com.kakay.lectio.auth.IdentityAuthentication;
+import com.kakay.lectio.auth.IdentityAuthenticator;
 import com.kktam.lectio.control.exception.LectioAuthorizationException;
 import com.kktam.lectio.control.exception.LectioConstraintException;
 import com.kktam.lectio.control.exception.LectioException;
@@ -71,7 +71,7 @@ public class LectioControl {
 			theUser.setName(name);
 			theUser.setEmail(email);
 			em.persist(theUser);
-			IdentityAuthentication.setupNewIdentity(em, theUser, password);
+			IdentityAuthenticator.setupNewIdentity(em, theUser, password);
 			em.getTransaction().commit();
 			logger.info("User " + name + " added.");
 			return theUser;

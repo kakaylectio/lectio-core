@@ -20,10 +20,10 @@ import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;
 import io.dropwizard.auth.basic.BasicCredentials;
 
-public class IdentityAuthentication implements Authenticator<BasicCredentials, LectioPrincipal> {
-	private final static Logger logger = Logger.getLogger(IdentityAuthentication.class);
+public class IdentityAuthenticator implements Authenticator<BasicCredentials, LectioPrincipal> {
+	private final static Logger logger = Logger.getLogger(IdentityAuthenticator.class);
 
-	public IdentityAuthentication() {
+	public IdentityAuthenticator() {
 	}
 
 	public static void setupNewIdentity(EntityManager em, User user, String password) {

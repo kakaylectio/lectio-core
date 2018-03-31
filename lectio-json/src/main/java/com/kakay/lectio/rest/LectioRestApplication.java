@@ -1,6 +1,6 @@
 package com.kakay.lectio.rest;
 
-import com.kakay.lectio.auth.IdentityAuthentication;
+import com.kakay.lectio.auth.IdentityAuthenticator;
 import com.kakay.lectio.auth.LectioPrincipal;
 import com.kakay.lectio.rest.health.BrandNameHealthCheck;
 import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
@@ -13,6 +13,8 @@ import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.setup.Environment;
 
 public class LectioRestApplication extends Application<LectioRestConfiguration> {
+	
+	public final static String ORDINARY_REALM  = "Lectio Realm";
     public static void main(String[] args) throws Exception {
         new LectioRestApplication().run(args);
     }
@@ -34,9 +36,9 @@ public class LectioRestApplication extends Application<LectioRestConfiguration> 
 
         environment.jersey().register(new AuthDynamicFeature(
         		new BasicCredentialAuthFilter.Builder<LectioPrincipal>()
-        			.setAuthenticator(new IdentityAuthentication())
+        			.setAuthenticator(new IdentityAuthenticator())
 //        			.setAuthorizer(new LectioAuthorizer())
-        			.setRealm("SUPER SECRET STUFF")
+        			.setRealm(ORDINARY_REALM)
         			.buildAuthFilter()));
 	}
 
