@@ -26,12 +26,6 @@ public class LectioPersistence {
 	}
 	
 
-	public static void clearData(String secret) {
-		// Check secret here
-		LectioClearData clearDataObj = new LectioClearData();
-		clearDataObj.clearData();
-	}
-
 	public EntityManager getEm() {
 		return em;
 	}

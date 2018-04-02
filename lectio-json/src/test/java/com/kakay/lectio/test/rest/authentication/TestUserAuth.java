@@ -11,18 +11,21 @@ import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.client.Client;
 
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.junit.Rule;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.kakay.lectio.auth.LectioAuthorizer;
+import com.kakay.lectio.auth.LectioPrincipal;
 import com.kakay.lectio.test.rest.TestRestResources;
 import com.kakay.lectio.test.scenarios.SeedData;
 import com.kakay.lectio.test.scenarios.VorkosiganSeedData;
 import com.kktam.lectio.control.exception.LectioException;
-import com.kktam.lectio.model.User;
 
 import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.testing.junit.ResourceTestRule;
 
 public abstract class TestUserAuth extends TestRestResources {
@@ -30,14 +33,18 @@ public abstract class TestUserAuth extends TestRestResources {
 	public ResourceTestRule noCredentialResource = ResourceTestRule.builder()
 				.addResource(getResource())
 				.addProvider(new AuthDynamicFeature(BASIC_AUTH_HANDLER))
-				// .addProvider(new LectioAuthorizer())
+				.addProvider(new LectioAuthorizer())
+		        .addProvider(RolesAllowedDynamicFeature.class)
+		        .addProvider(new AuthValueFactoryProvider.Binder<>(LectioPrincipal.class))
 				.build();
 
 	@Rule
 	public ResourceTestRule wrongPasswordResource = ResourceTestRule.builder()
 				.addResource(getResource())
 				.addProvider(new AuthDynamicFeature(BASIC_AUTH_HANDLER))
-				// .addProvider(new LectioAuthorizer())
+				.addProvider(new LectioAuthorizer())
+		        .addProvider(RolesAllowedDynamicFeature.class)
+		        .addProvider(new AuthValueFactoryProvider.Binder<>(LectioPrincipal.class))
 				.build();
 
 	public TestUserAuth() {

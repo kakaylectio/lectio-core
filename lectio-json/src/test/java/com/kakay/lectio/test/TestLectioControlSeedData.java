@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.kakay.lectio.test.scenarios.ClearData;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kktam.lectio.control.LectioControl;
 import com.kktam.lectio.control.LectioPersistence;
@@ -20,11 +21,11 @@ public class TestLectioControlSeedData {
 
 	@After
 	public void tearDown() throws Exception {
-		LectioPersistence.clearData("secret");
+		ClearData.main(new String[]{});
 	}
 
 	@Test
-	public void test() throws LectioException {
+	public void testFindUsers() throws LectioException {
 		RandomSeedData randomSeedData = new RandomSeedData();
 		randomSeedData.generateSeed(10,  0,  0,  0,  0,  0);
 		

@@ -15,6 +15,7 @@ import com.kakay.lectio.auth.LectioPrincipal;
 import com.kakay.lectio.rest.representation.NotebookRep;
 import com.kakay.lectio.rest.resources.views.Views;
 import com.kktam.lectio.control.LectioControl;
+import com.kktam.lectio.control.exception.LectioAuthorizationException;
 import com.kktam.lectio.model.Notebook;
 import com.kktam.lectio.model.Topic;
 
@@ -36,12 +37,13 @@ public class NotebookActiveTopicsResource {
 	
 	
 	/* Get the active topic names and ids for a notebook. */
-    @GET
+    @PermitAll
+	@GET
     @Timed
     @JsonView(Views.NoDetails.class)
-    public NotebookRep getTopicNames(@Auth LectioPrincipal principal, @PathParam("notebook-id") int notebookId) {
-		List<Topic> topicList = lectioControl.findActiveTopicsByNotebook(bogusId, notebookId);
-		Notebook notebook = lectioControl.findNotebookById(bogusId,  notebookId);
+    public NotebookRep getTopicNames(@PathParam("notebook-id") int notebookId, @Auth LectioPrincipal principal) throws LectioAuthorizationException {
+		List<Topic> topicList = lectioControl.findActiveTopicsByNotebook(principal.getId(), notebookId);
+		Notebook notebook = lectioControl.findNotebookById(principal.getId(),  notebookId);
 		
 		NotebookRep notebookRep = new NotebookRep(notebook, topicList);
 		return notebookRep;
@@ -55,8 +57,8 @@ public class NotebookActiveTopicsResource {
     @JsonView(Views.LastLessonNotes.class)
     public NotebookRep getTopicsAndLessons(@Auth LectioPrincipal principal, @PathParam("notebook-id") int notebookId) {
     	int bogusId = 20;
-    	List<Topic> topicList = lectioControl.findActiveTopicsAndLessonNotesByNotebook(bogusId, notebookId);
-		Notebook notebook = lectioControl.findNotebookById(bogusId,  notebookId);
+    	List<Topic> topicList = lectioControl.findActiveTopicsAndLessonNotesByNotebook(principal.getId(), notebookId);
+		Notebook notebook = lectioControl.findNotebookById(principal.getId(),  notebookId);
 		
 		NotebookRep notebookRep = new NotebookRep(notebook, topicList);
 		

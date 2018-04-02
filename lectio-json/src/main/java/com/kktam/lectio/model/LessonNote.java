@@ -24,6 +24,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 			"WHERE ln.topic = :topic "
 			+ "ORDER BY ln.date DESC"
 	),
+	@javax.persistence.NamedQuery(name="LessonNote.byTopicId",
+	query="SELECT ln FROM LessonNote ln " + 
+			"WHERE ln.topic.id = :topicId "
+			+ "ORDER BY ln.date DESC"
+	),
 	@javax.persistence.NamedQuery(name="LessonNote.countByTopic",
 			query="SELECT COUNT (ln) FROM LessonNote ln WHERE ln.topic = :topic"
 			),
@@ -42,6 +47,8 @@ public class LessonNote
 	public static final String QUERYPARAM_LESSONNOTE_TOPIC = "topic";
 	public static final String QUERY_LASTLESSONNOTEBYNOTEBOOK = "LessonNote.byActiveTopicByNotebook";
 	public static final String QUERYPARAM_LESSONNOTE_NOTEBOOK = "notebook";
+	public static final String QUERY_LESSONNOTES_BYTOPICID = "LessonNote.byTopicId";
+	public static final String QUERYPARAM_LESSONNOTES_BYTOPICID = "topicId";
 	
 	@javax.persistence.Column(nullable = false) 
 	protected LocalDateTime date;
@@ -49,7 +56,8 @@ public class LessonNote
 	@javax.persistence.Column(nullable = false, length = 2000) 
 	protected String content;
 
-	
+	@javax.persistence.Column(nullable = false)
+	protected LocalDateTime lastContentUpdate;
 
 	@JsonProperty 
 	public String getContent() {
@@ -150,6 +158,16 @@ public class LessonNote
 	
 	public void unsetTopic() {
 		this.topic = null;
+	}
+
+	@JsonProperty 
+	public LocalDateTime getLastContentUpdate() {
+		// TODO Auto-generated method stub
+		return this.lastContentUpdate;
+	}
+	
+	public void setLastContentUpdate(LocalDateTime myLastContentUpdate) {
+		this.lastContentUpdate = myLastContentUpdate;
 	}
 
 

@@ -7,9 +7,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.kakay.lectio.test.scenarios.ClearData;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kktam.lectio.control.LectioControl;
 import com.kktam.lectio.control.LectioPersistence;
+import com.kktam.lectio.control.exception.LectioAuthorizationException;
 import com.kktam.lectio.control.exception.LectioConstraintException;
 import com.kktam.lectio.control.exception.LectioException;
 import com.kktam.lectio.model.Notebook;
@@ -17,10 +19,7 @@ import com.kktam.lectio.model.Topic;
 import com.kktam.lectio.model.TopicState;
 import com.kktam.lectio.model.User;
 
-
-
-
-public class TestLectioControlNotebooks {
+public class TestLectioControlNotebooks  {
 
 	@Before
 	public void setUp() throws Exception {
@@ -28,82 +27,78 @@ public class TestLectioControlNotebooks {
 
 	@After
 	public void tearDown() throws Exception {
-		LectioPersistence.clearData("secret");
+		ClearData.main(new String[]{});
 	}
 
 	@Test
 	public void testDuplicateNotebook() throws LectioException {
 		RandomSeedData randomSeedData = new RandomSeedData();
-		randomSeedData.generateSeed(1 ,1, 1, 0, 0, 0);
-		
+		randomSeedData.generateSeed(1, 1, 1, 0, 0, 0);
+
 		User teacher = randomSeedData.getTeacher();
 		Notebook notebook = randomSeedData.getNotebook();
-		
+
 		LectioPersistence lectioPersistence = new LectioPersistence();
 		LectioControl lectioControl = lectioPersistence.getLectioControlById();
-		
+
 		try {
 			lectioControl.addNewNotebook(teacher.getId(), randomSeedData.getStudio().getId(), notebook.getName());
 			Assert.fail("Adding duplicate notebook to same studio should fail.");
-		}
-		catch(LectioConstraintException ex) {
+		} catch (LectioConstraintException ex) {
 			Assert.assertTrue("Adding duplicate notebook name exception should state the duplicate name.",
 					ex.getMessage().contains(notebook.getName()));
 		}
 	}
-	
+
 	@Test
-	public void testNotebookData() throws LectioException{
+	public void testNotebookData() throws LectioException {
 		RandomSeedData randomSeedData = new RandomSeedData();
-		randomSeedData.generateSeed(1 ,1, 5, 1, 0, 0);
-		
+		randomSeedData.generateSeed(1, 1, 5, 1, 0, 0);
+
 		User teacher = randomSeedData.getTeacher();
 		Notebook notebook = randomSeedData.getNotebook();
-		
+
 		LectioPersistence lectioPersistence = new LectioPersistence();
 		LectioControl lectioControl = lectioPersistence.getLectioControlById();
 
-		
 		List<Notebook> notebooksByTeacher = lectioControl.findNotebooksByUser(teacher.getId());
 		boolean notebookFound = false;
 		String lastNotebookName = "";
-		for (Notebook notebookitem:notebooksByTeacher) {
+		for (Notebook notebookitem : notebooksByTeacher) {
 			if (notebookitem.getId() == notebook.getId() && notebookitem.getName().equals(notebook.getName())) {
 				notebookFound = true;
 			}
-			Assert.assertTrue("Notebooks returned by findNotebooksByUser needs to be in alphabetical order." 
-					+ notebookitem.getName() + " should be before " + lastNotebookName,
+			Assert.assertTrue(
+					"Notebooks returned by findNotebooksByUser needs to be in alphabetical order."
+							+ notebookitem.getName() + " should be before " + lastNotebookName,
 					notebookitem.getName().compareToIgnoreCase(lastNotebookName) > 0);
 			lastNotebookName = notebookitem.getName();
 		}
-		Assert.assertTrue("Notebook needs to be in list returned by findNotebooksByUser.",
-				notebookFound);
+		Assert.assertTrue("Notebook needs to be in list returned by findNotebooksByUser.", notebookFound);
 
 		User student = randomSeedData.getStudent();
 		List<Notebook> notebooksByStudent = lectioControl.findNotebooksByUser(student.getId());
 		boolean studentNotebookFound = false;
 		String lastStudentNotebookName = "";
-		for (Notebook notebookitem:notebooksByStudent) {
+		for (Notebook notebookitem : notebooksByStudent) {
 			if (notebookitem.getId() == notebook.getId() && notebookitem.getName().equals(notebook.getName())) {
 				studentNotebookFound = true;
 			}
-			Assert.assertTrue("Notebooks returned by findNotebooksByUser for student needs to be in alphabetical order." +
-			  notebookitem.getName() + " should be before " + lastStudentNotebookName,
+			Assert.assertTrue(
+					"Notebooks returned by findNotebooksByUser for student needs to be in alphabetical order."
+							+ notebookitem.getName() + " should be before " + lastStudentNotebookName,
 					notebookitem.getName().compareToIgnoreCase(lastStudentNotebookName) > 0);
 			lastStudentNotebookName = notebookitem.getName();
 		}
-		Assert.assertTrue("Notebook needs to be in list returned by findNotebooksByUser.",
-				studentNotebookFound);
+		Assert.assertTrue("Notebook needs to be in list returned by findNotebooksByUser.", studentNotebookFound);
 
-		
-		
 	}
-	
+
 	@Test
 	public void testDuplicateTopic() throws LectioException {
 		RandomSeedData randomSeedData = new RandomSeedData();
-		randomSeedData.generateSeed(1 ,1, 1, 0, 1, 0);
-		
+		randomSeedData.generateSeed(1, 1, 1, 0, 1, 0);
+
 		User teacher = randomSeedData.getTeacher();
 		Notebook notebook = randomSeedData.getNotebook();
 
@@ -113,25 +108,63 @@ public class TestLectioControlNotebooks {
 		try {
 			lectioControl.addNewTopic(teacher.getId(), notebook.getId(), randomSeedData.getTopic().getName());
 			Assert.fail("Adding duplicate topic in same notebook should fail.");
-		}
-		catch(LectioConstraintException ex) {
+		} catch (LectioConstraintException ex) {
 			Assert.assertTrue("Exception thrown when adding duplicate topic should show topic name.",
 					ex.getMessage().contains(randomSeedData.getTopic().getName()));
 		}
-		
+
 		// Adding duplicate topic to different notebook should succeed.
-		Notebook newNotebook = lectioControl.addNewNotebook(teacher.getId(), randomSeedData.getStudio().getId(), "New Notebook");
-		Topic newTopic = lectioControl.addNewTopic(teacher.getId(), newNotebook.getId(), randomSeedData.getTopic().getName());
-		Assert.assertNotNull("Adding duplicate topic name to another notebook should succeed.",
-				newTopic);
-		
+		Notebook newNotebook = lectioControl.addNewNotebook(teacher.getId(), randomSeedData.getStudio().getId(),
+				"New Notebook");
+		Topic newTopic = lectioControl.addNewTopic(teacher.getId(), newNotebook.getId(),
+				randomSeedData.getTopic().getName());
+		Assert.assertNotNull("Adding duplicate topic name to another notebook should succeed.", newTopic);
+
 	}
-	
-	@Test 
+
+	@Test
 	public void testNotebookTopics() throws LectioException {
 		RandomSeedData randomSeedData = new RandomSeedData();
-		randomSeedData.generateSeed(1 ,1, 1, 1, 5, 0);
-		
+		randomSeedData.generateSeed(1, 1, 1, 1, 5, 0);
+
+		User teacher = randomSeedData.getTeacher();
+		Notebook notebook = randomSeedData.getNotebook();
+		User student = randomSeedData.getStudent();
+
+		LectioPersistence lectioPersistence = new LectioPersistence();
+		LectioControl lectioControl = lectioPersistence.getLectioControlById();
+
+		// Student should be able find active topics.
+		List<Topic> activeTopicList = lectioControl.findActiveTopicsByNotebook(student.getId(), notebook.getId());
+		// Make sure topics are all active and in active order.
+		int lastActiveOrder = -1;
+		for (Topic topic : activeTopicList) {
+			Assert.assertEquals("Topic should be active to be on the list.", TopicState.active, topic.getTopicState());
+			Assert.assertTrue("Topics returned by findActiveTopicsByNotebook should be in active order.",
+					topic.getActiveOrder() > lastActiveOrder);
+			lastActiveOrder = topic.getActiveOrder();
+		}
+
+		// When you add a new topic, it should become the first one in the active order.
+		Topic newTopic = lectioControl.addNewTopic(teacher.getId(), notebook.getId(), "Latest Topic");
+		List<Topic> newActiveTopicList = lectioControl.findActiveTopicsByNotebook(student.getId(), notebook.getId());
+		Assert.assertEquals("After adding new topic, active topic list count should be one more than before",
+				activeTopicList.size() + 1, newActiveTopicList.size());
+		Assert.assertEquals("Newest topic should be at top of list.", newTopic.getId(),
+				newActiveTopicList.get(0).getId());
+		// Make sure the rest of the list stays in the same order.
+		for (int i = 0; i < activeTopicList.size(); i++) {
+			Assert.assertEquals("After adding new topic, the rest of the Topic list should stay in the same order.",
+					activeTopicList.get(i).getId(), newActiveTopicList.get(i + 1).getId());
+
+		}
+	}
+
+	@Test
+	public void testWrongUserReadNotebook() throws Exception{
+		RandomSeedData randomSeedData = new RandomSeedData();
+		randomSeedData.generateSeed(1, 1, 1, 1, 5, 0);
+
 		User teacher = randomSeedData.getTeacher();
 		Notebook notebook = randomSeedData.getNotebook();
 		User student = randomSeedData.getStudent();
@@ -139,29 +172,13 @@ public class TestLectioControlNotebooks {
 		LectioPersistence lectioPersistence = new LectioPersistence();
 		LectioControl lectioControl = lectioPersistence.getLectioControlById();
 		
-		List<Topic> activeTopicList = lectioControl.findActiveTopicsByNotebook(student.getId(), notebook.getId());
-		// Make sure topics are all active and in active order.
-		int lastActiveOrder = -1;
-		for (Topic topic: activeTopicList) {
-			Assert.assertEquals("Topic should be active to be on the list.",
-					TopicState.active, topic.getTopicState());
-			Assert.assertTrue("Topics returned by findActiveTopicsByNotebook should be in active order.",
-					topic.getActiveOrder() > lastActiveOrder);
-			lastActiveOrder = topic.getActiveOrder();
+		User wrongUser = lectioControl.addNewUser(-1,  "testWrongUserReadNotebook Name",  "testWrongUserReadNotebook@email.com",  "pwd");
+		try {
+			List<Topic> activeTopicList = lectioControl.findActiveTopicsByNotebook(wrongUser.getId(), notebook.getId());
+			Assert.fail("Getting active topics by wrong user should have thrown a LectioAuthorizationException.");
 		}
-		
-		//When you add a new topic, it should become the first one in the active order.
-		Topic newTopic = lectioControl.addNewTopic(teacher.getId(), notebook.getId(), "Latest Topic");
-		List<Topic> newActiveTopicList = lectioControl.findActiveTopicsByNotebook(student.getId(), notebook.getId());
-		Assert.assertEquals("After adding new topic, active topic list count should be one more than before",
-				activeTopicList.size() + 1, newActiveTopicList.size());
-		Assert.assertEquals("Newest topic should be at top of list.",
-				newTopic.getId(), newActiveTopicList.get(0).getId());
-		//Make sure the rest of the list stays in the same order.
-		for (int i=0; i<activeTopicList.size(); i++) {
-			Assert.assertEquals("After adding new topic, the rest of the Topic list should stay in the same order.",
-					activeTopicList.get(i).getId(), newActiveTopicList.get(i+1).getId());
-			
+		catch(LectioAuthorizationException ex) {
+			Assert.assertTrue("Wrong user should not be allowed to find topics in a notebook.", true);
 		}
 	}
 
