@@ -1,5 +1,11 @@
 package com.kakay.lectio.rest;
 
+import java.util.EnumSet;
+
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
+
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
 import com.kakay.lectio.auth.IdentityAuthenticator;
@@ -15,6 +21,9 @@ import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
+import io.dropwizard.jetty.ConnectorFactory;
+import io.dropwizard.jetty.HttpConnectorFactory;
+import io.dropwizard.server.DefaultServerFactory;
 import io.dropwizard.setup.Environment;
 
 public class LectioRestApplication extends Application<LectioRestConfiguration> {
@@ -54,6 +63,22 @@ public class LectioRestApplication extends Application<LectioRestConfiguration> 
         environment.jersey().register(new LectioExceptionMappers.LectioAuthorizationExceptionMapper());
         environment.jersey().register(new LectioExceptionMappers.LectioConstraintExceptionMapper());
         environment.jersey().register(new LectioExceptionMappers.LectioObjectNotFoundExceptionMapper());
+
+        
+        
+ 
+        // CORS Settings to allow cross origin requests
+        final FilterRegistration.Dynamic filter = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
+
+        
+        filter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+        filter.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM, "GET,PUT,POST,DELETE,OPTIONS");
+        filter.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, configuration.getAllowedOrigins());
+        filter.setInitParameter(CrossOriginFilter.ACCESS_CONTROL_ALLOW_ORIGIN_HEADER, "*");
+        filter.setInitParameter(CrossOriginFilter.ALLOWED_HEADERS_PARAM, "Content-Type,Authorization,X-Requested-With,Content-Length,Accept,Origin");
+        filter.setInitParameter("allowCredentials", "true");
+
+	
 	}
 
 }

@@ -58,7 +58,49 @@ public class VorkosiganSeedData implements SeedData {
 			lectioControl.addNewNotebookUser(aralId, notebookId, milesId, Role.student);
 
 			topic = lectioControl.addNewTopic(aralId, notebookId, "Mendelssohn Songs Without Words, Opus 19 No. 1");
+			
+			lessonNote = lectioControl.addNewLessonNote(aralId, topic.getId(), "	<ol>\r\n" + 
+					"		<li>Work on pedal and play LH bass and tenor alone</li>\r\n" + 
+					"		<li>Pedal + alto + tenor + bass, making sure the inner voices are\r\n" + 
+					"			very light / muted/ soft fingers. Watch out for _*thumb* _accents</li>\r\n" + 
+					"		<li>Tempo: Play faster once you get a good control of inner\r\n" + 
+					"			voices. Leave out rubato for now</li>\r\n" + 
+					"		<li>Intro 2 measures: Think of a shimmery / glistening picture</li>\r\n" + 
+					"	</ol>\r\n" + 
+					"");
+
 			Topic topic2 = lectioControl.addNewTopic(aralId, notebookId, "Schubert Moment Musicaux Opus 39. no 3");
+			LessonNote lessonNote2 = lectioControl.addNewLessonNote(aralId, topic2.getId(),
+					"	<ul>\r\n" + 
+					"		<li>Quarternote = 92. Stay with this new tempo and fix today's\r\n" + 
+					"			notes</li>\r\n" + 
+					"\r\n" + 
+					"	</ul>\r\n" + 
+					"");
+
+			Topic topic3 = lectioControl.addNewTopic(aralId, notebookId, "Mozart Sonata in C K. 545 Movement 3");
+			LessonNote lessonNote3 = lectioControl.addNewLessonNote(aralId, topic3.getId(),
+					"	<ul>\r\n" + 
+					"		<li>Be more open to \"playful\" practicing</li>\r\n" + 
+					"		<li>Land - means really let go on the keyboard</li>\r\n" + 
+					"		<li>m. 44-48 LH needs phrasing and bring out (D E F E D - C B A)</li>\r\n" + 
+					"		<li>mm 51 Crescendo: end loud!</li>\r\n" + 
+					"		<li>mm 61-67 LH only support RH the same way RH is playing</li>\r\n" + 
+					"		<li>mm 68 - end: don't start soft.</li>\r\n" + 
+					"		<li>Rotate and drop wrist</li>\r\n" + 
+					"	</ul>");
+			
+			Topic topic4 = lectioControl.addNewTopic(aralId, notebookId, "Technique");
+			LessonNote lessonNote4 = lectioControl.addNewLessonNote(aralId, topic4.getId(),
+					"	D-major\r\n" + 
+					"	<ul>\r\n" + 
+					"		<li>2 octave, octave scales</li>\r\n" + 
+					"		<li>3rds/10ths: legato 4 octave scale</li>\r\n" + 
+					"		<li>Arpeggio and inversions</li>\r\n" + 
+					"		<li>Arpeggio V7 and inversions</li>\r\n" + 
+					"	</ul>");
+
+		
 		} catch (LectioException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

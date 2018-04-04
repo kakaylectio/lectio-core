@@ -11,6 +11,9 @@ public class LectioRestConfiguration extends Configuration {
 
     @NotEmpty
     private String brandName = "Gangqinke";
+    
+    @NotEmpty
+    private String allowedOrigins;
 
 	public String getStudio() {
 		return studio;
@@ -26,6 +29,14 @@ public class LectioRestConfiguration extends Configuration {
 
 	public void setBrandName(String brandName) {
 		this.brandName = brandName;
+	}
+
+	public String getAllowedOrigins() {
+		return allowedOrigins;
+	}
+
+	public void setAllowedOrigins(String allowedOrigins) {
+		this.allowedOrigins = allowedOrigins;
 	}
     
     
