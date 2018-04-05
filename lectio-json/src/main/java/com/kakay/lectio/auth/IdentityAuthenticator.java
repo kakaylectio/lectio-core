@@ -23,7 +23,9 @@ import io.dropwizard.auth.basic.BasicCredentials;
 public class IdentityAuthenticator implements Authenticator<BasicCredentials, LectioPrincipal> {
 	private final static Logger logger = Logger.getLogger(IdentityAuthenticator.class);
 
-	public IdentityAuthenticator() {
+	EntityManager entityManager;
+	public IdentityAuthenticator(EntityManager entityManager) {
+		this.entityManager = entityManager;
 	}
 
 	public static void setupNewIdentity(EntityManager em, User user, String password) {
@@ -81,6 +83,16 @@ public class IdentityAuthenticator implements Authenticator<BasicCredentials, Le
 		String username = credentials.getUsername();
 		String password = credentials.getPassword();
 
+		LectioPrincipal principal = checkStringCredentials(username, password);
+		if (principal == null) {
+			return Optional.empty();
+		}
+		else 
+			return Optional.of(principal);
+
+	}
+
+	public LectioPrincipal checkStringCredentials(String username, String password) {
 		LectioPersistence lectioPersistence = new LectioPersistence();
 		LectioControl control = lectioPersistence.getLectioControlById();
 		User user;
@@ -90,19 +102,18 @@ public class IdentityAuthenticator implements Authenticator<BasicCredentials, Le
 				user = control.findUserByEmail(0, username);
 			}
 			if (user == null) {
-				return Optional.empty();
+				return null;
 			}
 
 			if (checkIdentity(lectioPersistence.getEm(), user.getId(), password)) {
 				LectioPrincipal principal = new LectioPrincipal(user.getEmail(), user.getId(), 
 						new HashSet<Privilege>());
-				return Optional.of(principal);
+				return principal;
 			}
 		} catch (LectioException e) {
 			logger.error("LectioException while searching for user name.", e);
 			user = null;
 		}
-		return Optional.empty();
-
+		return null;
 	}
 }

@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.net.HttpHeaders;
 import com.kakay.lectio.rest.representation.NotebookRep;
 import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
@@ -23,7 +24,7 @@ public class TestLectioRestNotebookResources extends TestRestResources {
 	public void testNotebookActiveTopics() throws IOException {
 		int notebookId = notebook.getId();
 		String targetString = "/lectio/notebook/" + notebookId + "/activetopics";
-		String resp = teacherClient.target(targetString).request().get(String.class);
+		String resp = hitEndpoint(targetString);
 
 		ObjectMapper objectMapper = Jackson.newObjectMapper();
 		NotebookRep notebookRep = objectMapper.readValue(resp, NotebookRep.class);

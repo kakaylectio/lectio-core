@@ -15,6 +15,7 @@ import com.kktam.lectio.model.User;
 			)
 })
 public class UserIdentity {
+	
 
 	public static final String QUERY_USERIDENTITY_BYUSERID = "UserIdentity.byUserId";
 	public static final String QUERYPARAM_USERIDENTITY_USERID = "id";

@@ -11,8 +11,11 @@ import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import com.kakay.lectio.auth.IdentityAuthenticator;
 import com.kakay.lectio.auth.LectioAuthorizer;
 import com.kakay.lectio.auth.LectioPrincipal;
+import com.kakay.lectio.auth.TokenAuthenticator;
+import com.kakay.lectio.auth.WebTokenFilter;
 import com.kakay.lectio.rest.exceptions.LectioExceptionMappers;
 import com.kakay.lectio.rest.health.BrandNameHealthCheck;
+import com.kakay.lectio.rest.resources.LoginResource;
 import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
 import com.kktam.lectio.control.LectioControl;
 import com.kktam.lectio.control.LectioPersistence;
@@ -21,9 +24,6 @@ import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
-import io.dropwizard.jetty.ConnectorFactory;
-import io.dropwizard.jetty.HttpConnectorFactory;
-import io.dropwizard.server.DefaultServerFactory;
 import io.dropwizard.setup.Environment;
 
 public class LectioRestApplication extends Application<LectioRestConfiguration> {
@@ -47,11 +47,23 @@ public class LectioRestApplication extends Application<LectioRestConfiguration> 
 		NotebookActiveTopicsResource notebookActiveTopicResource = new NotebookActiveTopicsResource();
 		notebookActiveTopicResource.setLectioControl(lectioControl);
         environment.jersey().register(notebookActiveTopicResource);
-        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(LectioPrincipal.class));
+//        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(LectioPrincipal.class));
 
+        IdentityAuthenticator idAuthenticator = new IdentityAuthenticator(lectioPersistence.getEm());
+        TokenAuthenticator tokenAuthenticator = new TokenAuthenticator();
+        LoginResource loginResource = new LoginResource(idAuthenticator, tokenAuthenticator);
+        environment.jersey().register(loginResource);
+//        environment.jersey().register(new AuthDynamicFeature(
+//        		new BasicCredentialAuthFilter.Builder<LectioPrincipal>()
+//        			.setAuthenticator(new IdentityAuthenticator())
+//        			.setAuthorizer(new LectioAuthorizer())
+//        			.setRealm(ORDINARY_REALM)
+//        			.buildAuthFilter()));
+
+        
         environment.jersey().register(new AuthDynamicFeature(
-        		new BasicCredentialAuthFilter.Builder<LectioPrincipal>()
-        			.setAuthenticator(new IdentityAuthenticator())
+        		new WebTokenFilter.Builder()
+        			.setAuthenticator(tokenAuthenticator)
         			.setAuthorizer(new LectioAuthorizer())
         			.setRealm(ORDINARY_REALM)
         			.buildAuthFilter()));

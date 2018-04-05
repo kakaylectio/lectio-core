@@ -56,7 +56,6 @@ public class NotebookActiveTopicsResource {
     @Timed
     @JsonView(Views.LastLessonNotes.class)
     public NotebookRep getTopicsAndLessons(@Auth LectioPrincipal principal, @PathParam("notebook-id") int notebookId) {
-    	int bogusId = 20;
     	List<Topic> topicList = lectioControl.findActiveTopicsAndLessonNotesByNotebook(principal.getId(), notebookId);
 		Notebook notebook = lectioControl.findNotebookById(principal.getId(),  notebookId);
 		

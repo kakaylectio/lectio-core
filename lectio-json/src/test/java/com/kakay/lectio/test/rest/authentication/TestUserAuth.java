@@ -6,10 +6,13 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.client.Client;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.junit.Rule;
@@ -17,11 +20,17 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.common.net.HttpHeaders;
+import com.kakay.lectio.auth.IdentityAuthenticator;
 import com.kakay.lectio.auth.LectioAuthorizer;
 import com.kakay.lectio.auth.LectioPrincipal;
+import com.kakay.lectio.auth.TokenAuthenticator;
+import com.kakay.lectio.rest.resources.LoginResource;
+import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
 import com.kakay.lectio.test.rest.TestRestResources;
 import com.kakay.lectio.test.scenarios.SeedData;
 import com.kakay.lectio.test.scenarios.VorkosiganSeedData;
+import com.kktam.lectio.control.LectioPersistence;
 import com.kktam.lectio.control.exception.LectioException;
 
 import io.dropwizard.auth.AuthDynamicFeature;
@@ -29,23 +38,8 @@ import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.testing.junit.ResourceTestRule;
 
 public abstract class TestUserAuth extends TestRestResources {
-	@Rule
-	public ResourceTestRule noCredentialResource = ResourceTestRule.builder()
-				.addResource(getResource())
-				.addProvider(new AuthDynamicFeature(BASIC_AUTH_HANDLER))
-				.addProvider(new LectioAuthorizer())
-		        .addProvider(RolesAllowedDynamicFeature.class)
-		        .addProvider(new AuthValueFactoryProvider.Binder<>(LectioPrincipal.class))
-				.build();
 
-	@Rule
-	public ResourceTestRule wrongPasswordResource = ResourceTestRule.builder()
-				.addResource(getResource())
-				.addProvider(new AuthDynamicFeature(BASIC_AUTH_HANDLER))
-				.addProvider(new LectioAuthorizer())
-		        .addProvider(RolesAllowedDynamicFeature.class)
-		        .addProvider(new AuthValueFactoryProvider.Binder<>(LectioPrincipal.class))
-				.build();
+	
 
 	public TestUserAuth() {
 		super();
@@ -55,30 +49,37 @@ public abstract class TestUserAuth extends TestRestResources {
 	@Test
 	public void testUserLogin() throws LectioException, JsonParseException, JsonMappingException, IOException {
 
+		
 		String teacherEmail = teacher.getEmail();
-		String targetString = getTargetString();
+		String targetString = "/login";
 	
 		// Create authentication parameters
 		Map<String, String> emailToPasswordMap = seedData.getEmailToPasswordMap();
 		String teacherPassword = emailToPasswordMap.get(teacher.getEmail());
-		HttpAuthenticationFeature authFeature = HttpAuthenticationFeature.basic(teacherEmail, teacherPassword);
-		// Hit the endpoint and get the raw json string
-		Client client = resources.client();
-		client.register(authFeature);
-		String resp = client.target(targetString).request().get(String.class);
-	
-		assertNotNull("With valid login, returned value should be non-null.", resp);
-	}
 
+		
+		Response resp = getLoginResponse(teacherEmail, teacherPassword, targetString);
+		assertNotNull("With valid login, returned value should be non-null.", resp);
+		
+		Map<String, NewCookie> newCookieMap = resp.getCookies();
+		Set<String> cookieNames = newCookieMap.keySet();
+		assertTrue("A cookie for the username and password should have been set.",
+				cookieNames.contains(LoginResource.LOGIN_COOKIE_NAME));
+
+		NewCookie newCookie = newCookieMap.get(LoginResource.LOGIN_COOKIE_NAME);
+		String cookieValue = newCookie.getValue();
+		
+	}
 	@Test
-	public void testNoCredentials() throws Exception {
-		Client noCredentialClient = noCredentialResource.client();
-	
+	public void testNoToken() throws Exception {
 		String targetString = getTargetString();
 	
 		try {
-			String resp = noCredentialClient.target(targetString).request()
-				    .get(String.class);
+
+			// Hit endpoint without the token
+		    String resp = resources.client().target(targetString)
+		            .request()
+		            .get(String.class);
 			fail("Not authorized exception should have been thrown.");
 		} catch (NotAuthorizedException e) {
 			assertTrue("This exception is supposed to be thrown when using no credentials.", true);
@@ -87,23 +88,29 @@ public abstract class TestUserAuth extends TestRestResources {
 	}
 
 	@Test
-	public void testWrongPassword() throws IOException {
-	
-		HttpAuthenticationFeature wrongAuthFeature = HttpAuthenticationFeature.basic(teacher.getName(),
-				"bogusPassword");
-		Client wrongClient = wrongPasswordResource.client();
-		wrongClient.register(wrongAuthFeature);
-	
+	public void testBogusToken() throws Exception {
 		String targetString = getTargetString();
 	
 		try {
-			String resp = wrongClient.target(targetString).request()
-				    .get(String.class);
+			String bogusToken = RandomStringUtils.randomAlphanumeric(32);
+			// Hit endpoint with a bogus token
+		    String resp = resources.client().target(targetString)
+		            .request()
+		            .header(HttpHeaders.AUTHORIZATION, "Token " + bogusToken)
+		            .get(String.class);
 			fail("Not authorized exception should have been thrown.");
 		} catch (NotAuthorizedException e) {
-			assertTrue("This exception is supposed to be thrown when using wrong password.", true);
+			assertTrue("This exception is supposed to be thrown when using no credentials.", true);
 		}
 	
+	}
+
+	
+	@Test
+	public void testWrongPassword() throws IOException {
+		String targetString = "/login";		
+		Response resp = getLoginResponse(teacher.getEmail(), "bogusPassword", targetString);
+		assertTrue("Login with wrong email and password should have failed.", resp.getStatus() >= 400);
 	}
 
 	@Override

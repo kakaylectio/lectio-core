@@ -30,11 +30,9 @@ public class TestLectioRestNotebookWithLessonsResources extends TestRestResource
 		int notebookId = notebook.getId();
 		String targetString = "/lectio/notebook/" + notebookId + "/activetopics/withlessons";
 		
-		// Hit the endpoint and get the raw json string
-        String resp = resources.client().target(targetString)
-                .request().get(String.class);
-        ObjectMapper objectMapper = Jackson.newObjectMapper();
-        NotebookRep notebookRep = objectMapper.readValue(resp,  NotebookRep.class);
+		String resp = hitEndpoint(targetString);
+		ObjectMapper objectMapper = Jackson.newObjectMapper();
+		NotebookRep notebookRep = objectMapper.readValue(resp, NotebookRep.class);
         Assert.assertNotNull("NotebookRep should note be null when returned from activetopicswithlessons.",
         		notebookRep);
         
