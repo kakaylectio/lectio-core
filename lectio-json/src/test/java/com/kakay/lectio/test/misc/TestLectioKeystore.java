@@ -13,7 +13,7 @@ public class TestLectioKeystore {
 
 	@Test
 	public void testKeystore() throws Exception{
-		LectioKeystore keystore = LectioKeystore.getLectioKeystoreInstance();
+		LectioKeystore keystore = LectioKeystore.getInstance();
 		assertNotNull("LectioKeystore creation failed.", keystore);
 		
 		String testString = "Here is a string that I'd like to sign.";

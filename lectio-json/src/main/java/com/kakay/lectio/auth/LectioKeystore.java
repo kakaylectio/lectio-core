@@ -46,12 +46,54 @@ import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jersey.validation.Validators;
 
 public class LectioKeystore {
+	public static class KeystoreConfiguration {
+		public String keystoreFile;
+		public String keystorePassword;
+		public String webtokenAlias;
+		public String webtokenPassword;
+
+		public KeystoreConfiguration() {
+		}
+		@JsonProperty
+		String getKeystoreFile() {
+			return keystoreFile;
+		}
+
+		public void setKeystoreFile(String keystoreFile) {
+			this.keystoreFile = keystoreFile;
+		}
+
+		@JsonProperty
+		String getKeystorePassword() {
+			return keystorePassword;
+		}
+
+		public void setKeystorePassword(String keystorePassword) {
+			this.keystorePassword = keystorePassword;
+		}
+
+		@JsonProperty
+		String getWebtokenAlias() {
+			return webtokenAlias;
+		}
+
+		public void setWebtokenAlias(String webtokenAlias) {
+			this.webtokenAlias = webtokenAlias;
+		}
+
+		@JsonProperty
+		String getWebtokenPassword() {
+			return this.webtokenPassword;
+		}
+
+		public void setWebtokenPassword(String webtokenPassword) {
+			this.webtokenPassword = webtokenPassword;
+		}
+	}
+
 	private final static Logger logger = Logger.getLogger(LectioKeystore.class);
 
-	private String keystoreFile;
-	private String keystorePassword;
-	private String webtokenAlias;
-	private String webtokenPassword;
+	private KeystoreConfiguration configuration = new KeystoreConfiguration();
 
 	protected static LectioKeystore lectioKeystore;
 	private static final String CONFIGURATION_FILENAME = "lectio-rest-secret.yml";
@@ -64,17 +106,19 @@ public class LectioKeystore {
 	}
 	
 	@JsonIgnore
-	public static LectioKeystore getLectioKeystoreInstance() {
+	public static LectioKeystore getInstance() {
 		if (lectioKeystore == null) {
 			buildLectioKeystore();
 		}
 		return lectioKeystore;
 	}
 	
-	public void init() throws KeyStoreException, InvalidKeyException, NoSuchAlgorithmException {
-		keyStore = KeyStore.Builder.newInstance("JKS", null, new File(this.keystoreFile), new PasswordProtection(this.keystorePassword.toCharArray())).getKeyStore();
+	void init(KeystoreConfiguration newConfiguration) throws KeyStoreException, InvalidKeyException, NoSuchAlgorithmException {
+		this.configuration = newConfiguration;
+		keyStore = KeyStore.Builder.newInstance("JKS", null, new File(this.configuration.getKeystoreFile()), 
+				new PasswordProtection(this.configuration.getKeystorePassword().toCharArray())).getKeyStore();
 		Certificate cert;
-		cert = keyStore.getCertificate(webtokenAlias);
+		cert = keyStore.getCertificate(configuration.getWebtokenAlias());
 		PublicKey webtokenPublicKey = cert.getPublicKey();
 		webtokenSignatureVerifier = Signature.getInstance("SHA256withRSA");
 		webtokenSignatureVerifier.initVerify(webtokenPublicKey);
@@ -82,12 +126,13 @@ public class LectioKeystore {
 	}
 	private static void buildLectioKeystore() 
 	{
-		YamlConfigurationFactory<LectioKeystore> configurationFactory = new YamlConfigurationFactory<LectioKeystore>(LectioKeystore.class, Validators.newValidator(),
+		YamlConfigurationFactory<KeystoreConfiguration> configurationFactory = new YamlConfigurationFactory<KeystoreConfiguration>(KeystoreConfiguration.class, Validators.newValidator(),
 				new ObjectMapper(), "");
 
 		try {
-			lectioKeystore = configurationFactory.build(new ResourceConfigurationSourceProvider(), CONFIGURATION_FILENAME);
-			lectioKeystore.init();
+			KeystoreConfiguration configuration = configurationFactory.build(new ResourceConfigurationSourceProvider(), CONFIGURATION_FILENAME);
+			lectioKeystore = new LectioKeystore();
+			lectioKeystore.init(configuration);
 		
 		} catch (IOException e) {
 			
@@ -105,47 +150,13 @@ public class LectioKeystore {
 	}
 	
 
-	@JsonProperty
-	public String getKeystoreFile() {
-		return keystoreFile;
-	}
 
-	public void setKeystoreFile(String keystoreFile) {
-		this.keystoreFile = keystoreFile;
-	}
-
-	@JsonProperty
-	public String getKeystorePassword() {
-		return keystorePassword;
-	}
-
-	public void setKeystorePassword(String keystorePassword) {
-		this.keystorePassword = keystorePassword;
-	}
-
-	@JsonProperty
-	public String getWebtokenAlias() {
-		return webtokenAlias;
-	}
-
-	public void setWebtokenAlias(String webtokenAlias) {
-		this.webtokenAlias = webtokenAlias;
-	}
-
-	@JsonProperty
-	public String getWebtokenPassword() {
-		return webtokenPassword;
-	}
-
-	public void setWebtokenPassword(String webtokenPassword) {
-		this.webtokenPassword = webtokenPassword;
-	}
 	
 
 	public String signWithWebtoken(String payload) throws GeneralSecurityException, LectioSystemException {
 		try {
-			KeyStore.ProtectionParameter param = new KeyStore.PasswordProtection(webtokenPassword.toCharArray());
-			KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(webtokenAlias, param);
+			KeyStore.ProtectionParameter param = new KeyStore.PasswordProtection(configuration.getWebtokenPassword().toCharArray());
+			KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(configuration.getWebtokenAlias(), param);
 			PrivateKey privateKey = pkEntry.getPrivateKey();
 			Signature signature  = Signature.getInstance("SHA256withRSA");
 			signature.initSign(privateKey);
@@ -176,25 +187,25 @@ public class LectioKeystore {
 		String encodedSignature = signedEntity.substring(dotIndex+1);
 		try {
 			byte[] encodedPayloadBytes = encodedPayload.getBytes("UTF-8");
-			byte[] byteArray = Base64.decodeBase64(encodedPayloadBytes);
 			int encodedPayloadIndex = 0;
 			while(encodedPayloadIndex < encodedPayloadBytes.length) {
 				byte[] subsetByteArray = ArrayUtils.subarray(encodedPayloadBytes,  encodedPayloadIndex,  
 						encodedPayloadIndex +  Math.min(SIGNATURE_MAX_BYTES,  
-						byteArray.length - encodedPayloadIndex));
+								encodedPayloadBytes.length - encodedPayloadIndex));
 				webtokenSignatureVerifier.update(subsetByteArray);
 				encodedPayloadIndex = encodedPayloadIndex + subsetByteArray.length;
 			}
 			if (webtokenSignatureVerifier.verify(Base64.decodeBase64(encodedSignature))) {
+				byte[] byteArray = Base64.decodeBase64(encodedPayloadBytes);
 				return new String(byteArray, "UTF-8");
 			}
 		} catch (SignatureException e) {
 			logger.error("Signature failure.", e);
+			return null;
 		} catch (UnsupportedEncodingException e) {
-			logger.error("Signature failure.", e);
+			logger.error("UnsupportedEncodingException while verifying signature.", e);
+			throw new LectioSystemException("Decoding not supported.", e);
 		}
 		return null;
-		
-
 	}
 }
