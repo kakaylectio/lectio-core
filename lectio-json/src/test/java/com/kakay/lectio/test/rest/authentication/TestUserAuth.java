@@ -24,7 +24,7 @@ import com.google.common.net.HttpHeaders;
 import com.kakay.lectio.auth.IdentityAuthenticator;
 import com.kakay.lectio.auth.LectioAuthorizer;
 import com.kakay.lectio.auth.LectioPrincipal;
-import com.kakay.lectio.auth.TokenAuthenticator;
+import com.kakay.lectio.auth.LoginResponse;
 import com.kakay.lectio.rest.resources.LoginResource;
 import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
 import com.kakay.lectio.test.rest.TestRestResources;
@@ -58,16 +58,11 @@ public abstract class TestUserAuth extends TestRestResources {
 		String teacherPassword = emailToPasswordMap.get(teacher.getEmail());
 
 		
-		Response resp = getLoginResponse(teacherEmail, teacherPassword, targetString);
-		assertNotNull("With valid login, returned value should be non-null.", resp);
+		LoginResponse loginResponse = getLoginResponse(teacherEmail, teacherPassword, targetString);
+		assertNotNull("With valid login, returned value should be non-null.", loginResponse);
 		
-		Map<String, NewCookie> newCookieMap = resp.getCookies();
-		Set<String> cookieNames = newCookieMap.keySet();
-		assertTrue("A cookie for the username and password should have been set.",
-				cookieNames.contains(LoginResource.LOGIN_COOKIE_NAME));
-
-		NewCookie newCookie = newCookieMap.get(LoginResource.LOGIN_COOKIE_NAME);
-		String cookieValue = newCookie.getValue();
+		assertNotNull("Token content should have token string.", loginResponse.getToken());
+		assertTrue("Token string should not be blank.", loginResponse.getToken().length() > 0);
 		
 	}
 	@Test
@@ -109,8 +104,8 @@ public abstract class TestUserAuth extends TestRestResources {
 	@Test
 	public void testWrongPassword() throws IOException {
 		String targetString = "/login";		
-		Response resp = getLoginResponse(teacher.getEmail(), "bogusPassword", targetString);
-		assertTrue("Login with wrong email and password should have failed.", resp.getStatus() >= 400);
+		LoginResponse loginResponse = getLoginResponse(teacher.getEmail(), "bogusPassword", targetString);
+		assertTrue("Login with wrong email and password should have failed.", loginResponse == null);
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package com.kakay.lectio.auth;
 
-import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -68,5 +67,14 @@ public class TokenAuthenticator implements Authenticator<String, LectioPrincipal
 		lectioToken.stupidSecurityHole  = decodedStringSplit[1];
 		return lectioToken;
 	}
-
+	
+	public LoginResponse principal2tokenContent(LectioPrincipal lectioPrincipal) {
+		LectioToken token = principal2Token(lectioPrincipal);
+		String tokenString = serializeToken(token);
+		LoginResponse loginResponse = new LoginResponse();
+		loginResponse.setToken(tokenString);
+		loginResponse.setName(lectioPrincipal.getName());
+		loginResponse.setExpiration("Nothing right now");
+		return loginResponse;
+	}
 }

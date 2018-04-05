@@ -4,10 +4,10 @@ import java.util.Map;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
-import org.glassfish.jersey.internal.util.Base64;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.junit.After;
 import org.junit.Before;
@@ -18,6 +18,7 @@ import com.kakay.lectio.auth.EmailPassword;
 import com.kakay.lectio.auth.IdentityAuthenticator;
 import com.kakay.lectio.auth.LectioAuthorizer;
 import com.kakay.lectio.auth.LectioPrincipal;
+import com.kakay.lectio.auth.LoginResponse;
 import com.kakay.lectio.auth.TokenAuthenticator;
 import com.kakay.lectio.auth.WebTokenFilter;
 import com.kakay.lectio.rest.LectioRestApplication;
@@ -89,9 +90,8 @@ public abstract class TestRestResources {
 //		teacherClient = resources.client();
 		
 
-		Response response = getLoginResponse(teacher.getEmail(), teacherPassword, "/login");
-		NewCookie newCookie = response.getCookies().get(LoginResource.LOGIN_COOKIE_NAME);
-		teacherTokenString = newCookie.getValue();
+		LoginResponse loginResponse = getLoginResponse(teacher.getEmail(), teacherPassword, "/login");
+		teacherTokenString = loginResponse.getToken();
 	}
 
 	@After
@@ -107,7 +107,7 @@ public abstract class TestRestResources {
 	    
 		return resp;
 	}
-	protected Response getLoginResponse(String teacherEmail, String teacherPassword, String targetString) {
+	protected LoginResponse getLoginResponse(String teacherEmail, String teacherPassword, String targetString) {
 	
 	
 		EmailPassword emailPassword = new EmailPassword();
@@ -117,8 +117,9 @@ public abstract class TestRestResources {
 		// Hit the endpoint and get the raw json string
 		Client client = loginResourceTestRule.client();
 		Entity entity = Entity.json(emailPassword);
-		Response resp = client.target(targetString).request().post(entity);
-		return resp;
+		Response resp = client.target(targetString).request(MediaType.APPLICATION_JSON).post(entity);
+		LoginResponse loginResponse = resp.readEntity(LoginResponse.class);
+		return loginResponse;
 	}
 
 }

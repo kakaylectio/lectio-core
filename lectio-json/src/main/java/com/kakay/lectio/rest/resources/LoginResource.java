@@ -6,7 +6,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -15,6 +14,7 @@ import com.kakay.lectio.auth.EmailPassword;
 import com.kakay.lectio.auth.IdentityAuthenticator;
 import com.kakay.lectio.auth.LectioPrincipal;
 import com.kakay.lectio.auth.LectioToken;
+import com.kakay.lectio.auth.LoginResponse;
 import com.kakay.lectio.auth.TokenAuthenticator;
 
 
@@ -34,16 +34,14 @@ public class LoginResource  {
 
 	@POST
     @Timed
-	public Response login(EmailPassword info) {
+	public LoginResponse login(EmailPassword info) {
 		
 		LectioPrincipal lectioPrincipal = authenticator.checkStringCredentials(info.getEmail(), info.getPassword());
 		if (lectioPrincipal == null) {
-			Response.status(Status.UNAUTHORIZED).build();
+			return null;
 		}
-		LectioToken token = tokenAuthenticator.principal2Token(lectioPrincipal);
-		String tokenString = tokenAuthenticator.serializeToken(token);
-		NewCookie newCookie = new NewCookie(LOGIN_COOKIE_NAME, tokenString);
-		return Response.ok().cookie(newCookie).build();
+		LoginResponse loginResponse = tokenAuthenticator.principal2tokenContent(lectioPrincipal);
+		return loginResponse;
 	}
 	
 	
