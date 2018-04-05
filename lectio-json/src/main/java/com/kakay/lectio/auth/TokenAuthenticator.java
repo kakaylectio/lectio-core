@@ -4,13 +4,24 @@ import java.util.HashSet;
 import java.util.Optional;
 
 import org.glassfish.jersey.internal.util.Base64;
+import org.jboss.logging.Logger;
 
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;
 
 public class TokenAuthenticator implements Authenticator<String, LectioPrincipal> {
+	private final static Logger logger = Logger.getLogger(TokenAuthenticator.class);
 
 	public TokenAuthenticator() {
+	}
+	
+	public void loadKeystore() {
+		LectioKeystore keystore = LectioKeystore.getLectioKeystoreInstance();
+		if (keystore == null) {
+			logger.debug("Keystore is null.");
+			return;
+		}
+		logger.debug("Keystore alias = " + keystore.getWebtokenAlias());
 	}
 
 	@Override
