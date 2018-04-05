@@ -45,7 +45,7 @@ import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
 import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jersey.validation.Validators;
 
-public class LectioKeystore {
+public class LectioSigner {
 	public static class KeystoreConfiguration {
 		public String keystoreFile;
 		public String keystorePassword;
@@ -91,26 +91,26 @@ public class LectioKeystore {
 		}
 	}
 
-	private final static Logger logger = Logger.getLogger(LectioKeystore.class);
+	private final static Logger logger = Logger.getLogger(LectioSigner.class);
 
 	private KeystoreConfiguration configuration = new KeystoreConfiguration();
 
-	protected static LectioKeystore lectioKeystore;
+	protected static LectioSigner lectioSigner;
 	private static final String CONFIGURATION_FILENAME = "lectio-rest-secret.yml";
 	private KeyStore keyStore;
 
 	private Signature webtokenSignatureVerifier;
 	private final static int SIGNATURE_MAX_BYTES = 256;
 
-	protected LectioKeystore() {
+	protected LectioSigner() {
 	}
 	
 	@JsonIgnore
-	public static LectioKeystore getInstance() {
-		if (lectioKeystore == null) {
+	public static LectioSigner getInstance() {
+		if (lectioSigner == null) {
 			buildLectioKeystore();
 		}
-		return lectioKeystore;
+		return lectioSigner;
 	}
 	
 	void init(KeystoreConfiguration newConfiguration) throws KeyStoreException, InvalidKeyException, NoSuchAlgorithmException {
@@ -131,8 +131,8 @@ public class LectioKeystore {
 
 		try {
 			KeystoreConfiguration configuration = configurationFactory.build(new ResourceConfigurationSourceProvider(), CONFIGURATION_FILENAME);
-			lectioKeystore = new LectioKeystore();
-			lectioKeystore.init(configuration);
+			lectioSigner = new LectioSigner();
+			lectioSigner.init(configuration);
 		
 		} catch (IOException e) {
 			
@@ -141,10 +141,10 @@ public class LectioKeystore {
 			logger.error("ConfigurationException trying to find keystore configuration file.  ", e);
 		} catch(KeyStoreException e) {
 			logger.error("KeyStoreException trying to initialize keystore.  ", e);
-			lectioKeystore = null;
+			lectioSigner = null;
 		} catch(GeneralSecurityException e) {
 			logger.error("SecurityException trying to set up signatures.", e);
-			lectioKeystore = null;
+			lectioSigner = null;
 		}
 			
 	}

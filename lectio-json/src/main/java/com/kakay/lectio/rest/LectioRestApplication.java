@@ -51,7 +51,6 @@ public class LectioRestApplication extends Application<LectioRestConfiguration> 
 
         IdentityAuthenticator idAuthenticator = new IdentityAuthenticator(lectioPersistence.getEm());
         TokenAuthenticator tokenAuthenticator = new TokenAuthenticator();
-        tokenAuthenticator.loadKeystore();
         LoginResource loginResource = new LoginResource(idAuthenticator, tokenAuthenticator);
         environment.jersey().register(loginResource);
 //        environment.jersey().register(new AuthDynamicFeature(

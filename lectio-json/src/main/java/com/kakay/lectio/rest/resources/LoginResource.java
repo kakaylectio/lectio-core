@@ -38,6 +38,7 @@ public class LoginResource  {
 		
 		LectioPrincipal lectioPrincipal = authenticator.checkStringCredentials(info.getEmail(), info.getPassword());
 		if (lectioPrincipal == null) {
+		
 			return null;
 		}
 		LoginResponse loginResponse = tokenAuthenticator.principal2tokenContent(lectioPrincipal);

@@ -1,10 +1,13 @@
 package com.kakay.lectio.auth;
 
+import java.security.GeneralSecurityException;
 import java.util.HashSet;
 import java.util.Optional;
 
 import org.glassfish.jersey.internal.util.Base64;
 import org.jboss.logging.Logger;
+
+import com.kakay.lectio.rest.exceptions.LectioSystemException;
 
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;
@@ -12,17 +15,11 @@ import io.dropwizard.auth.Authenticator;
 public class TokenAuthenticator implements Authenticator<String, LectioPrincipal> {
 	private final static Logger logger = Logger.getLogger(TokenAuthenticator.class);
 
+	private LectioSigner signer;
 	public TokenAuthenticator() {
+		signer = LectioSigner.getInstance();
 	}
 	
-	public void loadKeystore() {
-		LectioKeystore keystore = LectioKeystore.getLectioKeystoreInstance();
-		if (keystore == null) {
-			logger.debug("Keystore is null.");
-			return;
-		}
-		logger.debug("Keystore alias = " + keystore.getWebtokenAlias());
-	}
 
 	@Override
 	public Optional<LectioPrincipal> authenticate(String credentials) throws AuthenticationException {
@@ -36,6 +33,7 @@ public class TokenAuthenticator implements Authenticator<String, LectioPrincipal
 		
 	}
 	
+	/* Used during login process */
 	public LectioToken principal2Token(LectioPrincipal principal) {
 		LectioToken token = new LectioToken();
 		token.id = principal.getId();
@@ -47,45 +45,43 @@ public class TokenAuthenticator implements Authenticator<String, LectioPrincipal
 		return lectioPrincipal;
 	}
 	
-	public String serializeToken(LectioToken token) {
-		String tokenString = "" + token.id + ":obvious-password";
-		// TODO replace this with more information and encryption.
+	public String serializeToken(LectioToken token) throws LectioSystemException, GeneralSecurityException {
+		String tokenString = "" + token.id;
 		
-		String encodedString = Base64.encodeAsString(tokenString);
-		return encodedString;
+		String signedString = signer.signWithWebtoken(tokenString);
+		
+		return signedString;
 	}
 	
-	public LectioToken deserializeToken(String tokenString) {
-		String decodedString = Base64.decodeAsString(tokenString);
+	public LectioToken deserializeToken(String signedString) {
 		
-		
-		String[] decodedStringSplit = decodedString.split(":", 2);
-		if (decodedStringSplit.length < 2) {
-            return null;
-		}
-		
-		if (!decodedStringSplit[1].equals("obvious-password")) {
-			return null;
-		}
+		String tokenString = signer.verifySignatureWithWebtoken(signedString);
 		
 		LectioToken lectioToken = new LectioToken();
 		try {
-			lectioToken.id = Integer.parseInt(decodedStringSplit[0]);
+			lectioToken.id = Integer.parseInt(tokenString);
 		}
 		catch(NumberFormatException e) {
             return null;
 		}
-		lectioToken.stupidSecurityHole  = decodedStringSplit[1];
 		return lectioToken;
 	}
 	
 	public LoginResponse principal2tokenContent(LectioPrincipal lectioPrincipal) {
 		LectioToken token = principal2Token(lectioPrincipal);
-		String tokenString = serializeToken(token);
-		LoginResponse loginResponse = new LoginResponse();
-		loginResponse.setToken(tokenString);
-		loginResponse.setName(lectioPrincipal.getName());
-		loginResponse.setExpiration("Nothing right now");
-		return loginResponse;
+		try {
+			String tokenString = serializeToken(token);
+			LoginResponse loginResponse = new LoginResponse();
+			loginResponse.setToken(tokenString);
+			loginResponse.setName(lectioPrincipal.getName());
+			loginResponse.setExpiration("Nothing right now");
+			return loginResponse;
+		} catch (LectioSystemException e) {
+			// TODO Auto-generated catch block
+			return null;
+		} catch (GeneralSecurityException e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
 	}
 }

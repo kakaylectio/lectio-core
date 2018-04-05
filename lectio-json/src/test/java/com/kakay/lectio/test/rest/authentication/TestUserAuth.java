@@ -63,6 +63,10 @@ public abstract class TestUserAuth extends TestRestResources {
 		
 		assertNotNull("Token content should have token string.", loginResponse.getToken());
 		assertTrue("Token string should not be blank.", loginResponse.getToken().length() > 0);
+		teacherTokenString = loginResponse.getToken();
+		
+		String endpointTarget = hitEndpoint(getTargetString());
+		assertNotNull("hitEndpoint returned a null", endpointTarget);
 		
 	}
 	@Test

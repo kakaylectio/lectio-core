@@ -7,14 +7,14 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.kakay.lectio.auth.LectioKeystore;
+import com.kakay.lectio.auth.LectioSigner;
 
 public class TestLectioKeystore {
 
 	@Test
 	public void testKeystore() throws Exception{
-		LectioKeystore keystore = LectioKeystore.getInstance();
-		assertNotNull("LectioKeystore creation failed.", keystore);
+		LectioSigner keystore = LectioSigner.getInstance();
+		assertNotNull("LectioSigner creation failed.", keystore);
 		
 		String testString = "Here is a string that I'd like to sign.";
 		String signedString = keystore.signWithWebtoken(testString);
