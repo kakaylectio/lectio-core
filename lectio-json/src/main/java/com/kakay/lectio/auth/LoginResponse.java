@@ -6,6 +6,7 @@ public class LoginResponse {
 	protected String token;
 	protected String expiration;
 	protected String name;
+	protected int userId;
 	
 	public LoginResponse(){}
 	
@@ -31,5 +32,13 @@ public class LoginResponse {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public int getUserId() {
+		return this.userId;
+	}
+	
+	public void setUserId(int id) {
+		this.userId = id;
 	}
 }

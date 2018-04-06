@@ -67,7 +67,7 @@ public class TokenAuthenticator implements Authenticator<String, LectioPrincipal
 		return lectioToken;
 	}
 	
-	public LoginResponse principal2tokenContent(LectioPrincipal lectioPrincipal) {
+	public LoginResponse principal2loginResponse(LectioPrincipal lectioPrincipal) {
 		LectioToken token = principal2Token(lectioPrincipal);
 		try {
 			String tokenString = serializeToken(token);
@@ -75,6 +75,7 @@ public class TokenAuthenticator implements Authenticator<String, LectioPrincipal
 			loginResponse.setToken(tokenString);
 			loginResponse.setName(lectioPrincipal.getName());
 			loginResponse.setExpiration("Nothing right now");
+			loginResponse.setUserId(lectioPrincipal.getId());
 			return loginResponse;
 		} catch (LectioSystemException e) {
 			// TODO Auto-generated catch block

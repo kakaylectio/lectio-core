@@ -1,5 +1,6 @@
 package com.kakay.lectio.test.rest.authentication;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -46,9 +47,10 @@ public class TestUserLogin extends TestRestResources{
 		assertTrue("Token string should not be blank.", loginResponse.getToken().length() > 0);
 		teacherTokenString = loginResponse.getToken();
 		
+		
 		String endpointTarget = hitEndpoint(getTargetString());
 		assertNotNull("hitEndpoint returned a null", endpointTarget);
-		
+		assertEquals("User ID on loginResponse is wrong.",  teacher.getId(), loginResponse.getUserId());
 	}
 
 	@Override

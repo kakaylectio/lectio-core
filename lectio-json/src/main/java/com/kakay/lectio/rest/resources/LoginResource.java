@@ -41,7 +41,7 @@ public class LoginResource  {
 		
 			return null;
 		}
-		LoginResponse loginResponse = tokenAuthenticator.principal2tokenContent(lectioPrincipal);
+		LoginResponse loginResponse = tokenAuthenticator.principal2loginResponse(lectioPrincipal);
 		return loginResponse;
 	}
 	
