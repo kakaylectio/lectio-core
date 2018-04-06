@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kktam.lectio.model.Notebook;
+import com.kktam.lectio.model.Role;
 import com.kktam.lectio.model.Topic;
 
 public class NotebookRep {
@@ -14,6 +15,9 @@ public class NotebookRep {
 
     @JsonProperty
 	List<Topic> topicList;
+    
+    @JsonProperty
+    Role userRole;
 	
 	public NotebookRep() {
 	}
@@ -37,6 +41,14 @@ public class NotebookRep {
 
 	public void setTopicList(List<Topic> topicList) {
 		this.topicList = topicList;
+	}
+
+	public Role getUserRole() {
+		return userRole;
+	}
+
+	public void setUserRole(Role userRole) {
+		this.userRole = userRole;
 	}
 	
 	

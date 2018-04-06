@@ -235,7 +235,7 @@ public class LectioControl {
 		return false;
 	}
 
-	private Role findRoleOfUserInNotebook(int executorId, int notebookId)  {
+	public Role findRoleOfUserInNotebook(int executorId, int notebookId)  {
 		TypedQuery<NotebookUserRole> notebookUserRoleQuery = em
 				.createNamedQuery(NotebookUserRole.QUERY_NOTEBOOKUSERROLE_NOTEBOOKIDUSERID, NotebookUserRole.class);
 		notebookUserRoleQuery.setParameter(NotebookUserRole.QUERYPARAM_NOTEBOOKUSERROLE_NOTEBOOKID, notebookId);

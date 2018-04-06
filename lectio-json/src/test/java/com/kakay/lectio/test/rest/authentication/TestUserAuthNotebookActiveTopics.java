@@ -5,6 +5,8 @@ import org.junit.Assert;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kakay.lectio.rest.representation.NotebookRep;
 import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
+import com.kakay.lectio.test.scenarios.RandomSeedData;
+import com.kakay.lectio.test.scenarios.SeedData;
 import com.kktam.lectio.control.LectioPersistence;
 import com.kktam.lectio.model.Notebook;
 
@@ -26,6 +28,15 @@ public class TestUserAuthNotebookActiveTopics extends TestUserAuth{
 
 		Object resource = notebookActiveTopicResource;
 		return resource;
+	}
+
+	@Override
+	protected SeedData getSeedData() {
+		RandomSeedData randomSeedData = new RandomSeedData();
+		randomSeedData.generateSeed(1, 1, 1, 0, 0, 0);
+
+		return randomSeedData;
+
 	}
 
 

@@ -46,29 +46,7 @@ public abstract class TestUserAuth extends TestRestResources {
 	}
 	abstract protected String getTargetString();
 
-	@Test
-	public void testUserLogin() throws LectioException, JsonParseException, JsonMappingException, IOException {
 
-		
-		String teacherEmail = teacher.getEmail();
-		String targetString = "/login";
-	
-		// Create authentication parameters
-		Map<String, String> emailToPasswordMap = seedData.getEmailToPasswordMap();
-		String teacherPassword = emailToPasswordMap.get(teacher.getEmail());
-
-		
-		LoginResponse loginResponse = getLoginResponse(teacherEmail, teacherPassword, targetString);
-		assertNotNull("With valid login, returned value should be non-null.", loginResponse);
-		
-		assertNotNull("Token content should have token string.", loginResponse.getToken());
-		assertTrue("Token string should not be blank.", loginResponse.getToken().length() > 0);
-		teacherTokenString = loginResponse.getToken();
-		
-		String endpointTarget = hitEndpoint(getTargetString());
-		assertNotNull("hitEndpoint returned a null", endpointTarget);
-		
-	}
 	@Test
 	public void testNoToken() throws Exception {
 		String targetString = getTargetString();
@@ -105,20 +83,6 @@ public abstract class TestUserAuth extends TestRestResources {
 	}
 
 	
-	@Test
-	public void testWrongPassword() throws IOException {
-		String targetString = "/login";		
-		LoginResponse loginResponse = getLoginResponse(teacher.getEmail(), "bogusPassword", targetString);
-		assertTrue("Login with wrong email and password should have failed.", loginResponse == null);
-	}
 
-	@Override
-	protected SeedData getSeedData() {
-		VorkosiganSeedData vorkosiganSeedData = new VorkosiganSeedData();
-		vorkosiganSeedData.seedData();
-		
-		return vorkosiganSeedData;
-	
-	}
 
 }
