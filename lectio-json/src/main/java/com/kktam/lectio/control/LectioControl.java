@@ -64,7 +64,7 @@ public class LectioControl {
 
 	}
 
-	public User addNewUser(String name, String email, String password) throws LectioException {
+	public User addNewUser(String name, String email, String password) throws LectioConstraintException {
 		logger.debug("Adding new user " + name + ":" + email);
 		try {
 			em.getTransaction().begin();
@@ -272,7 +272,7 @@ public class LectioControl {
 		return false;
 	}
 
-	private boolean authCheckModifyTopic(int executorId, int topicId) {
+	public boolean authCheckModifyTopic(int executorId, int topicId) {
 		Topic topic = em.find(Topic.class, topicId);
 		return authCheckModifyTopic(executorId, topic);
 	}

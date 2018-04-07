@@ -7,7 +7,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.junit.After;
@@ -117,6 +116,17 @@ public abstract class TestRestResources {
 		}
 		LoginResponse loginResponse = resp.readEntity(LoginResponse.class);
 		return loginResponse;
+	}
+	
+	protected Response postEndpoint(String targetString, Object bodyContent) {
+		Client client = resources.client();
+		Entity entity = Entity.json(bodyContent);
+		Response resp = client.target(targetString)
+				.request(MediaType.APPLICATION_JSON)
+				.header(HttpHeaders.AUTHORIZATION, "Token " + savedTokenString)
+				.post(entity);
+		return resp;
+		
 	}
 	
 	
