@@ -2,6 +2,11 @@ package com.kakay.lectio.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Encapsulation of information to be passed to client when login process succeeds.
+ * Used as an object to form a JSON string.
+ *
+ */
 public class LoginResponse {
 	protected String token;
 	protected String expiration;

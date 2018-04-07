@@ -45,7 +45,28 @@ import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
 import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jersey.validation.Validators;
 
+/**
+ * Object used to sign and verify tokens
+ * A keystore needs to be created using keytool.  A yaml file
+ * with the sensitive keystore access information needs to be in the classpath.
+ * 
+ * Command to set up keystore:  (keytool is a command line utility provided with Oracle Java SE8)
+ * keytool -genkeypair -alias  <choose-alias> -keystore <choose-filename> -keyalg RSA -storepass <choose-keystore-password> -keypass <choose-alias-password>
+ *
+ * Content of lectio-rest-secret.yml file to be placed in classpath:
+ * 
+ * keystoreFile: <Location of choose-filename>
+ * keystorePassword: <value of choose-keystore-password>
+ * webtokenAlias: <value of choose-alias>
+ * webtokenPassword: <value of choose-alias-password>
+
+ * 
+ */
 public class LectioSigner {
+	/**
+	 * Configuration class to read a YAML file containing the keystore information.
+	 *
+	 */
 	public static class KeystoreConfiguration {
 		public String keystoreFile;
 		public String keystorePassword;

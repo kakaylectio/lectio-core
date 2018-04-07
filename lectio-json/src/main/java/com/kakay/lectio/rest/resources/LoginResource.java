@@ -19,6 +19,10 @@ import com.kakay.lectio.auth.LoginResponse;
 import com.kakay.lectio.auth.TokenAuthenticator;
 
 
+/**
+ * JSON resource to allow users to log in based on email address and password.
+ 
+ */
 @Path("/login")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
@@ -28,11 +32,32 @@ public class LoginResource  {
 
 	IdentityAuthenticator authenticator;
 	TokenAuthenticator tokenAuthenticator;
+	
+	/**
+	 * 
+	 * 
+	 * @param authenticator  The authenticator used to verify a username and password
+	 * @param tokenAuthenticator  The authenticator used to verify tokens.  Tokens are generated
+	 *                            using this resource and returned as a response.
+	 */
 	public LoginResource( IdentityAuthenticator authenticator, TokenAuthenticator tokenAuthenticator) {
 		this.authenticator = authenticator;
 		this.tokenAuthenticator = tokenAuthenticator;
 	}
 
+	/**
+	 * Authenticates the email/password pair from a client and returns the token
+	 * and a bit of information about the user in the form of a LoginResponse.  
+	 * If the email and password do not pass authentication, a WebApplicationException
+	 * is thrown with status set to UNAUTHORIZED.
+	 * 
+	 * @param Email and Password object deserialized JSON object from client
+	 * @return A LoginResponse that contains the token.  The token needs to be 
+	 *    sent as part of the HTTP Authorization header prepended with "Token ".  
+	 *    The LoginResponse also contains the username and user ID for clients.
+	 *    
+	 * @throws WebApplicationException(UNAUTHORIZED) if authentication fails.
+	 */
 	@POST
     @Timed
 	public LoginResponse login(EmailPassword info) {

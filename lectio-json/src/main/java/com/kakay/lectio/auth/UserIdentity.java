@@ -8,6 +8,11 @@ import javax.persistence.Convert;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kktam.lectio.model.User;
 
+/**
+ * DataAccessObject stored in the database containing User ID and password.
+ * 
+ *
+ */
 @javax.persistence.Entity
 @javax.persistence.NamedQueries({
 	@javax.persistence.NamedQuery(name="UserIdentity.byUserId",

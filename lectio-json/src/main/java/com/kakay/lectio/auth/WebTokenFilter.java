@@ -16,11 +16,24 @@ import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 
+/**
+ * This class is used in every incoming HTTP request requiring authentication
+ * to extract the HTTP header information containing authentication token and
+ * authenticating the token.  It blocks the HTTP request if authentication fails.
+ *
+ */
 public class WebTokenFilter extends AuthFilter<String, LectioPrincipal> {
 
+	/**
+	 *  Created by Rest Application to add allow token authentication  
+	 */
 	public WebTokenFilter() {
 		this.prefix = "Token";
 	}
+
+	/* (non-Javadoc)
+	 * @see javax.ws.rs.container.ContainerRequestFilter#filter(javax.ws.rs.container.ContainerRequestContext)
+	 */
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		String headerValue = requestContext.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
@@ -51,13 +64,14 @@ public class WebTokenFilter extends AuthFilter<String, LectioPrincipal> {
 	}
 	
     /**
-     * Builder for {@link BasicCredentialAuthFilter}.
-     * <p>An {@link Authenticator} must be provided during the building process.</p>
+     * Builder for {@link WebTokenFilter}.
+     * <p>A TokenAuthenticator must be provided during the building process.</p>
      *
-     * @param <P> the principal
+     * This Builder builds a WebTokenFilter that takes a String as credentials (JSON of email and password),
+     * and uses the TokenAuthenticator that returns LectioPrincipal as its principal.
+     * 
      */
     public static class Builder extends AuthFilterBuilder<String, LectioPrincipal, WebTokenFilter> {
-
         
         protected WebTokenFilter newInstance() {
             WebTokenFilter filter =  new WebTokenFilter();

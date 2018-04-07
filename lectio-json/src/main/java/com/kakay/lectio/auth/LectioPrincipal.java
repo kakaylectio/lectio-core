@@ -4,6 +4,10 @@ import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * TODO:  Possibly combine with LectioToken?  Looks like the same information anyway.
+ *
+ */
 public class LectioPrincipal implements Principal {
 
 	protected String name;

@@ -10,6 +10,11 @@ import javax.persistence.Converter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;;
 
+/**
+ * Allows serialization of a Set<Privilige> into a single string for
+ * storing in database
+ *
+ */
 @Converter
 public class PrivilegeSetAttributeConverter implements AttributeConverter<Set<Privilege>, String> {
 	public PrivilegeSetAttributeConverter() {
