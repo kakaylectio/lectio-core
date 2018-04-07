@@ -7,6 +7,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
+
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -24,8 +27,14 @@ public class TestUserLogin extends TestRestResources{
 	@Test
 	public void testWrongPassword() throws IOException {
 		String targetString = "/login";		
+		try {
 		LoginResponse loginResponse = getLoginResponse(teacher.getEmail(), "bogusPassword", targetString);
 		assertTrue("Login with wrong email and password should have failed.", loginResponse == null);
+		}
+		catch(WebApplicationException ex) {
+			assertEquals("Exception should be of status Status.UNAUTHORIZED for a login failure.",
+					Status.UNAUTHORIZED, ex.getResponse().getStatusInfo());
+		}
 	}
 	
 	@Test
@@ -45,7 +54,7 @@ public class TestUserLogin extends TestRestResources{
 		
 		assertNotNull("Token content should have token string.", loginResponse.getToken());
 		assertTrue("Token string should not be blank.", loginResponse.getToken().length() > 0);
-		teacherTokenString = loginResponse.getToken();
+		savedTokenString = loginResponse.getToken();
 		
 		
 		String endpointTarget = hitEndpoint(getTargetString());

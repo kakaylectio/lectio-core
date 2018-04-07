@@ -2,16 +2,21 @@ package com.kakay.lectio.test.rest;
 
 import java.io.IOException;
 
+import javax.ws.rs.ForbiddenException;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.net.HttpHeaders;
+import com.kakay.lectio.auth.LoginResponse;
 import com.kakay.lectio.rest.representation.NotebookRep;
 import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kakay.lectio.test.scenarios.SeedData;
+import com.kktam.lectio.control.LectioControl;
 import com.kktam.lectio.control.LectioPersistence;
+import com.kktam.lectio.model.Notebook;
+import com.kktam.lectio.model.User;
 
 import io.dropwizard.jackson.Jackson;
 
@@ -40,6 +45,33 @@ public class TestLectioRestNotebookResources extends TestRestResources {
 
 	}
 
+	
+	@Test
+	public void testWrongUserReadNotebook() throws Exception{
+
+		User teacher = seedData.getTeacher();
+		Notebook notebook = seedData.getNotebook();
+		User student = seedData.getStudent();
+		String wrongUserPassword =  "pwd";
+		
+		LectioPersistence lectioPersistence = new LectioPersistence();
+		LectioControl lectioControl = lectioPersistence.getLectioControlById();
+		User wrongUser = lectioControl.addNewUser("testWrongUserReadNotebook Name",  "testWrongUserReadNotebook@email.com", wrongUserPassword );
+		LoginResponse wrongUserLoginResponse = getLoginResponse(wrongUser.getEmail(), wrongUserPassword, "/login");
+		savedTokenString = wrongUserLoginResponse.getToken();
+		
+		String targetString = "/lectio/notebook/" + notebook.getId() + "/activetopics";
+		
+		try {
+		String resp = hitEndpoint(targetString);
+		Assert.fail("Getting active topics by wrong user should have thrown a LectioAuthorizationException.");
+		}
+		catch(ForbiddenException ex) {
+			Assert.assertTrue("ForbiddenException is the correct exception to throw.", true);
+		}
+	}
+
+	
 	@Override
 	protected SeedData getSeedData() {
 		RandomSeedData randomSeedData = new RandomSeedData();

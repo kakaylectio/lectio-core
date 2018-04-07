@@ -50,7 +50,7 @@ public class TestLectioControlSeedData {
 		
 		// Try adding duplicate teacher.
 		try {
-			control.addNewUser(adminId,  teacher.getName(), "bogusemail", "boguspassword");
+			control.addNewUser( teacher.getName(), "bogusemail", "boguspassword");
 			Assert.fail("Duplicate user name should have caused an exception.");
 		}
 		catch(LectioConstraintException ex) {
@@ -63,7 +63,7 @@ public class TestLectioControlSeedData {
 
 		// Try adding duplicate email.
 		try {
-			control.addNewUser(adminId,  "bogusname", teacher.getEmail(), "boguspassword");
+			control.addNewUser( "bogusname", teacher.getEmail(), "boguspassword");
 			Assert.fail("Duplicate email entry should have caused an exception.");
 		}
 		catch(LectioConstraintException ex) {

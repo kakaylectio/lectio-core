@@ -41,23 +41,23 @@ public class VorkosiganSeedData implements SeedData {
 		LectioControl lectioControl = lectioPersistence.getLectioControlById();
 
 		try {
-			aral = lectioControl.addNewUser(0, "Aral Vorkosigan", "aral@vorkosigan.com", "cordelia");
+			aral = lectioControl.addNewUser("Aral Vorkosigan", "aral@vorkosigan.com", "cordelia");
 			emailToPasswordMap.put("aral@vorkosigan.com", "cordelia");
 			int aralId = aral.getId();
 
 			studio = lectioControl.addNewStudio(aralId, "Imperial Service Academy");
 			int studioId = studio.getId();
 
-			User miles = lectioControl.addNewUser(0, "Miles Vorkosigan", "miles@dendarii.com", "naismith");
+			User miles = lectioControl.addNewUser("Miles Vorkosigan", "miles@dendarii.com", "naismith");
 			emailToPasswordMap.put("miles@dendarii.com", "naismith");
 			int milesId = miles.getId();
 
-			notebook = lectioControl.addNewNotebook(aralId, studioId, "Miles Vorkosigan");
+			notebook = lectioControl.addNewNotebook(studioId, "Miles Vorkosigan");
 			int notebookId = notebook.getId();
 
-			lectioControl.addNewNotebookUser(aralId, notebookId, milesId, Role.student);
+			lectioControl.addNewNotebookUser( notebookId, milesId, Role.student);
 
-			topic = lectioControl.addNewTopic(aralId, notebookId, "Mendelssohn Songs Without Words, Opus 19 No. 1");
+			topic = lectioControl.addNewTopic(notebookId, "Mendelssohn Songs Without Words, Opus 19 No. 1");
 			
 			lessonNote = lectioControl.addNewLessonNote(aralId, topic.getId(), "	<ol>\r\n" + 
 					"		<li>Work on pedal and play LH bass and tenor alone</li>\r\n" + 
@@ -69,7 +69,7 @@ public class VorkosiganSeedData implements SeedData {
 					"	</ol>\r\n" + 
 					"");
 
-			Topic topic2 = lectioControl.addNewTopic(aralId, notebookId, "Schubert Moment Musicaux Opus 39. no 3");
+			Topic topic2 = lectioControl.addNewTopic( notebookId, "Schubert Moment Musicaux Opus 39. no 3");
 			LessonNote lessonNote2 = lectioControl.addNewLessonNote(aralId, topic2.getId(),
 					"	<ul>\r\n" + 
 					"		<li>Quarternote = 92. Stay with this new tempo and fix today's\r\n" + 
@@ -78,7 +78,7 @@ public class VorkosiganSeedData implements SeedData {
 					"	</ul>\r\n" + 
 					"");
 
-			Topic topic3 = lectioControl.addNewTopic(aralId, notebookId, "Mozart Sonata in C K. 545 Movement 3");
+			Topic topic3 = lectioControl.addNewTopic(notebookId, "Mozart Sonata in C K. 545 Movement 3");
 			LessonNote lessonNote3 = lectioControl.addNewLessonNote(aralId, topic3.getId(),
 					"	<ul>\r\n" + 
 					"		<li>Be more open to \"playful\" practicing</li>\r\n" + 
@@ -90,7 +90,7 @@ public class VorkosiganSeedData implements SeedData {
 					"		<li>Rotate and drop wrist</li>\r\n" + 
 					"	</ul>");
 			
-			Topic topic4 = lectioControl.addNewTopic(aralId, notebookId, "Technique");
+			Topic topic4 = lectioControl.addNewTopic(notebookId, "Technique");
 			LessonNote lessonNote4 = lectioControl.addNewLessonNote(aralId, topic4.getId(),
 					"	D-major\r\n" + 
 					"	<ul>\r\n" + 

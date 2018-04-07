@@ -64,7 +64,7 @@ public class LectioControl {
 
 	}
 
-	public User addNewUser(int executorId, String name, String email, String password) throws LectioException {
+	public User addNewUser(String name, String email, String password) throws LectioException {
 		logger.debug("Adding new user " + name + ":" + email);
 		try {
 			em.getTransaction().begin();
@@ -96,7 +96,7 @@ public class LectioControl {
 
 	}
 
-	public User findUserById(int executorId, int userId)  {
+	public User findUserById(int executorId, int userId) {
 		User user = em.find(User.class, userId);
 		return user;
 	}
@@ -113,25 +113,24 @@ public class LectioControl {
 		return studio;
 	}
 
-	public Studio findStudioById(int executorId, int studioId)  {
+	public Studio findStudioById( int studioId) {
 		Studio studio = em.find(Studio.class, studioId);
 		return studio;
 	}
 
-	private boolean authCheckModifyStudio(int executorId, int studioId) {
-		Studio studio = findStudioById(executorId, studioId);
+	private boolean authCheckModifyStudio( int executorId, int studioId) {
+		Studio studio = findStudioById( studioId);
 		User studioOwner = studio.getOwner();
-		return studioOwner.getId() == executorId ;
+		return studioOwner.getId() == executorId;
 	}
 
-	public Notebook addNewNotebook(int executorId, int studioId, String notebookName) throws LectioAuthorizationException, LectioConstraintException {
+	public Notebook addNewNotebook(int studioId, String notebookName)
+			throws  LectioConstraintException {
 		em.getTransaction().begin();
 
-		// Make sure that executor is the owner of the studio.
-		if (authCheckModifyStudio(executorId, studioId) ) {
-			Studio studio = findStudioById(executorId, studioId);
-			User studioOwner = findUserById(executorId, executorId);
+			Studio studio = findStudioById( studioId);
 			Notebook notebook = new Notebook();
+			User studioOwner = studio.getOwner();
 			notebook.setName(notebookName);
 			notebook.setStudio(studio);
 			notebook.setDateCreated(LocalDateTime.now(clock));
@@ -156,29 +155,14 @@ public class LectioControl {
 				throw ex;
 
 			}
-		} else {
-			em.getTransaction().rollback();
-			throw new LectioAuthorizationException(
-					"User " + executorId + " does not have permission to add a " + "notebook to studio " + studioId);
-		}
 	}
 
-	public Notebook findNotebookById(int executorId, int notebookId) {
-		// if (!authCheckNotebook(executorId, notebookId)) {
-		// throw new LectioAuthorizationException("User " + executorId + " not
-		// authorized to search for notebook " + notebookId + ".");
-		// }
+	public Notebook findNotebookById( int notebookId) {
 		Notebook notebook = em.find(Notebook.class, notebookId);
 		return notebook;
 	}
 
-	
-
-	public Topic addNewTopic(int executorId, int notebookId, String topicName) throws LectioException {
-		if (!authCheckModifyNotebook(executorId, notebookId)) {
-			throw new LectioAuthorizationException("User " + executorId + " cannot modify notebook " + notebookId);
-		}
-
+	public Topic addNewTopic(int notebookId, String topicName) throws LectioException {
 		em.getTransaction().begin();
 		try {
 			Topic topic = new Topic();
@@ -189,7 +173,7 @@ public class LectioControl {
 			topic.setDateCreated(LocalDateTime.now(clock));
 			topic.setShortname(topicName);
 			topic.setTopicState(TopicState.active);
-			insertTopic(executorId, notebookId, topic, 0);
+			insertTopic(notebookId, topic, 0);
 			em.persist(topic);
 			em.getTransaction().commit();
 			return topic;
@@ -206,9 +190,10 @@ public class LectioControl {
 		}
 	}
 
-	protected void insertTopic(int executorId, int notebookId, Topic topic, int position) throws LectioAuthorizationException {
+	protected void insertTopic(int notebookId, Topic topic, int position)
+ {
 		// TODO Add authorization check
-		List<Topic> musicPiecesList = findActiveTopicsByNotebook(executorId, notebookId);
+		List<Topic> musicPiecesList = findActiveTopicsByNotebook(notebookId);
 		topic.setActiveOrder(position);
 		int activeOrder = 0;
 		;
@@ -224,7 +209,7 @@ public class LectioControl {
 		}
 	}
 
-	private boolean authCheckModifyNotebook(int executorId, int notebookId)  {
+	public boolean authCheckModifyNotebook(int executorId, int notebookId) {
 		// TODO Auto-generated method stub
 		Role role = findRoleOfUserInNotebook(executorId, notebookId);
 		if (role != null) {
@@ -235,14 +220,15 @@ public class LectioControl {
 		return false;
 	}
 
-	public Role findRoleOfUserInNotebook(int executorId, int notebookId)  {
+	public Role findRoleOfUserInNotebook(int executorId, int notebookId) {
 		TypedQuery<NotebookUserRole> notebookUserRoleQuery = em
 				.createNamedQuery(NotebookUserRole.QUERY_NOTEBOOKUSERROLE_NOTEBOOKIDUSERID, NotebookUserRole.class);
 		notebookUserRoleQuery.setParameter(NotebookUserRole.QUERYPARAM_NOTEBOOKUSERROLE_NOTEBOOKID, notebookId);
 		notebookUserRoleQuery.setParameter(NotebookUserRole.QUERYPARAM_NOTEBOOKUSERROLE_USERID, executorId);
 		List<NotebookUserRole> notebookUserRoleList = notebookUserRoleQuery.getResultList();
 		if (notebookUserRoleList.size() > 1) {
-			throw new LectioFatalException("More than one role for user " + executorId + " in notebook " + notebookId + ".");
+			throw new LectioFatalException(
+					"More than one role for user " + executorId + " in notebook " + notebookId + ".");
 		} else if (notebookUserRoleList.size() == 0) {
 			return null;
 		}
@@ -252,18 +238,14 @@ public class LectioControl {
 
 	}
 
-	public Topic findTopicById(int executorId, int topicId) throws LectioException {
-		Topic topic = em.find(Topic.class,  topicId);
+	public Topic findTopicById(int topicId) throws LectioException {
+		Topic topic = em.find(Topic.class, topicId);
 		return topic;
-		
+
 	}
 
-	public LessonNote addNewLessonNote(int executorId, int topicId, String lessonNoteContent) throws LectioException {
-		
-		if (!authCheckModifyTopic(executorId, topicId)) {
-			throw new LectioAuthorizationException(
-					"User " + executorId + " is not authorized to add lesson notes to topic " + topicId);
-		}
+	public LessonNote addNewLessonNote(int executorId, int topicId, String lessonNoteContent) throws LectioConstraintException {
+
 		em.getTransaction().begin();
 		LessonNote lessonNote = new LessonNote();
 		User author = new User();
@@ -285,7 +267,7 @@ public class LectioControl {
 
 		return lessonNote;
 	}
-	
+
 	private boolean authCheckSuperAdmin(int userId) {
 		return false;
 	}
@@ -294,20 +276,18 @@ public class LectioControl {
 		Topic topic = em.find(Topic.class, topicId);
 		return authCheckModifyTopic(executorId, topic);
 	}
-	
-	
+
 	private boolean authCheckModifyTopic(int executorId, Topic topic) {
 		Notebook notebook = topic.getNotebook();
 		return authCheckModifyNotebook(executorId, notebook.getId());
 	}
 
-
-	public LessonNote findLessonNoteById(int executorId, int lessonNoteId) {
-		LessonNote lessonNote = em.find(LessonNote.class,  lessonNoteId);
+	public LessonNote findLessonNoteById(int lessonNoteId) {
+		LessonNote lessonNote = em.find(LessonNote.class, lessonNoteId);
 		return lessonNote;
 	}
 
-	public void addNewNotebookUser(int executorId, int notebookId, int userId, Role role) {
+	public void addNewNotebookUser( int notebookId, int userId, Role role) {
 
 		em.getTransaction().begin();
 		NotebookUserRole notebookUserRole = new NotebookUserRole();
@@ -352,36 +332,34 @@ public class LectioControl {
 
 	}
 
-	public List<Topic> findActiveTopicsByNotebook(int executorId, int notebookId) throws LectioAuthorizationException{
-		if (!authCheckReadNotebook(executorId, notebookId) && !authCheckSuperAdmin(executorId)) {
-			throw new LectioAuthorizationException("User " + executorId + " is not authorized to look in notebook " + notebookId);
-		}
-		
-		
+	public List<Topic> findActiveTopicsByNotebook(int notebookId)  {
+
 		TypedQuery<Topic> topicQuery = em.createNamedQuery(Topic.QUERY_FINDTOPICS_NOTEBOOKID, Topic.class);
 		topicQuery.setParameter(Topic.QUERYPARAM_TOPIC_NOTEBOOKID, notebookId);
 		List<Topic> topics = topicQuery.getResultList();
 		return topics;
 	}
 
-	private boolean authCheckReadNotebook(int executorId, int notebookId) {
+	public boolean authCheckReadNotebook(int executorId, int notebookId) {
 		Role role = findRoleOfUserInNotebook(executorId, notebookId);
 		if (role == null)
 			return false;
-		return (role.equals(Role.teacher) || role.equals(Role.student) || role.equals(Role.student)  
+		return (role.equals(Role.teacher) || role.equals(Role.student) || role.equals(Role.student)
 				|| role.equals(Role.observer));
 	}
 
-	public List<Topic> findActiveTopicsAndLessonNotesByNotebook(int executorId, int notebookId) {
+	public List<Topic> findActiveTopicsAndLessonNotesByNotebook(int notebookId)  {
 		TypedQuery<Topic> topicQuery = em.createNamedQuery(Topic.QUERY_FINDTOPICSWITHLESSONNOTE_NOTEBOOKID,
 				Topic.class);
 		topicQuery.setParameter(Topic.QUERYPARAM_TOPIC_NOTEBOOKID, notebookId);
 		List<Topic> topics = topicQuery.getResultList();
 		return topics;
+
 	}
 
-	public List<LessonNote> findLessonNotesByTopicId(int teacherId, int topicId, int numToFind, int startingIndex) {
-		TypedQuery<LessonNote> lessonNoteQuery = em.createNamedQuery(LessonNote.QUERY_LESSONNOTES_BYTOPICID, LessonNote.class);
+	public List<LessonNote> findLessonNotesByTopicId(int topicId, int numToFind, int startingIndex) {
+		TypedQuery<LessonNote> lessonNoteQuery = em.createNamedQuery(LessonNote.QUERY_LESSONNOTES_BYTOPICID,
+				LessonNote.class);
 		lessonNoteQuery.setParameter(LessonNote.QUERYPARAM_LESSONNOTES_BYTOPICID, topicId);
 		List<LessonNote> lessonNoteList = lessonNoteQuery.getResultList();
 		return lessonNoteList;
@@ -413,8 +391,8 @@ public class LectioControl {
 
 	public Topic updateTopicName(int teacherId, int topicId, String newTopicName) {
 		em.getTransaction().begin();
-		Topic topic = em.find(Topic.class,  topicId);
-		
+		Topic topic = em.find(Topic.class, topicId);
+
 		if (topic != null) {
 			topic.setName(newTopicName);
 			em.persist(topic);
@@ -424,28 +402,26 @@ public class LectioControl {
 		return topic;
 	}
 
-	public LessonNote updateLessonNoteContent(int executorId, int lessonNoteId, String newContent) 
-		throws LectioAuthorizationException, LectioObjectNotFoundException
-	{
+	public LessonNote updateLessonNoteContent(int executorId, int lessonNoteId, String newContent)
+			throws LectioAuthorizationException, LectioObjectNotFoundException {
 		em.getTransaction().begin();
-		LessonNote lessonNote = em.find(LessonNote.class,  lessonNoteId);
-		if (lessonNote == null) { 
+		LessonNote lessonNote = em.find(LessonNote.class, lessonNoteId);
+		if (lessonNote == null) {
 			em.getTransaction().rollback();
 			throw new LectioObjectNotFoundException("Lesson note note found.", LessonNote.class, lessonNoteId);
 		}
 		if (!authCheckModifyLessonNote(executorId, lessonNote)) {
 			em.getTransaction().rollback();
-			throw new LectioAuthorizationException("User " + executorId + " is not authorized to modify lesson note ID " + lessonNoteId);
+			throw new LectioAuthorizationException(
+					"User " + executorId + " is not authorized to modify lesson note ID " + lessonNoteId);
 		}
-		
-		
+
 		lessonNote.setContent(newContent);
 		lessonNote.setLastContentUpdate(LocalDateTime.now());
 		em.persist(lessonNote);
 		em.getTransaction().commit();
 		return lessonNote;
 
-		
 	}
 
 	private boolean authCheckModifyLessonNote(int executorId, LessonNote lessonNote) {

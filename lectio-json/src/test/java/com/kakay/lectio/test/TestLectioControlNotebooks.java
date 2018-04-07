@@ -42,7 +42,7 @@ public class TestLectioControlNotebooks  {
 		LectioControl lectioControl = lectioPersistence.getLectioControlById();
 
 		try {
-			lectioControl.addNewNotebook(teacher.getId(), randomSeedData.getStudio().getId(), notebook.getName());
+			lectioControl.addNewNotebook( randomSeedData.getStudio().getId(), notebook.getName());
 			Assert.fail("Adding duplicate notebook to same studio should fail.");
 		} catch (LectioConstraintException ex) {
 			Assert.assertTrue("Adding duplicate notebook name exception should state the duplicate name.",
@@ -106,7 +106,7 @@ public class TestLectioControlNotebooks  {
 		LectioControl lectioControl = lectioPersistence.getLectioControlById();
 
 		try {
-			lectioControl.addNewTopic(teacher.getId(), notebook.getId(), randomSeedData.getTopic().getName());
+			lectioControl.addNewTopic( notebook.getId(), randomSeedData.getTopic().getName());
 			Assert.fail("Adding duplicate topic in same notebook should fail.");
 		} catch (LectioConstraintException ex) {
 			Assert.assertTrue("Exception thrown when adding duplicate topic should show topic name.",
@@ -114,9 +114,9 @@ public class TestLectioControlNotebooks  {
 		}
 
 		// Adding duplicate topic to different notebook should succeed.
-		Notebook newNotebook = lectioControl.addNewNotebook(teacher.getId(), randomSeedData.getStudio().getId(),
+		Notebook newNotebook = lectioControl.addNewNotebook(randomSeedData.getStudio().getId(),
 				"New Notebook");
-		Topic newTopic = lectioControl.addNewTopic(teacher.getId(), newNotebook.getId(),
+		Topic newTopic = lectioControl.addNewTopic(newNotebook.getId(),
 				randomSeedData.getTopic().getName());
 		Assert.assertNotNull("Adding duplicate topic name to another notebook should succeed.", newTopic);
 
@@ -135,7 +135,7 @@ public class TestLectioControlNotebooks  {
 		LectioControl lectioControl = lectioPersistence.getLectioControlById();
 
 		// Student should be able find active topics.
-		List<Topic> activeTopicList = lectioControl.findActiveTopicsByNotebook(student.getId(), notebook.getId());
+		List<Topic> activeTopicList = lectioControl.findActiveTopicsByNotebook( notebook.getId());
 		// Make sure topics are all active and in active order.
 		int lastActiveOrder = -1;
 		for (Topic topic : activeTopicList) {
@@ -146,8 +146,8 @@ public class TestLectioControlNotebooks  {
 		}
 
 		// When you add a new topic, it should become the first one in the active order.
-		Topic newTopic = lectioControl.addNewTopic(teacher.getId(), notebook.getId(), "Latest Topic");
-		List<Topic> newActiveTopicList = lectioControl.findActiveTopicsByNotebook(student.getId(), notebook.getId());
+		Topic newTopic = lectioControl.addNewTopic(notebook.getId(), "Latest Topic");
+		List<Topic> newActiveTopicList = lectioControl.findActiveTopicsByNotebook( notebook.getId());
 		Assert.assertEquals("After adding new topic, active topic list count should be one more than before",
 				activeTopicList.size() + 1, newActiveTopicList.size());
 		Assert.assertEquals("Newest topic should be at top of list.", newTopic.getId(),
@@ -160,26 +160,5 @@ public class TestLectioControlNotebooks  {
 		}
 	}
 
-	@Test
-	public void testWrongUserReadNotebook() throws Exception{
-		RandomSeedData randomSeedData = new RandomSeedData();
-		randomSeedData.generateSeed(1, 1, 1, 1, 5, 0);
-
-		User teacher = randomSeedData.getTeacher();
-		Notebook notebook = randomSeedData.getNotebook();
-		User student = randomSeedData.getStudent();
-
-		LectioPersistence lectioPersistence = new LectioPersistence();
-		LectioControl lectioControl = lectioPersistence.getLectioControlById();
-		
-		User wrongUser = lectioControl.addNewUser(-1,  "testWrongUserReadNotebook Name",  "testWrongUserReadNotebook@email.com",  "pwd");
-		try {
-			List<Topic> activeTopicList = lectioControl.findActiveTopicsByNotebook(wrongUser.getId(), notebook.getId());
-			Assert.fail("Getting active topics by wrong user should have thrown a LectioAuthorizationException.");
-		}
-		catch(LectioAuthorizationException ex) {
-			Assert.assertTrue("Wrong user should not be allowed to find topics in a notebook.", true);
-		}
-	}
 
 }

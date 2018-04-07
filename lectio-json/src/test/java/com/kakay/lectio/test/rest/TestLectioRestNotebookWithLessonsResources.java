@@ -22,7 +22,6 @@ public class TestLectioRestNotebookWithLessonsResources extends TestRestResource
 	int numTopics = 6;
 	int numLessonNotes = 10;
 
-
     @Test
     public void testNotebookActiveTopicsLessonNotesJsonRest() throws IOException {
 		

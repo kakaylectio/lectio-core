@@ -36,7 +36,7 @@ public class UserResource {
     @Timed
     @Path("/notebooks")
     @JsonView(Views.NoDetails.class)
-    public List<NotebookRep> getTopicNames(@PathParam("notebook-id") int notebookId, @Auth LectioPrincipal principal) throws LectioAuthorizationException {
+    public List<NotebookRep> getTopicNames(@PathParam("notebook-id") int notebookId, @Auth LectioPrincipal principal)  {
 		List<Notebook> notebookList = lectioControl.findNotebooksByUser(principal.getId());
 		List<NotebookRep> notebookRepList = new ArrayList<NotebookRep>(notebookList.size());
 
@@ -48,6 +48,7 @@ public class UserResource {
 			notebookRepList.add(notebookRep);
 		}
 		return notebookRepList;
+		
 		
 	}
 

@@ -54,7 +54,7 @@ public class RandomSeedData implements SeedData {
 				String randomPassword = createRandomPassword();
 				emailToPasswordMap.put(randomUser.getEmail(),  randomPassword);
 
-				teacher = lectioControl.addNewUser(adminId, randomUser.getName(), randomUser.getEmail(),
+				teacher = lectioControl.addNewUser(randomUser.getName(), randomUser.getEmail(),
 						randomPassword);
 
 				for (int j = 0; j < numStudios; j++) {
@@ -62,20 +62,20 @@ public class RandomSeedData implements SeedData {
 					studio = lectioControl.addNewStudio(teacher.getId(), randomStudio.getName());
 					for (int k = 0; k < numNotebooks; k++) {
 						Notebook randomNotebook = createRandomNotebook();
-						notebook = lectioControl.addNewNotebook(teacher.getId(), studio.getId(),
+						notebook = lectioControl.addNewNotebook( studio.getId(),
 								randomNotebook.getName());
 						for (int p = 0; p < numStudents; p++) {
 							User randomStudent = createRandomUser();
 							randomPassword = createRandomPassword();
 							emailToPasswordMap.put(randomStudent.getEmail(), randomPassword);
-							student = lectioControl.addNewUser(adminId, randomStudent.getName(),
+							student = lectioControl.addNewUser( randomStudent.getName(),
 									randomStudent.getEmail(), randomPassword);
-							lectioControl.addNewNotebookUser(teacher.getId(), notebook.getId(), student.getId(),
+							lectioControl.addNewNotebookUser( notebook.getId(), student.getId(),
 									Role.student);
 						}
 						for (int m = 0; m < numTopics; m++) {
 							Topic randomTopic = createRandomTopic();
-							topic = lectioControl.addNewTopic(teacher.getId(), notebook.getId(), randomTopic.getName());
+							topic = lectioControl.addNewTopic( notebook.getId(), randomTopic.getName());
 							for (int n = 0; n < numLessonNotes; n++) {
 								LessonNote randomLessonNote = createRandomLessonNote();
 								lessonNote = lectioControl.addNewLessonNote(teacher.getId(), topic.getId(),

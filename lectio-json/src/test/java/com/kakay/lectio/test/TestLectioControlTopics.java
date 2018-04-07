@@ -47,7 +47,7 @@ public class TestLectioControlTopics {
 		Assert.assertEquals("Updated topic name does not match.", newTopicName, updatedTopic.getName());
 		Assert.assertEquals("Updated topic is not the same topic.", topicId, updatedTopic.getId());
 
-		Topic foundTopic = lectioControl.findTopicById(teacherId, topicId);
+		Topic foundTopic = lectioControl.findTopicById( topicId);
 		Assert.assertNotNull("After update, topic should be found.", foundTopic);
 		Assert.assertEquals("Find topic by Id after topic update doesn't have matching topic name.", newTopicName,
 				foundTopic.getName());
@@ -78,12 +78,12 @@ public class TestLectioControlTopics {
 
 		int numToFind = numLessonNotes;
 		int startingIndex = 0;
-		List<LessonNote> lessonNoteList = lectioControl.findLessonNotesByTopicId(teacherId, topicId, numToFind, startingIndex);
+		List<LessonNote> lessonNoteList = lectioControl.findLessonNotesByTopicId(topicId, numToFind, startingIndex);
 		Assert.assertNotNull("Lesson note list should not be null.", lessonNoteList);
 		Assert.assertEquals("Not enough lesson notes returned.",  numLessonNotes, lessonNoteList.size());
 
 		// Make sure the very first lesson note is the one that topic is pointing to.
-		Topic foundTopic = lectioControl.findTopicById(teacherId,  topicId);
+		Topic foundTopic = lectioControl.findTopicById( topicId);
 		LessonNote foundTopicLastLesson = foundTopic.getLastLessonNote();
 		LessonNote lastLessonNoteFound = lessonNoteList.get(0);
 		Assert.assertEquals("Topic is not point to last lesson note.", foundTopicLastLesson.getId(), lastLessonNoteFound.getId());

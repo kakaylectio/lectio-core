@@ -42,7 +42,7 @@ public class TestLectioControlLessonNotes {
 		int topicId = topic.getId();
 		int lessonNoteId = lessonNote.getId();
 		
-		LessonNote lessonNoteEntity = lectioControl.findLessonNoteById(teacherId,  lessonNoteId);
+		LessonNote lessonNoteEntity = lectioControl.findLessonNoteById( lessonNoteId);
 		String lessonNoteEntityContent = lessonNoteEntity.getContent();
 		Assert.assertNotNull("LessonNote should not be null.", lessonNoteEntityContent);
 		Assert.assertEquals("Lesson note content does not match.", lessonNote.getContent(), lessonNoteEntityContent);
@@ -62,60 +62,6 @@ public class TestLectioControlLessonNotes {
 	
 	
 	
-	/* Test what happens when wrong user adds or edits a lesson note. */
-	@Test
-	public void testLessonNotesWrongUser() throws Exception {
-		RandomSeedData randomSeedData = new RandomSeedData();
-		randomSeedData.generateSeed(1, 1, 1, 1, 1, 1);
-		SeedData seedData = randomSeedData;
-
-		User teacher = seedData.getTeacher();
-		Notebook notebook = seedData.getNotebook();
-		User student = seedData.getStudent();
-		Topic topic = seedData.getTopic();
-		LessonNote lessonNote = seedData.getLessonNote();
-
-		LectioPersistence lectioPersistence = new LectioPersistence();
-		LectioControl lectioControl = lectioPersistence.getLectioControlById();
-
-		int teacherId = teacher.getId();
-		int notebookId = notebook.getId();
-		int studentId = student.getId();
-		int topicId = topic.getId();
-		int lessonNoteId = lessonNote.getId();
-
-		User anotherUser = lectioControl.addNewUser(-1, "New User", "newuser@newisp.com", "newPassword");
-		try {
-			lectioControl.addNewLessonNote(anotherUser.getId(), topicId, "Here is the new lesson note content.");
-			Assert.fail("An unauthorized user was allowed to add a new lesson note to the topic.");
-		} catch (LectioAuthorizationException e) {
-			Assert.assertTrue("Correct exception for another user adding new lesson note to topic.", true);
-		}
-
-
-		
-		try {
-			lectioControl.addNewLessonNote(student.getId(), topicId, "Here is the new lesson note content.");
-			Assert.fail("A students was allowed to add a new lesson note to the topic.");
-		} catch (LectioAuthorizationException e) {
-			Assert.assertTrue("Correct exception for student adding new lesson note to topic.", true);
-		}
-		
-		try {
-			lectioControl.updateLessonNoteContent(anotherUser.getId(), lessonNoteId, "Updated content.");
-			Assert.fail("An unauthorized user was allowed to update a lesson note.");
-		} catch (LectioAuthorizationException e) {
-			Assert.assertTrue("Correct exception for another user updating a lesson note to topic.", true);
-		}
-
-		try {
-			lectioControl.updateLessonNoteContent(student.getId(), lessonNoteId, "Updated content.");
-			Assert.fail("A student was allowed to update a lesson note.");
-		} catch (LectioAuthorizationException e) {
-			Assert.assertTrue("Correct exception for student updating a lesson note to topic.", true);
-		}
-
-	}
 	
 	public void testLessonNotePagination() throws Exception{
 		int numLessonNotes = 23;
@@ -142,7 +88,7 @@ public class TestLectioControlLessonNotes {
 		int numToFind = 4;
 		int startingIndex = 0;
 		while(startingIndex < numLessonNotes) {
-			List<LessonNote> lessonNoteList = lectioControl.findLessonNotesByTopicId(teacherId, topicId, numToFind, startingIndex);
+			List<LessonNote> lessonNoteList = lectioControl.findLessonNotesByTopicId(topicId, numToFind, startingIndex);
 			if ((numLessonNotes - startingIndex)  < numToFind) {
 				Assert.assertEquals("Wrong number of lesson notes in list.", numToFind, lessonNoteList.size());
 			}
@@ -171,7 +117,7 @@ public class TestLectioControlLessonNotes {
 		int topicId = topic.getId();
 
 		try {
-			lectioControl.addNewTopic(teacherId,  notebookId,  topic.getName());
+			lectioControl.addNewTopic( notebookId,  topic.getName());
 			Assert.fail("Adding duplicate topic should throw LectioConstraintException.");
 		}
 		catch (LectioConstraintException ex) {
@@ -181,43 +127,6 @@ public class TestLectioControlLessonNotes {
 		
 	}
 	
-	@Test
-	public void testWrongUserAddsTopic() throws Exception {
-		RandomSeedData randomSeedData = new RandomSeedData();
-		randomSeedData.generateSeed(1 , 1, 1, 1, 0, 0);
-		SeedData seedData = randomSeedData;
-		
-		User teacher = seedData.getTeacher();
-		Notebook notebook = seedData.getNotebook();
-		User student = seedData.getStudent();
-		
-		LectioPersistence lectioPersistence = new LectioPersistence();
-		LectioControl lectioControl = lectioPersistence.getLectioControlById();
-		
-		int teacherId = teacher.getId();
-		int notebookId = notebook.getId();
-		int studentId =  student.getId();
-
-		User newUser = lectioControl.addNewUser(-1,  "testWrongUserAddsTopic.Name",  "testWrongUserAddsTopic@SomeIsp.com",  "SomePassword");
-		
-		try {
-			lectioControl.addNewTopic(newUser.getId(),  notebookId,  "testWrongUserAddsTopicName New User");
-			Assert.fail("Topic addition by wrong user should throw  LectioAuthorizationException.");
-		}
-		catch (LectioAuthorizationException ex) {
-			Assert.assertTrue("LectioAuthorizationException should happen.", true);
-		}
-
-		try {
-			lectioControl.addNewTopic(studentId,  notebookId,  "testWrongUserAddsTopicName.student");
-			Assert.fail("Topic addition by student should throw  LectioAuthorizationException.");
-		}
-		catch (LectioAuthorizationException ex) {
-			Assert.assertTrue("LectioAuthorizationException should happen.", true);
-		}
-
-	}
-
 	@After
 	public void tearDown() throws Exception {
 		ClearData.main(new String[]{});

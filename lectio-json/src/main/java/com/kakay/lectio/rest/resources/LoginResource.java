@@ -5,6 +5,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -39,7 +40,7 @@ public class LoginResource  {
 		LectioPrincipal lectioPrincipal = authenticator.checkStringCredentials(info.getEmail(), info.getPassword());
 		if (lectioPrincipal == null) {
 		
-			return null;
+			throw new WebApplicationException(Status.UNAUTHORIZED);
 		}
 		LoginResponse loginResponse = tokenAuthenticator.principal2loginResponse(lectioPrincipal);
 		return loginResponse;
