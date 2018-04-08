@@ -33,7 +33,7 @@ public class TestUserLogin extends TestRestResources{
 		}
 		catch(WebApplicationException ex) {
 			assertEquals("Exception should be of status Status.UNAUTHORIZED for a login failure.",
-					Status.UNAUTHORIZED, ex.getResponse().getStatusInfo());
+					Status.UNAUTHORIZED.getStatusCode(), ex.getResponse().getStatus());
 		}
 	}
 	

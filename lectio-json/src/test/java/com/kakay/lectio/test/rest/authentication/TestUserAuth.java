@@ -54,7 +54,7 @@ public abstract class TestUserAuth extends TestRestResources {
 		try {
 
 			// Hit endpoint without the token
-		    String resp = resources.client().target(targetString)
+		    String resp = appRule.client().target(appUri + targetString)
 		            .request()
 		            .get(String.class);
 			fail("Not authorized exception should have been thrown.");
@@ -71,7 +71,7 @@ public abstract class TestUserAuth extends TestRestResources {
 		try {
 			String bogusToken = RandomStringUtils.randomAlphanumeric(32);
 			// Hit endpoint with a bogus token
-		    String resp = resources.client().target(targetString)
+		    String resp = appRule.client().target(appUri + targetString)
 		            .request()
 		            .header(HttpHeaders.AUTHORIZATION, "Token " + bogusToken)
 		            .get(String.class);

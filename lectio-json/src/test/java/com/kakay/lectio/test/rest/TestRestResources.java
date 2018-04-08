@@ -8,55 +8,28 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 
 import com.google.common.net.HttpHeaders;
 import com.kakay.lectio.auth.EmailPassword;
-import com.kakay.lectio.auth.IdentityAuthenticator;
-import com.kakay.lectio.auth.LectioAuthorizer;
-import com.kakay.lectio.auth.LectioPrincipal;
 import com.kakay.lectio.auth.LoginResponse;
-import com.kakay.lectio.auth.TokenAuthenticator;
-import com.kakay.lectio.auth.WebTokenFilter;
 import com.kakay.lectio.rest.LectioRestApplication;
-import com.kakay.lectio.rest.resources.LoginResource;
+import com.kakay.lectio.rest.LectioRestConfiguration;
 import com.kakay.lectio.test.scenarios.ClearData;
 import com.kakay.lectio.test.scenarios.SeedData;
-import com.kktam.lectio.control.LectioPersistence;
 import com.kktam.lectio.model.Notebook;
 import com.kktam.lectio.model.User;
 
-import io.dropwizard.auth.AuthDynamicFeature;
-import io.dropwizard.auth.AuthValueFactoryProvider;
-import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
-import io.dropwizard.testing.junit.ResourceTestRule;
+import io.dropwizard.testing.junit.DropwizardAppRule;
 
 public abstract class TestRestResources {
 
+	protected static String appUri = "http://localhost:8888";
 	@Rule
-	public ResourceTestRule loginResourceTestRule = ResourceTestRule.builder()
-			.addResource(new LoginResource(new IdentityAuthenticator(new LectioPersistence().getEm()),
-					new TokenAuthenticator()))
-			.addProvider(new AuthDynamicFeature(WEB_AUTH_HANDLER)).addProvider(new LectioAuthorizer())
-			.addProvider(RolesAllowedDynamicFeature.class)
-			.addProvider(new AuthValueFactoryProvider.Binder<>(LectioPrincipal.class)).build();
-
-	protected static final WebTokenFilter WEB_AUTH_HANDLER = new WebTokenFilter.Builder()
-			.setAuthenticator(new TokenAuthenticator()).setAuthorizer(new LectioAuthorizer()).setPrefix("Token")
-			.setRealm(LectioRestApplication.ORDINARY_REALM).buildAuthFilter();
-
-	protected static final BasicCredentialAuthFilter<LectioPrincipal> BASIC_AUTH_HANDLER = new BasicCredentialAuthFilter.Builder<LectioPrincipal>()
-			.setAuthenticator(new IdentityAuthenticator(new LectioPersistence().getEm()))
-			.setAuthorizer(new LectioAuthorizer()).setPrefix("Basic").setRealm(LectioRestApplication.ORDINARY_REALM)
-			.buildAuthFilter();
-	@Rule
-	public ResourceTestRule resources = ResourceTestRule.builder().addResource(getResource())
-			.addProvider(new AuthDynamicFeature(WEB_AUTH_HANDLER)).addProvider(new LectioAuthorizer())
-			.addProvider(RolesAllowedDynamicFeature.class)
-			.addProvider(new AuthValueFactoryProvider.Binder<>(LectioPrincipal.class)).build();
+	public DropwizardAppRule<LectioRestConfiguration> appRule = 
+	   new DropwizardAppRule<LectioRestConfiguration>(LectioRestApplication.class, "lectio-rest.yml");
 	protected Notebook notebook;
 	protected User teacher;
 	protected SeedData seedData;
@@ -73,6 +46,7 @@ public abstract class TestRestResources {
 
 	@Before
 	public void setUp() throws Exception {
+		appUri = "http://localhost:" + appRule.getPort(0);
 
 		seedData = getSeedData();
 
@@ -95,7 +69,7 @@ public abstract class TestRestResources {
 
 	protected String hitEndpoint(String targetString) {
 		// Hit the endpoint and get the raw json string
-		String resp = resources.client().target(targetString).request()
+		String resp = appRule.client().target(appUri + targetString).request()
 				.header(HttpHeaders.AUTHORIZATION, "Token " + savedTokenString).get(String.class);
 
 		return resp;
@@ -108,9 +82,9 @@ public abstract class TestRestResources {
 		emailPassword.setPassword(teacherPassword);
 
 		// Hit the endpoint and get the raw json string
-		Client client = loginResourceTestRule.client();
+		Client client = appRule.client();
 		Entity entity = Entity.json(emailPassword);
-		Response resp = client.target(targetString).request(MediaType.APPLICATION_JSON).post(entity);
+		Response resp = client.target(appUri + targetString).request(MediaType.APPLICATION_JSON).post(entity);
 		if (resp.getStatus() >= 400) {
 			throw new WebApplicationException(resp);
 		}
@@ -119,9 +93,9 @@ public abstract class TestRestResources {
 	}
 	
 	protected Response postEndpoint(String targetString, Object bodyContent) {
-		Client client = resources.client();
+		Client client = appRule.client();
 		Entity entity = Entity.json(bodyContent);
-		Response resp = client.target(targetString)
+		Response resp = client.target(appUri + targetString)
 				.request(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, "Token " + savedTokenString)
 				.post(entity);
