@@ -15,6 +15,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.jboss.logging.Logger;
 
 import com.kakay.lectio.auth.IdentityAuthenticator;
+import com.kakay.lectio.rest.exceptions.LectioSystemException;
 import com.kktam.lectio.control.exception.LectioAuthorizationException;
 import com.kktam.lectio.control.exception.LectioConstraintException;
 import com.kktam.lectio.control.exception.LectioException;
@@ -410,12 +411,6 @@ public class LectioControl {
 			em.getTransaction().rollback();
 			throw new LectioObjectNotFoundException("Lesson note note found.", LessonNote.class, lessonNoteId);
 		}
-		if (!authCheckModifyLessonNote(executorId, lessonNote)) {
-			em.getTransaction().rollback();
-			throw new LectioAuthorizationException(
-					"User " + executorId + " is not authorized to modify lesson note ID " + lessonNoteId);
-		}
-
 		lessonNote.setContent(newContent);
 		lessonNote.setLastContentUpdate(LocalDateTime.now());
 		em.persist(lessonNote);
@@ -424,14 +419,31 @@ public class LectioControl {
 
 	}
 
-	private boolean authCheckModifyLessonNote(int executorId, LessonNote lessonNote) {
-		Topic topic = lessonNote.getTopic();
-		return authCheckModifyTopic(executorId, topic);
+	public int getCountLessonNotesByTopic(int teacherId, int topicId) {
+		throw new LectioSystemException("Not implemented yet.");
 	}
 
-	public int getCountLessonNotesByTopic(int teacherId, int topicId) {
-		// TODO Auto-generated method stub
-		return 0;
+	/**
+	 * Check to see if user is allowed to modify lesson note.
+	 * Only teacher is allowed to modify lesson note.
+	 * 
+	 * @param userId  ID of user trying to modify the lesson note.
+	 * @param lessonNoteId  ID of the lesson note being updated.
+	 * @return  True if authorized.  False if not.
+	 */
+	public boolean authCheckUpdateLessonNote(int userId, int lessonNoteId) {
+		TypedQuery<NotebookUserRole> notebookUserRoleQuery = em.createNamedQuery(NotebookUserRole.QUERY_NOTEBOOKUSERROLE_USERIDLESSONNOTEID, NotebookUserRole.class);
+		notebookUserRoleQuery.setParameter(NotebookUserRole.QUERYPARAM_NOTEBOOKUSERROLE_USERID, userId);
+		notebookUserRoleQuery.setParameter(NotebookUserRole.QUERYPARAM_NOTEBOOKUSERROLE_LESSONNOTEID, lessonNoteId);
+		List<NotebookUserRole> notebookUserRoleList = notebookUserRoleQuery.getResultList();
+		if (notebookUserRoleList.size() > 1) {
+			throw new LectioSystemException("More than one NotebookUserRole for a lesson note.");
+		}
+		if (notebookUserRoleList.size() == 0) {
+			return false;
+		}
+		NotebookUserRole notebookUserRole = notebookUserRoleList.get(0);
+		return notebookUserRole.getRole().equals(Role.teacher);
 	}
 
 }

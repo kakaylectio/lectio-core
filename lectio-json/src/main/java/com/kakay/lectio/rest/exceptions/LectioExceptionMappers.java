@@ -23,7 +23,7 @@ public class LectioExceptionMappers  {
 	public static class LectioAuthorizationExceptionMapper implements ExceptionMapper<LectioAuthorizationException> {
 		@Override
 		public Response toResponse(LectioAuthorizationException ex) {
-			return Response.status(Response.Status.FORBIDDEN).type(MediaType.APPLICATION_JSON)					.entity(ex.getMessage())
+			return Response.status(Response.Status.FORBIDDEN).type(MediaType.APPLICATION_JSON)					
 					.entity(ex.getMessage())
 					.build();
 		}

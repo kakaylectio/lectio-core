@@ -1,5 +1,6 @@
 package com.kktam.lectio.model;
 
+import javax.persistence.NamedQuery;
 import javax.persistence.UniqueConstraint;
 
 /**
@@ -21,18 +22,22 @@ uniqueConstraints=
 	}
 )
 @javax.persistence.NamedQueries({
-	@javax.persistence.NamedQuery(name="NotebookUserRole.byNotebook",
+	@NamedQuery(name="NotebookUserRole.byNotebook",
 			query="select nbUserRole FROM NotebookUserRole as nbUserRole where nbUserRole.notebook = :givennotebook order by nbUserRole.user.name"
 			),
-	@javax.persistence.NamedQuery(name="NotebookUserRole.byUser",
+	@NamedQuery(name="NotebookUserRole.byUser",
 			query="select nbUserRole FROM NotebookUserRole as nbUserRole where nbUserRole.user = :givenuser order by nbUserRole.notebook.name"
 			),
-	@javax.persistence.NamedQuery(name="NotebookUserRole.byUserId",
+	@NamedQuery(name="NotebookUserRole.byUserId",
 	query="select nbUserRole FROM NotebookUserRole as nbUserRole join fetch nbUserRole.notebook where nbUserRole.user.id = :userId order by nbUserRole.notebook.name"
 			),
-	@javax.persistence.NamedQuery(name="NotebookUserRole.byNotebookIdUserId",
+	@NamedQuery(name="NotebookUserRole.byNotebookIdUserId",
 	query="select nbUserRole FROM NotebookUserRole as nbUserRole join fetch nbUserRole.notebook where nbUserRole.notebook.id = :notebookId and nbUserRole.user.id = :userId order by nbUserRole.notebook.name"
-	)
+			),
+	@NamedQuery(name="NotebookUserRole.byLessonNoteUser",
+	//	query="select nbUserRole FROM LessonNote as ln join ln.topic as t join t.notebook as nb where (select nb2.id from  NotebookUserRole as nbuserrole join nbuserrole.notebook as nb2) = nb.id and  ln.id = :lnid and nbuserrole.user.id = :userId "
+		query="select nbUserRole FROM NotebookUserRole as nbUserRole join nbUserRole.user as u join nbUserRole.notebook as nb where u.id = :userId and nb.id = (select nb1.id from LessonNote as ln join ln.topic as t join t.notebook as nb1 where ln.id = :lnid)"
+		)
 })
 public class NotebookUserRole
 {
@@ -45,6 +50,8 @@ public class NotebookUserRole
 	public static final String QUERY_NOTEBOOKUSERROLE_NOTEBOOKIDUSERID = "NotebookUserRole.byNotebookIdUserId";
 	public static final String QUERYPARAM_NOTEBOOKUSERROLE_USERID = "userId";
 	public static final String QUERYPARAM_NOTEBOOKUSERROLE_NOTEBOOKID = "notebookId";
+	public static final String QUERY_NOTEBOOKUSERROLE_USERIDLESSONNOTEID = "NotebookUserRole.byLessonNoteUser";
+	public static final String QUERYPARAM_NOTEBOOKUSERROLE_LESSONNOTEID = "lnid";
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!--  end-user-doc  -->

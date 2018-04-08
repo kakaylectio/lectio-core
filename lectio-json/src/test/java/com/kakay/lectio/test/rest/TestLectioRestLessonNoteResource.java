@@ -1,5 +1,7 @@
 package com.kakay.lectio.test.rest;
 
+import static org.junit.Assert.fail;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -13,38 +15,41 @@ import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kakay.lectio.test.scenarios.SeedData;
 import com.kktam.lectio.control.LectioControl;
 import com.kktam.lectio.control.LectioPersistence;
+import com.kktam.lectio.control.exception.LectioConstraintException;
 import com.kktam.lectio.model.LessonNote;
 import com.kktam.lectio.model.Topic;
 import com.kktam.lectio.model.User;
 
-public class TestLectioRestTopicResource extends TestRestResources {
+/**
+ *  Run tests on LessonNoteResource
+ */
+public class TestLectioRestLessonNoteResource extends TestRestResources {
+
 
 
 	@Override
 	protected SeedData getSeedData() {
 		RandomSeedData seedData = new RandomSeedData();
-		seedData.generateSeed(1, 1, 1, 1, 1, 0);
+		seedData.generateSeed(1, 1, 1, 1, 1, 1);
 		return seedData;
 	}
 
 	@Override
 	protected Object getResource() {
-		return new TopicResource(new LectioPersistence().getLectioControlById());
+		return new LessonNoteResource(new LectioPersistence().getLectioControlById());
 	}
-	
-	@Test
-	public void testCreateNewLessonNote() {
-		Topic topic = seedData.getTopic();
-		String targetString = "/lectio/topic/" + topic.getId() + "/createlessonnote";
 
-		String newContent = "Here is some data that is used as  content.\n"
-				+ "<ol> <li> It contains ordered </li><li>lists.</li></ol> \n"
-				+ "<ul> <li> and unordered </li><li> lists.</li></ul> \n"
-				+ " and some text that is not formatted that way.";
+	@Test
+	public void testUpdateLessonNote() {
+		LessonNote lessonNote = seedData.getLessonNote();
+		
+		String targetString = "/lectio/lessonnote/" + lessonNote.getId() + "/updatecontent";
+
+		String newContent = lessonNote.getContent() + "\n  I've added another line to the content.";
 		LessonNoteResource.LessonNoteContent lessonNoteContent = new LessonNoteResource.LessonNoteContent();
 		lessonNoteContent.setContent(newContent);
 		Response resp = postEndpoint(targetString, lessonNoteContent);
-		Assert.assertEquals("Status response of creating new lesson note should be OK.", 
+		Assert.assertEquals("Status response of updating new lesson note should be OK.", 
 				Status.OK.getStatusCode(), resp.getStatus());
 		LessonNote retrievedLessonNote = resp.readEntity(LessonNote.class);
 		Assert.assertEquals("Lesson note content should match.", newContent,
@@ -52,24 +57,27 @@ public class TestLectioRestTopicResource extends TestRestResources {
 	}
 	
 	@Test
-	public void testCreateLessonNoteWrongUser() throws Exception{
-		Topic topic = seedData.getTopic();
-		String targetString = "/lectio/topic/" + topic.getId() + "/createlessonnote";
+	public void testWrongUserUpdateLessonNote() throws LectioConstraintException {
+		LessonNote lessonNote = seedData.getLessonNote();
+		
+		String targetString = "/lectio/lessonnote/" + lessonNote.getId() + "/updatecontent";
 
+		// Login in a wrong user.
 		LectioControl lectioControl = new LectioPersistence().getLectioControlById();
 		String wrongUserPassword = "pwd";
-		User wrongUser = lectioControl.addNewUser("testWrongUserNewLessonNote Name",  "testWrongUserNewLessonNote@email.com", wrongUserPassword );
+		User wrongUser = lectioControl.addNewUser("testWrongUserUpdateLessonNote Name",  "testWrongUserUpdateLessonNote@email.com", wrongUserPassword );
 		LoginResponse wrongUserLoginResponse = getLoginResponse(wrongUser.getEmail(), wrongUserPassword, "/login");
-		savedTokenString = wrongUserLoginResponse.getToken();
+    	savedTokenString = wrongUserLoginResponse.getToken();
 
-		String newContent = "Here is some data that is used as  content.\n"
-				+ "<ol> <li> It contains ordered </li><li>lists.</li></ol> \n"
-				+ "<ul> <li> and unordered </li><li> lists.</li></ul> \n"
-				+ " and some text that is not formatted that way.";
+		
+		
+		String newContent = lessonNote.getContent() + "\n  I've added another line to the content.";
 		LessonNoteResource.LessonNoteContent lessonNoteContent = new LessonNoteResource.LessonNoteContent();
 		lessonNoteContent.setContent(newContent);
 		Response resp = postEndpoint(targetString, lessonNoteContent);
-		Assert.assertEquals("Response should have status FORBIDDEN.", Status.FORBIDDEN.getStatusCode(), resp.getStatus());
-	
+		Assert.assertEquals("Status response of updating lesson note should be FORBIDDEN.", 
+				Status.FORBIDDEN.getStatusCode(), resp.getStatus());
+		
+
 	}
 }

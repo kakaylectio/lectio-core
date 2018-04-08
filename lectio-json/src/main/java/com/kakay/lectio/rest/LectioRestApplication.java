@@ -15,8 +15,10 @@ import com.kakay.lectio.auth.TokenAuthenticator;
 import com.kakay.lectio.auth.WebTokenFilter;
 import com.kakay.lectio.rest.exceptions.LectioExceptionMappers;
 import com.kakay.lectio.rest.health.BrandNameHealthCheck;
+import com.kakay.lectio.rest.resources.LessonNoteResource;
 import com.kakay.lectio.rest.resources.LoginResource;
 import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
+import com.kakay.lectio.rest.resources.TopicResource;
 import com.kakay.lectio.rest.resources.UserResource;
 import com.kktam.lectio.control.LectioControl;
 import com.kktam.lectio.control.LectioPersistence;
@@ -48,6 +50,8 @@ public class LectioRestApplication extends Application<LectioRestConfiguration> 
 		notebookActiveTopicResource.setLectioControl(lectioControl);
         environment.jersey().register(notebookActiveTopicResource);
         environment.jersey().register(new UserResource(lectioControl));
+        environment.jersey().register(new TopicResource(lectioControl));
+        environment.jersey().register(new LessonNoteResource(lectioControl));
 
         IdentityAuthenticator idAuthenticator = new IdentityAuthenticator(lectioPersistence.getEm());
         TokenAuthenticator tokenAuthenticator = new TokenAuthenticator();

@@ -31,25 +31,7 @@ public class TopicResource {
 		this.lectioControl = lectioControl;
 	}
 	
-	/**
-	 * Encapsulates the lesson note content requested by the client
-	 * to be deserialized as Json string.
-	 *
-	 */
-	public static class LessonNoteContent {
-		@JsonProperty
-		String content;
-		
-		public LessonNoteContent(){}
 
-		public String getContent() {
-			return content;
-		}
-
-		public void setContent(String content) {
-			this.content = content;
-		}
-	}
 	/**
 	 * Creates a new lesson note. The body of this request is the 
 	 * lesson note content.
@@ -60,7 +42,7 @@ public class TopicResource {
 	 * @return  The Lesson Note information.
 	 * 
 	 * @throws WebApplicationException(Status.FORBIDDEN) if user is not authorized
-	 *      to create a new lesso note here.
+	 *      to create a new lesson note here.
 	 *
 	 */
 	@PermitAll
@@ -68,7 +50,7 @@ public class TopicResource {
 	@Timed
 	@Path("/createlessonnote")
 	@JsonView(Views.NoDetails.class)
-	public LessonNote createLessonNote(@PathParam("topic-id") int topicId, @Auth LectioPrincipal principal, LessonNoteContent lessonNoteContent) {
+	public LessonNote createLessonNote(@PathParam("topic-id") int topicId, @Auth LectioPrincipal principal, LessonNoteResource.LessonNoteContent lessonNoteContent) {
 
 		if (!lectioControl.authCheckModifyTopic(principal.getId(), topicId)) {
 			throw new WebApplicationException("User " + principal.getId() + " is not authorized to modify topic " + topicId, Status.FORBIDDEN);
