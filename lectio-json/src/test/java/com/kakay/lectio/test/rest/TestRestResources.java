@@ -1,17 +1,25 @@
 package com.kakay.lectio.test.rest;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.client.HttpUrlConnectorProvider;
+import org.glassfish.jersey.client.JerseyClientBuilder;
+import org.glassfish.jersey.uri.UriComponent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.net.HttpHeaders;
 import com.kakay.lectio.auth.EmailPassword;
 import com.kakay.lectio.auth.LoginResponse;
@@ -22,10 +30,13 @@ import com.kakay.lectio.test.scenarios.SeedData;
 import com.kktam.lectio.model.Notebook;
 import com.kktam.lectio.model.User;
 
+import io.dropwizard.jersey.jackson.JacksonBinder;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 
 public abstract class TestRestResources {
 
+	private static final int DEBUG_CONNECT_TIMEOUT_MS = 400000;
+	private static final int DEBUG_READ_TIMEOUT_MS = 400000;
 	protected static String appUri = "http://localhost:8888";
 	@Rule
 	public DropwizardAppRule<LectioRestConfiguration> appRule = 
@@ -35,6 +46,7 @@ public abstract class TestRestResources {
 	protected SeedData seedData;
 
 	protected String savedTokenString;
+	protected Client client;
 
 	public TestRestResources() {
 		super();
@@ -46,6 +58,8 @@ public abstract class TestRestResources {
 
 	@Before
 	public void setUp() throws Exception {
+		
+
 		appUri = "http://localhost:" + appRule.getPort(0);
 
 		seedData = getSeedData();
@@ -56,7 +70,12 @@ public abstract class TestRestResources {
 		// Set up the rest client authentication
 		Map<String, String> emailToPasswordMap = seedData.getEmailToPasswordMap();
 		String teacherPassword = emailToPasswordMap.get(teacher.getEmail());
-		// teacherClient = resources.client();
+
+		client = new JerseyClientBuilder()
+		        .register(new JacksonBinder(appRule.getObjectMapper()))
+		        .property(ClientProperties.CONNECT_TIMEOUT, DEBUG_CONNECT_TIMEOUT_MS)
+		        .property(ClientProperties.READ_TIMEOUT, DEBUG_READ_TIMEOUT_MS)
+		        .property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true).build();
 
 		LoginResponse loginResponse = getLoginResponse(teacher.getEmail(), teacherPassword, "/login");
 		savedTokenString = loginResponse.getToken();
@@ -64,12 +83,28 @@ public abstract class TestRestResources {
 
 	@After
 	public void tearDown() throws Exception {
+		client.close();
 		ClearData.main(new String[] {});
 	}
 
 	protected String hitEndpoint(String targetString) {
-		// Hit the endpoint and get the raw json string
-		String resp = appRule.client().target(appUri + targetString).request()
+		try {
+			return hitEndpoint(targetString, new HashMap<String, Object>());
+		} catch (JsonProcessingException e) {
+			return null;
+		}
+	}
+	
+	protected String hitEndpoint(String targetString, Map<String, Object> queryParams) throws JsonProcessingException {
+		
+		
+		WebTarget target = client.target(appUri + targetString);
+		for (String queryParamKey : queryParams.keySet()) {
+			Object obj = queryParams.get(queryParamKey);
+					
+			target = target.queryParam(queryParamKey, UriComponent.encode(obj.toString(), UriComponent.Type.QUERY_PARAM_SPACE_ENCODED));
+		}
+		String resp = target.request()
 				.header(HttpHeaders.AUTHORIZATION, "Token " + savedTokenString).get(String.class);
 
 		return resp;
@@ -82,7 +117,6 @@ public abstract class TestRestResources {
 		emailPassword.setPassword(teacherPassword);
 
 		// Hit the endpoint and get the raw json string
-		Client client = appRule.client();
 		Entity entity = Entity.json(emailPassword);
 		Response resp = client.target(appUri + targetString).request(MediaType.APPLICATION_JSON).post(entity);
 		if (resp.getStatus() >= 400) {
@@ -93,7 +127,6 @@ public abstract class TestRestResources {
 	}
 	
 	protected Response postEndpoint(String targetString, Object bodyContent) {
-		Client client = appRule.client();
 		Entity entity = Entity.json(bodyContent);
 		Response resp = client.target(appUri + targetString)
 				.request(MediaType.APPLICATION_JSON)

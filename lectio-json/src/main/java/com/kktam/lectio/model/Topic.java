@@ -173,10 +173,14 @@ public class Topic
 	@javax.persistence.JoinColumn(nullable = false) 
 	protected Notebook notebook;
 
+	/**
+	 * The last lesson of a topic is usually 
+	 * retrieved with the topic.
+	 */
 	@javax.persistence.ManyToOne
 	@javax.persistence.JoinColumn(nullable = true) 
 	protected LessonNote lastLessonNote;
-	 
+		
 	@JsonView(Views.LastLessonNotes.class)
 	public LessonNote getLastLessonNote() {
 		return lastLessonNote;

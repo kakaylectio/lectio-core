@@ -11,24 +11,70 @@ import javax.ws.rs.core.Response.Status;
 
 import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.kakay.lectio.auth.LectioPrincipal;
-import com.kakay.lectio.rest.exceptions.LectioSystemException;
 import com.kakay.lectio.rest.resources.views.Views;
 import com.kktam.lectio.control.LectioControl;
 import com.kktam.lectio.control.exception.LectioAuthorizationException;
-import com.kktam.lectio.control.exception.LectioConstraintException;
 import com.kktam.lectio.control.exception.LectioObjectNotFoundException;
 import com.kktam.lectio.model.LessonNote;
 
 import io.dropwizard.auth.Auth;
 
+/**
+ * Json interface to query about lesson notes.
+ */
 @PermitAll
 @Path("/lectio/lessonnote/{lessonnote-id}")
 @Produces(MediaType.APPLICATION_JSON)
 public class LessonNoteResource {
-	LectioControl lectioControl;
 
+	LectioControl lectioControl;
+	
+	/**
+	 * Type of criterion used to identify LessonNoteCriteria
+	 */
+	public enum CriterionType{
+		oneBefore;   // The lesson note that comes after the one in the lessonNoteId
+		
+		@JsonValue
+		public String getName() {
+			return "oneBefore";
+		}
+	};
+	
+	/**
+	 *	Criteria properties for finding lesson note.  Used by json client
+	 *  to specify how to search for lesson note.
+	 */
+	public static class LessonNoteCriteria {
+		@JsonProperty
+		CriterionType type;
+
+		@JsonProperty
+		int lessonNoteId;
+		public LessonNoteCriteria() {
+		}
+		public CriterionType getType() {
+			return type;
+		}
+		public void setType(CriterionType type) {
+			this.type = type;
+		}
+		public int getLessonNoteId() {
+			return lessonNoteId;
+		}
+		public void setLessonNoteId(int lessonNoteId) {
+			this.lessonNoteId = lessonNoteId;
+		}
+	}
+
+
+	/**
+	 * Constructor 
+	 * @param lectioControl The control object that accesses the database.
+	 */
 	public LessonNoteResource(LectioControl lectioControl) {
 		this.lectioControl = lectioControl;
 	}

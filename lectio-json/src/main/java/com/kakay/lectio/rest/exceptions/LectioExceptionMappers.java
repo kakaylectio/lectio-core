@@ -6,10 +6,23 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 import com.kktam.lectio.control.exception.LectioAuthorizationException;
 import com.kktam.lectio.control.exception.LectioConstraintException;
+import com.kktam.lectio.control.exception.LectioNotImplementedException;
 import com.kktam.lectio.control.exception.LectioObjectNotFoundException;
 
 public class LectioExceptionMappers  {
 
+	public static class LectioNotImplementedExceptionMapper implements ExceptionMapper<LectioNotImplementedException> {
+
+		@Override
+		public Response toResponse(LectioNotImplementedException exception) {
+			// TODO Auto-generated method stub
+			return Response.status(Response.Status.NOT_IMPLEMENTED)
+					.type(MediaType.APPLICATION_JSON)
+					.entity(exception.getMessage())
+					.build();
+		}
+	}
+	
 	public static class LectioObjectNotFoundExceptionMapper implements ExceptionMapper<LectioObjectNotFoundException> {
 		@Override
 		public Response toResponse(LectioObjectNotFoundException ex) {

@@ -15,12 +15,11 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.jboss.logging.Logger;
 
 import com.kakay.lectio.auth.IdentityAuthenticator;
-import com.kakay.lectio.rest.exceptions.LectioSystemException;
 import com.kktam.lectio.control.exception.LectioAuthorizationException;
 import com.kktam.lectio.control.exception.LectioConstraintException;
 import com.kktam.lectio.control.exception.LectioException;
-import com.kktam.lectio.control.exception.LectioFatalException;
 import com.kktam.lectio.control.exception.LectioObjectNotFoundException;
+import com.kktam.lectio.control.exception.LectioSystemException;
 import com.kktam.lectio.model.LessonNote;
 import com.kktam.lectio.model.Notebook;
 import com.kktam.lectio.model.NotebookUserRole;
@@ -228,7 +227,7 @@ public class LectioControl {
 		notebookUserRoleQuery.setParameter(NotebookUserRole.QUERYPARAM_NOTEBOOKUSERROLE_USERID, executorId);
 		List<NotebookUserRole> notebookUserRoleList = notebookUserRoleQuery.getResultList();
 		if (notebookUserRoleList.size() > 1) {
-			throw new LectioFatalException(
+			throw new LectioSystemException(
 					"More than one role for user " + executorId + " in notebook " + notebookId + ".");
 		} else if (notebookUserRoleList.size() == 0) {
 			return null;
@@ -275,6 +274,9 @@ public class LectioControl {
 
 	public boolean authCheckModifyTopic(int executorId, int topicId) {
 		Topic topic = em.find(Topic.class, topicId);
+		if (topic == null) {
+			return false;
+		}
 		return authCheckModifyTopic(executorId, topic);
 	}
 
@@ -444,6 +446,22 @@ public class LectioControl {
 		}
 		NotebookUserRole notebookUserRole = notebookUserRoleList.get(0);
 		return notebookUserRole.getRole().equals(Role.teacher);
+	}
+
+	public boolean authCheckReadTopic(int executorId, int topicId) {
+		TypedQuery<NotebookUserRole> notebookUserRoleQuery = em.createNamedQuery(NotebookUserRole.QUERY_NOTEBOOKUSERROLE_USERIDTOPICID, NotebookUserRole.class);
+		notebookUserRoleQuery.setParameter(NotebookUserRole.QUERYPARAM_NOTEBOOKUSERROLE_USERID, executorId);
+		notebookUserRoleQuery.setParameter(NotebookUserRole.QUERYPARAM_NOTEBOOKUSERROLE_TOPICID, topicId);
+		List<NotebookUserRole> notebookUserRoleList = notebookUserRoleQuery.getResultList();
+		if (notebookUserRoleList.size() > 1) {
+			throw new LectioSystemException("More than one NotebookUserRole for a lesson note.");
+		}
+		if (notebookUserRoleList.size() == 0) {
+			return false;
+		}
+		NotebookUserRole notebookUserRole = notebookUserRoleList.get(0);
+		Role role = notebookUserRole.getRole();
+		return (role.equals(Role.teacher) || role.equals(Role.student) || role.equals(Role.parent) || role.equals(Role.observer));
 	}
 
 }

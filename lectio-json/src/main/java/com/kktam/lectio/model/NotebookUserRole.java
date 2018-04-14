@@ -35,9 +35,12 @@ uniqueConstraints=
 	query="select nbUserRole FROM NotebookUserRole as nbUserRole join fetch nbUserRole.notebook where nbUserRole.notebook.id = :notebookId and nbUserRole.user.id = :userId order by nbUserRole.notebook.name"
 			),
 	@NamedQuery(name="NotebookUserRole.byLessonNoteUser",
-	//	query="select nbUserRole FROM LessonNote as ln join ln.topic as t join t.notebook as nb where (select nb2.id from  NotebookUserRole as nbuserrole join nbuserrole.notebook as nb2) = nb.id and  ln.id = :lnid and nbuserrole.user.id = :userId "
 		query="select nbUserRole FROM NotebookUserRole as nbUserRole join nbUserRole.user as u join nbUserRole.notebook as nb where u.id = :userId and nb.id = (select nb1.id from LessonNote as ln join ln.topic as t join t.notebook as nb1 where ln.id = :lnid)"
+		),
+	@NamedQuery(name="NotebookUserRole.byTopicUser",
+		query="select nbUserRole FROM NotebookUserRole as nbUserRole join nbUserRole.user as u join nbUserRole.notebook as nb where u.id = :userId and nb.id = (select nb1.id from Topic as t join t.notebook as nb1 where t.id = :topicId)"
 		)
+
 })
 public class NotebookUserRole
 {
@@ -52,6 +55,9 @@ public class NotebookUserRole
 	public static final String QUERYPARAM_NOTEBOOKUSERROLE_NOTEBOOKID = "notebookId";
 	public static final String QUERY_NOTEBOOKUSERROLE_USERIDLESSONNOTEID = "NotebookUserRole.byLessonNoteUser";
 	public static final String QUERYPARAM_NOTEBOOKUSERROLE_LESSONNOTEID = "lnid";
+	public static final String QUERY_NOTEBOOKUSERROLE_USERIDTOPICID = "NotebookUserRole.byTopicUser";
+	public static final String QUERYPARAM_NOTEBOOKUSERROLE_TOPICID = "topicId";
+	
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!--  end-user-doc  -->
