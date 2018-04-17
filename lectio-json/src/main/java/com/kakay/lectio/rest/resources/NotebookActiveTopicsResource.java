@@ -80,5 +80,6 @@ public class NotebookActiveTopicsResource {
 		notebookRep.setUserRole(role);
 		return notebookRep;
 	}
+	
 
 }
