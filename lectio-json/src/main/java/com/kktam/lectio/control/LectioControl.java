@@ -406,7 +406,7 @@ public class LectioControl {
 	}
 
 	public LessonNote updateLessonNoteContent(int executorId, int lessonNoteId, String newContent)
-			throws LectioAuthorizationException, LectioObjectNotFoundException {
+			throws LectioObjectNotFoundException {
 		em.getTransaction().begin();
 		LessonNote lessonNote = em.find(LessonNote.class, lessonNoteId);
 		if (lessonNote == null) {
@@ -418,7 +418,30 @@ public class LectioControl {
 		em.persist(lessonNote);
 		em.getTransaction().commit();
 		return lessonNote;
-
+	}
+	
+	/**
+	 * This method sets a new date for a lesson note.  This is not usually done,
+	 * but needed when setting up testing seed data.  
+	 * @param lessonNoteId  ID of the lesson note to be changed
+	 * @param newDateTime  New date and time of the lesson note
+	 * @return   The lesson note with the new date and time
+	 * @throws LectioObjectNotFoundException
+	 */
+	public LessonNote updateLessonNoteDate(int lessonNoteId, LocalDateTime newDateTime) 
+		throws LectioObjectNotFoundException {
+		em.getTransaction().begin();
+		LessonNote lessonNote = em.find(LessonNote.class, lessonNoteId);
+		if (lessonNote == null) {
+			em.getTransaction().rollback();
+			throw new LectioObjectNotFoundException("Lesson note note found.", LessonNote.class, lessonNoteId);
+		}
+		lessonNote.setDate(newDateTime);
+		lessonNote.setLastContentUpdate(LocalDateTime.now());
+		em.persist(lessonNote);
+		em.getTransaction().commit();
+		return lessonNote;
+		
 	}
 
 	public int getCountLessonNotesByTopic(int teacherId, int topicId) {

@@ -17,8 +17,8 @@ import com.kakay.lectio.auth.LectioPrincipal;
 import com.kakay.lectio.rest.representation.NotebookRep;
 import com.kakay.lectio.rest.resources.views.Views;
 import com.kktam.lectio.control.LectioControl;
-import com.kktam.lectio.control.exception.LectioAuthorizationException;
 import com.kktam.lectio.model.Notebook;
+import com.kktam.lectio.model.Role;
 import com.kktam.lectio.model.Topic;
 
 import io.dropwizard.auth.Auth;
@@ -52,8 +52,10 @@ public class NotebookActiveTopicsResource {
 		
 		List<Topic> topicList = lectioControl.findActiveTopicsByNotebook( notebookId);
 		Notebook notebook = lectioControl.findNotebookById( notebookId);
-
+		Role role = lectioControl.findRoleOfUserInNotebook(principal.getId(), notebookId);
+		
 		NotebookRep notebookRep = new NotebookRep(notebook, topicList);
+		notebookRep.setUserRole(role);
 		return notebookRep;
 	}
 
@@ -72,8 +74,10 @@ public class NotebookActiveTopicsResource {
 		}
 		List<Topic> topicList = lectioControl.findActiveTopicsAndLessonNotesByNotebook(notebookId);
 		Notebook notebook = lectioControl.findNotebookById(notebookId);
+		Role role = lectioControl.findRoleOfUserInNotebook(principal.getId(), notebookId);
 
 		NotebookRep notebookRep = new NotebookRep(notebook, topicList);
+		notebookRep.setUserRole(role);
 		return notebookRep;
 	}
 

@@ -13,6 +13,7 @@ import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kakay.lectio.test.scenarios.SeedData;
 import com.kktam.lectio.control.LectioPersistence;
 import com.kktam.lectio.model.LessonNote;
+import com.kktam.lectio.model.Role;
 import com.kktam.lectio.model.Topic;
 
 import io.dropwizard.jackson.Jackson;
@@ -37,6 +38,8 @@ public class TestLectioRestNotebookWithLessonsResources extends TestRestResource
         
         Assert.assertNotNull("Topic list should not be null when returned from activetopicswithlessons.", notebookRep.getTopicList());
         List<Topic> topicList = notebookRep.getTopicList();
+        Assert.assertNotNull("NotebookRep role should not be null.", notebookRep.getUserRole());
+        Assert.assertEquals("NotebookRep has the wrong role.",  Role.teacher, notebookRep.getUserRole());
         for (Topic topic:topicList) {
         	LessonNote lastLessonNote = topic.getLastLessonNote();
         	Assert.assertNotNull("Last lesson note should not be null when returned from activetopicwithlessons.",

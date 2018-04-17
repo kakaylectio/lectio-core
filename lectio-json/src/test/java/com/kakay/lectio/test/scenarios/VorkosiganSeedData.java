@@ -1,5 +1,6 @@
 package com.kakay.lectio.test.scenarios;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +41,7 @@ public class VorkosiganSeedData implements SeedData {
 		LectioPersistence lectioPersistence = new LectioPersistence();
 		LectioControl lectioControl = lectioPersistence.getLectioControlById();
 
+		LocalDateTime twoWeeksAgo = LocalDateTime.now().minusWeeks(2);
 		try {
 			aral = lectioControl.addNewUser("Aral Vorkosigan", "aral@vorkosigan.com", "cordelia");
 			emailToPasswordMap.put("aral@vorkosigan.com", "cordelia");
@@ -68,7 +70,8 @@ public class VorkosiganSeedData implements SeedData {
 					"		<li>Intro 2 measures: Think of a shimmery / glistening picture</li>\r\n" + 
 					"	</ol>\r\n" + 
 					"");
-
+			lectioControl.updateLessonNoteDate(lessonNote.getId(), twoWeeksAgo);
+			
 			Topic topic2 = lectioControl.addNewTopic( notebookId, "Schubert Moment Musicaux Opus 39. no 3");
 			LessonNote lessonNote2 = lectioControl.addNewLessonNote(aralId, topic2.getId(),
 					"	<ul>\r\n" + 
@@ -77,6 +80,7 @@ public class VorkosiganSeedData implements SeedData {
 					"\r\n" + 
 					"	</ul>\r\n" + 
 					"");
+			lectioControl.updateLessonNoteDate(lessonNote2.getId(), twoWeeksAgo);
 
 			Topic topic3 = lectioControl.addNewTopic(notebookId, "Mozart Sonata in C K. 545 Movement 3");
 			LessonNote lessonNote3 = lectioControl.addNewLessonNote(aralId, topic3.getId(),
@@ -89,6 +93,7 @@ public class VorkosiganSeedData implements SeedData {
 					"		<li>mm 68 - end: don't start soft.</li>\r\n" + 
 					"		<li>Rotate and drop wrist</li>\r\n" + 
 					"	</ul>");
+			lectioControl.updateLessonNoteDate(lessonNote3.getId(), twoWeeksAgo);
 			
 			Topic topic4 = lectioControl.addNewTopic(notebookId, "Technique");
 			LessonNote lessonNote4 = lectioControl.addNewLessonNote(aralId, topic4.getId(),
@@ -99,6 +104,7 @@ public class VorkosiganSeedData implements SeedData {
 					"		<li>Arpeggio and inversions</li>\r\n" + 
 					"		<li>Arpeggio V7 and inversions</li>\r\n" + 
 					"	</ul>");
+			lectioControl.updateLessonNoteDate(lessonNote4.getId(), twoWeeksAgo);
 
 		
 		} catch (LectioException e) {
