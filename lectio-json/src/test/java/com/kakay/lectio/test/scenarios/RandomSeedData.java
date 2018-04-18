@@ -1,5 +1,6 @@
 package com.kakay.lectio.test.scenarios;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,6 +93,31 @@ public class RandomSeedData implements SeedData {
 			lectioPersistence.close();
 		}
 
+	}
+	
+	/**
+	 * Adds some more lesson notes to the generated seed data, setting
+	 * each lesson date one week apart.  The very last lesson note to be added
+	 * because the lesson note returned by getLessonNote().
+	 * 
+	 * @param numExtraLessonNotes
+	 * @throws Exception
+	 */
+	public void addExtraLessonNotes(int numExtraLessonNotes) throws Exception {
+		LectioPersistence lectioPersistence = new LectioPersistence();
+		LectioControl lectioControl = lectioPersistence.getLectioControlById();
+		int topicId = topic.getId();
+		if (lessonNote != null) {
+
+			lectioControl.updateLessonNoteDate(lessonNote.getId(), LocalDateTime.now().minusWeeks(numExtraLessonNotes+1));
+		}
+		
+		for (int i=0; i< numExtraLessonNotes; i++) {
+			LessonNote newLessonNote = createRandomLessonNote();
+			LessonNote lessonNoteDao = lectioControl.addNewLessonNote(teacher.getId(), topicId, newLessonNote.getContent());
+			lectioControl.updateLessonNoteDate(lessonNoteDao.getId(), LocalDateTime.now().minusWeeks(numExtraLessonNotes - i));
+			lessonNote = lessonNoteDao;
+		}	
 	}
 
 	String createRandomEmail() {

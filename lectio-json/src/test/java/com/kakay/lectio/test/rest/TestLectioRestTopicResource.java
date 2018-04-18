@@ -1,6 +1,7 @@
 package com.kakay.lectio.test.rest;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.Response;
@@ -9,9 +10,9 @@ import javax.ws.rs.core.Response.Status;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kakay.lectio.auth.LoginResponse;
-import com.kakay.lectio.rest.representation.NotebookRep;
 import com.kakay.lectio.rest.resources.LessonNoteResource;
 import com.kakay.lectio.rest.resources.TopicResource;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
@@ -26,12 +27,13 @@ import io.dropwizard.jackson.Jackson;
 
 public class TestLectioRestTopicResource extends TestRestResources {
 
-
+	RandomSeedData randomSeedData;
+	
 	@Override
 	protected SeedData getSeedData() {
-		RandomSeedData seedData = new RandomSeedData();
-		seedData.generateSeed(1, 1, 1, 1, 1, 0);
-		return seedData;
+		randomSeedData = new RandomSeedData();
+		randomSeedData.generateSeed(1, 1, 1, 1, 1, 0);
+		return randomSeedData;
 	}
 
 	@Override
@@ -105,7 +107,7 @@ public class TestLectioRestTopicResource extends TestRestResources {
 		LessonNote lessonNote2 = resp2.readEntity(LessonNote.class);
 		
 		String targetString2 = "/lectio/topic/" + topic.getId() + "/findlessonnote";
-		Map<String, Object> queryParamMap = new HashMap(1);
+		Map<String, Object> queryParamMap = new HashMap<String, Object>(1);
 		queryParamMap.put("afterid",  String.valueOf(lessonNote2.getId()));
 		String foundLessonNoteJsonString = hitEndpoint(targetString2, queryParamMap);
 		Assert.assertNotNull("LessonNote should have been found.",
@@ -118,5 +120,30 @@ public class TestLectioRestTopicResource extends TestRestResources {
 		Assert.assertEquals("LessonNoteFound ID should match the one that was added.",
 				lessonNote1.getId(), foundLessonNote.getId());
 		
+		
+	}
+	
+	@Test
+	public void testFindLessonNotesPagination() throws Exception {
+		int numExtraLessons = 25;
+		Topic topic = randomSeedData.getTopic();
+		
+		randomSeedData.addExtraLessonNotes(numExtraLessons);
+		String targetString2 = "/lectio/topic/" + topic.getId() + "/findlessonnotes";
+		Map<String, Object> queryParamMap = new HashMap<String, Object>(1);
+		queryParamMap.put("startindex",  3);
+		queryParamMap.put("numitems", 10);
+		String foundLessonNoteJsonString = hitEndpoint(targetString2, queryParamMap);
+		Assert.assertNotNull("LessonNote should have been found.",
+				foundLessonNoteJsonString);
+		ObjectMapper objectMapper = Jackson.newObjectMapper();
+		List<LessonNote> foundLessonNote = objectMapper.readValue(foundLessonNoteJsonString,( new TypeReference<List<LessonNote>>(){}));
+        Assert.assertNotNull("LessonNote list should note be null when returned from findlessonnote.",
+        		foundLessonNote);
+
+		
+		
 	}
 }
+	
+	

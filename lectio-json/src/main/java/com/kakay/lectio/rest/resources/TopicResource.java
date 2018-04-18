@@ -80,6 +80,48 @@ public class TopicResource {
 		return null;
 	}
 
+	
+	/**
+	 * Gets the lesson notes of a topic based on a specific criteria
+	 * @param topicId  ID of the topic to which lesson note belongs
+	 * @param principal  The person working with the client to invoke getLessonNote
+	 * @param criteria  The criteria
+	 * @return
+	 */
+	@PermitAll
+	@GET
+	@Timed
+	@Path("/findlessonnotes")
+	@JsonView(Views.NoDetails.class)
+	@Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
+	public List<LessonNote> findLessonNotes(@Auth LectioPrincipal principal,
+			@QueryParam("afterid") Integer afterId,
+			@QueryParam("startindex") Integer startIndex,
+			@QueryParam("numitems") Integer numItems,
+			@PathParam("topic-id") int topicId
+			
+			) throws LectioAuthorizationException {
+
+		if (!lectioControl.authCheckReadTopic(principal.getId(), topicId)) {
+			throw new LectioAuthorizationException("User " + principal.getId() + 
+					" is not authorized to read lesson notes in topic " + topicId);
+		}
+		if (afterId != null) {
+			List<LessonNote> lessonNoteList = lectioControl.findLessonNotesByTopicId(topicId, 2, 0);
+			return lessonNoteList;
+		}
+		else if (numItems != null) {
+			int startIndexInt = 0;
+			if (startIndex != null) {
+				startIndexInt = startIndex.intValue();
+			}
+			List<LessonNote> lessonNoteList = lectioControl.findLessonNotesByTopicId(topicId,  numItems.intValue(), startIndexInt);
+			return lessonNoteList;
+			
+		}
+		return null;
+	}
+
 	/**
 	 * Creates a new lesson note. The body of this request is the 
 	 * lesson note content.
@@ -111,4 +153,6 @@ public class TopicResource {
 			throw new LectioSystemException("Lesson notes should not have constraints.");
 		}
 	}
+	
+	
 }
