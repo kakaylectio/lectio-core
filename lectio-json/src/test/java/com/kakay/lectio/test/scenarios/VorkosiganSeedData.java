@@ -8,7 +8,9 @@ import org.apache.log4j.Logger;
 
 import com.kktam.lectio.control.LectioControl;
 import com.kktam.lectio.control.LectioPersistence;
+import com.kktam.lectio.control.exception.LectioConstraintException;
 import com.kktam.lectio.control.exception.LectioException;
+import com.kktam.lectio.control.exception.LectioObjectNotFoundException;
 import com.kktam.lectio.model.LessonNote;
 import com.kktam.lectio.model.Notebook;
 import com.kktam.lectio.model.Role;
@@ -61,16 +63,7 @@ public class VorkosiganSeedData implements SeedData {
 
 			topic = lectioControl.addNewTopic(notebookId, "Mendelssohn Songs Without Words, Opus 19 No. 1");
 			
-			lessonNote = lectioControl.addNewLessonNote(aralId, topic.getId(), "	<ol>\r\n" + 
-					"		<li>Work on pedal and play LH bass and tenor alone</li>\r\n" + 
-					"		<li>Pedal + alto + tenor + bass, making sure the inner voices are\r\n" + 
-					"			very light / muted/ soft fingers. Watch out for _*thumb* _accents</li>\r\n" + 
-					"		<li>Tempo: Play faster once you get a good control of inner\r\n" + 
-					"			voices. Leave out rubato for now</li>\r\n" + 
-					"		<li>Intro 2 measures: Think of a shimmery / glistening picture</li>\r\n" + 
-					"	</ol>\r\n" + 
-					"");
-			lectioControl.updateLessonNoteDate(lessonNote.getId(), twoWeeksAgo);
+			mendelssohnLessonNotes(lectioControl);
 			
 			Topic topic2 = lectioControl.addNewTopic( notebookId, "Schubert Moment Musicaux Opus 39. no 3");
 			LessonNote lessonNote2 = lectioControl.addNewLessonNote(aralId, topic2.getId(),
@@ -106,13 +99,69 @@ public class VorkosiganSeedData implements SeedData {
 					"	</ul>");
 			lectioControl.updateLessonNoteDate(lessonNote4.getId(), twoWeeksAgo);
 
-		
+			
 		} catch (LectioException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		lectioPersistence.close();
+	}
+
+	protected void mendelssohnLessonNotes(LectioControl lectioControl)
+			throws LectioConstraintException, LectioObjectNotFoundException {
+		LocalDateTime date = LocalDateTime.now().minusYears(1);
+		int aralId = aral.getId();
+		LessonNote newLessonNote = lectioControl.addNewLessonNote(aralId, topic.getId(), 
+				"New.  Practice this in several ways<br/>" + 
+				"<ol><li>1st page only:  Chordal block Hands Together.</li>"
+				+ "<li>Right hand melody only - work on fingering and holding notes and cantabile</li>"
+				+ "<li>Chordal left hand block with right-hand melody:  top voice only.</li>"
+				+ "<li> Practice only inner voices.</li></ol>\r\n" + 
+				"");
+		lectioControl.updateLessonNoteDate(newLessonNote.getId(), date);
+		
+		date = date.plusWeeks(1);
+		newLessonNote = lectioControl.addNewLessonNote(aralId, topic.getId(), 
+				"Watch out for long melody lines.  Always connect the melody.");
+		lectioControl.updateLessonNoteDate(newLessonNote.getId(), date);
+
+		date = date.plusWeeks(1);
+		newLessonNote = lectioControl.addNewLessonNote(aralId, topic.getId(), 
+				"<ul><li>inside voice - play keys surface to get light touch / sound</li>"
+				+ "<li>Right hand melody must work on *ROTATION*</li>"
+				+ "<li>Pick up speed for the 1st page!</li></ul>");
+		lectioControl.updateLessonNoteDate(newLessonNote.getId(), date);
+		
+		date = date.plusWeeks(1);
+		newLessonNote = lectioControl.addNewLessonNote(aralId, topic.getId(), 
+				"Follow all pencil new notes.");
+		lectioControl.updateLessonNoteDate(newLessonNote.getId(), date);
+		
+		date = date.plusWeeks(1);
+		newLessonNote = lectioControl.addNewLessonNote(aralId, topic.getId(), 
+				"<ol><li>Work on pedal + play LH bass + tenor alone.</li>"
+				+ "<li>Pedal + alto + tenor + bass, making sure the inner voices are very light / muted / soft fingers.</li></ol>\r"
+				+ "Watch out for THUMb accents.<br/>"
+				+ "<ul><li>Tempo:  play faster once you get a good control of inner voice.</li>,"
+				+ "<li>Leave out rubato for now</li>"
+				+ "<li>INtro 2 measures:  think of a shimmery / glistening picture.</li></ul>");
+		lectioControl.updateLessonNoteDate(newLessonNote.getId(), date);
+		
+		date = date.plusWeeks(1);
+		newLessonNote = lectioControl.addNewLessonNote(aralId, topic.getId(), 
+				"No pedal for this week. <br/>"
+				+ "Work on staccato control. <br/>"
+				+ "Practice background snow light but phrased, then separate voices, thumb plays 1st tenuto notes. Phrase second theme.");
+		lectioControl.updateLessonNoteDate(newLessonNote.getId(), date);
+		
+		date = date.plusWeeks(1);
+		newLessonNote = lectioControl.addNewLessonNote(aralId, topic.getId(), 
+				"<ul><li> 1st page watch out for both hands' timing of notes.</li>" +
+				"<li>Work on all highlighted passages.</li>"
+				+ "<li> mm. 47-50 - use the metronome, practice LH alone, HT choose a steady pace.</li></ul>");
+		lectioControl.updateLessonNoteDate(newLessonNote.getId(), date);
+		
 	}
 
 	public User getTeacher() {
@@ -148,5 +197,7 @@ public class VorkosiganSeedData implements SeedData {
 		// TODO Auto-generated method stub
 		return lessonNote;
 	}
+	
+	
 
 }

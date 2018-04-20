@@ -238,7 +238,7 @@ public class LectioControl {
 
 	}
 
-	public Topic findTopicById(int topicId) throws LectioException {
+	public Topic findTopicById(int topicId)  {
 		Topic topic = em.find(Topic.class, topicId);
 		return topic;
 
@@ -364,7 +364,10 @@ public class LectioControl {
 		TypedQuery<LessonNote> lessonNoteQuery = em.createNamedQuery(LessonNote.QUERY_LESSONNOTES_BYTOPICID,
 				LessonNote.class);
 		lessonNoteQuery.setParameter(LessonNote.QUERYPARAM_LESSONNOTES_BYTOPICID, topicId);
+		lessonNoteQuery.setFirstResult(startingIndex);
+		lessonNoteQuery.setMaxResults(numToFind);
 		List<LessonNote> lessonNoteList = lessonNoteQuery.getResultList();
+		
 		return lessonNoteList;
 	}
 

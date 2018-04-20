@@ -21,9 +21,11 @@ import com.kakay.lectio.rest.resources.views.Views;
 import com.kktam.lectio.control.LectioControl;
 import com.kktam.lectio.control.exception.LectioAuthorizationException;
 import com.kktam.lectio.control.exception.LectioConstraintException;
+import com.kktam.lectio.control.exception.LectioException;
 import com.kktam.lectio.control.exception.LectioNotImplementedException;
 import com.kktam.lectio.control.exception.LectioSystemException;
 import com.kktam.lectio.model.LessonNote;
+import com.kktam.lectio.model.Topic;
 
 import io.dropwizard.auth.Auth;
 
@@ -36,7 +38,23 @@ public class TopicResource {
 	public TopicResource(LectioControl lectioControl) {
 		this.lectioControl = lectioControl;
 	}
-	
+
+	@PermitAll
+	@GET
+	@Timed
+	@Path("/findtopicbyid")
+	@JsonView(Views.NoDetails.class)
+	@Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
+	public Topic findTopicById(@Auth LectioPrincipal principal, @PathParam("topic-id") int topicId) 
+			throws LectioAuthorizationException
+	{
+		if (!lectioControl.authCheckReadTopic(principal.getId(), topicId)) {
+			throw new LectioAuthorizationException("User " + principal.getId() + 
+					" is not authorized to read lesson notes in topic " + topicId);
+		}
+		return lectioControl.findTopicById(topicId);
+	}
+
 	/**
 	 * Gets the lesson note of a topic based on a specific criteria
 	 * @param topicId  ID of the topic to which lesson note belongs

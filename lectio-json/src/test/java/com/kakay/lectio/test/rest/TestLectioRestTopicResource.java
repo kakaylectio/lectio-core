@@ -140,10 +140,24 @@ public class TestLectioRestTopicResource extends TestRestResources {
 		List<LessonNote> foundLessonNote = objectMapper.readValue(foundLessonNoteJsonString,( new TypeReference<List<LessonNote>>(){}));
         Assert.assertNotNull("LessonNote list should note be null when returned from findlessonnote.",
         		foundLessonNote);
-
-		
-		
 	}
+	
+	@Test
+	public void testFindTopicById() throws Exception {
+		Topic topic = seedData.getTopic();
+		
+		String targetString2 = "/lectio/topic/" + topic.getId() + "/findtopicbyid";
+		Map<String, Object> queryParamMap = new HashMap<String, Object>(1);
+		String foundTopicJsonString = hitEndpoint(targetString2);
+		Assert.assertNotNull("Topic should have been found.",
+				foundTopicJsonString);
+		ObjectMapper objectMapper = Jackson.newObjectMapper();
+		Topic foundTopic = objectMapper.readValue(foundTopicJsonString,Topic.class);
+        Assert.assertNotNull("Topic should have been found.", foundTopic);
+        Assert.assertEquals("Topic ID should match.", topic.getId(), foundTopic.getId());
+        Assert.assertEquals("Topic name should match.", topic.getName(), foundTopic.getName());
+	}
+
 }
 	
 	
