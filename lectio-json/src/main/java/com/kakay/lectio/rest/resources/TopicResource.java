@@ -31,6 +31,9 @@ import com.kktam.lectio.model.TopicState;
 
 import io.dropwizard.auth.Auth;
 
+/**
+ * A REST API to retrieve everything related to a topic.
+ */
 @PermitAll
 @Path("/lectio/topic/{topic-id}")
 @Produces(MediaType.APPLICATION_JSON)
@@ -41,6 +44,13 @@ public class TopicResource {
 		this.lectioControl = lectioControl;
 	}
 
+	/**
+	 * Retrieves a single Topic based on the ID.  If topic is not found, null is returned.
+	 * @param principal  The user retrieving the topic.
+	 * @param topicId
+	 * @return  Topic with the topicId as ID
+	 * @throws LectioAuthorizationException Thrown when user is not authorized to view this topic.
+	 */
 	@PermitAll
 	@GET
 	@Timed

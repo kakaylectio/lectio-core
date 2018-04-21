@@ -22,6 +22,9 @@ import com.kktam.lectio.model.Role;
 
 import io.dropwizard.auth.Auth;
 
+/**
+ * Rest API for user-related operations.
+ */
 @PermitAll
 @Path("/lectio/user/{user-id}")
 @Produces(MediaType.APPLICATION_JSON)
