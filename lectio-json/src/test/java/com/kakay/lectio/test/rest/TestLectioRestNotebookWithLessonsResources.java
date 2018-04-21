@@ -12,7 +12,7 @@ import com.kakay.lectio.model.LessonNote;
 import com.kakay.lectio.model.Role;
 import com.kakay.lectio.model.Topic;
 import com.kakay.lectio.rest.representation.NotebookRep;
-import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
+import com.kakay.lectio.rest.resources.NotebookResource;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kakay.lectio.test.scenarios.SeedData;
 
@@ -57,15 +57,6 @@ public class TestLectioRestNotebookWithLessonsResources extends TestRestResource
 		randomSeedData.generateSeed(1 ,1, 1, 1, numTopics, numLessonNotes);
 
 		return randomSeedData;
-	}
-
-	@Override
-	protected Object getResource() {
-		NotebookActiveTopicsResource notebookActiveTopicResource = new NotebookActiveTopicsResource();
-		notebookActiveTopicResource.setLectioControl(new LectioPersistence().getLectioControlById());
-
-		Object resource = notebookActiveTopicResource;
-		return resource;
 	}
 
 }

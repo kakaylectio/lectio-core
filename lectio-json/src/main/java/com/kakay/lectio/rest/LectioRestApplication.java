@@ -19,7 +19,7 @@ import com.kakay.lectio.rest.exceptions.LectioExceptionMappers;
 import com.kakay.lectio.rest.health.BrandNameHealthCheck;
 import com.kakay.lectio.rest.resources.LessonNoteResource;
 import com.kakay.lectio.rest.resources.LoginResource;
-import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
+import com.kakay.lectio.rest.resources.NotebookResource;
 import com.kakay.lectio.rest.resources.TopicResource;
 import com.kakay.lectio.rest.resources.UserResource;
 
@@ -46,7 +46,7 @@ public class LectioRestApplication extends Application<LectioRestConfiguration> 
 		BrandNameHealthCheck brandNameHealthCheck = new BrandNameHealthCheck();
 		environment.healthChecks().register("brandName", brandNameHealthCheck);
 		
-		NotebookActiveTopicsResource notebookActiveTopicResource = new NotebookActiveTopicsResource();
+		NotebookResource notebookActiveTopicResource = new NotebookResource();
 		notebookActiveTopicResource.setLectioControl(lectioControl);
         environment.jersey().register(notebookActiveTopicResource);
         environment.jersey().register(new UserResource(lectioControl));

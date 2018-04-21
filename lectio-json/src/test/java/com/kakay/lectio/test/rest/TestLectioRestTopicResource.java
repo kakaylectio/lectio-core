@@ -41,10 +41,6 @@ public class TestLectioRestTopicResource extends TestRestResources {
 		return randomSeedData;
 	}
 
-	@Override
-	protected Object getResource() {
-		return new TopicResource(new LectioPersistence().getLectioControlById());
-	}
 	
 	@Test
 	public void testArchiveTopic() {

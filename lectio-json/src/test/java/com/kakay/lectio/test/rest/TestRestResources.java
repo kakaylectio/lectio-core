@@ -54,7 +54,7 @@ public abstract class TestRestResources {
 
 	abstract protected SeedData getSeedData();
 
-	abstract protected Object getResource();
+//	abstract protected Object getResource();
 
 	@Before
 	public void setUp() throws Exception {

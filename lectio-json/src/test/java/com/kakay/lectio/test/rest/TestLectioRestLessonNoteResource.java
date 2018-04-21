@@ -34,10 +34,6 @@ public class TestLectioRestLessonNoteResource extends TestRestResources {
 		return seedData;
 	}
 
-	@Override
-	protected Object getResource() {
-		return new LessonNoteResource(new LectioPersistence().getLectioControlById());
-	}
 
 	@Test
 	public void testUpdateLessonNote() {

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kakay.lectio.control.LectioPersistence;
 import com.kakay.lectio.model.Notebook;
 import com.kakay.lectio.rest.representation.NotebookRep;
-import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
+import com.kakay.lectio.rest.resources.NotebookResource;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kakay.lectio.test.scenarios.SeedData;
 
@@ -21,14 +21,6 @@ public class TestUserAuthNotebookActiveTopics extends TestUserAuth{
 		return targetString;
 	}
 	
-	@Override
-	protected Object getResource() {
-		NotebookActiveTopicsResource notebookActiveTopicResource = new NotebookActiveTopicsResource();
-		notebookActiveTopicResource.setLectioControl(new LectioPersistence().getLectioControlById());
-
-		Object resource = notebookActiveTopicResource;
-		return resource;
-	}
 
 	@Override
 	protected SeedData getSeedData() {

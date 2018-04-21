@@ -1,7 +1,7 @@
 package com.kakay.lectio.test.rest.authentication;
 
 import com.kakay.lectio.control.LectioPersistence;
-import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
+import com.kakay.lectio.rest.resources.NotebookResource;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kakay.lectio.test.scenarios.SeedData;
 
@@ -23,12 +23,4 @@ public class TestUserAuthNotebookActiveTopicsAndLessons extends TestUserAuth {
 
 	}
 
-	@Override
-	protected Object getResource() {
-		NotebookActiveTopicsResource notebookActiveTopicResource = new NotebookActiveTopicsResource();
-		notebookActiveTopicResource.setLectioControl(new LectioPersistence().getLectioControlById());
-
-		Object resource = notebookActiveTopicResource;
-		return resource;
-	}
 }

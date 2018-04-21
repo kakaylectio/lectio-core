@@ -31,13 +31,7 @@ public class TestLectioRestUserResource extends TestRestResources {
 		return randomSeedData;
 	}
 
-	@Override
-	protected Object getResource() {
-		LectioPersistence persistence = new LectioPersistence();
-		return new UserResource(persistence.getLectioControlById());
-	}
     @Test
-    
     public void testUserNotebooksRest() throws IOException {
 		
     	User teacher = seedData.getTeacher();

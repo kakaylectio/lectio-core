@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.kakay.lectio.auth.LoginResponse;
 import com.kakay.lectio.control.LectioPersistence;
 import com.kakay.lectio.control.exception.LectioException;
-import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
+import com.kakay.lectio.rest.resources.NotebookResource;
 import com.kakay.lectio.test.rest.TestRestResources;
 import com.kakay.lectio.test.scenarios.SeedData;
 import com.kakay.lectio.test.scenarios.VorkosiganSeedData;
@@ -76,12 +76,4 @@ public class TestUserLogin extends TestRestResources{
 		String targetString = "/lectio/notebook/" + notebookId + "/activetopics";
 		return targetString;
 	}
-	@Override
-	protected Object getResource() {
-		NotebookActiveTopicsResource notebookActiveTopicResource = new NotebookActiveTopicsResource();
-		notebookActiveTopicResource.setLectioControl(new LectioPersistence().getLectioControlById());
-
-		Object resource = notebookActiveTopicResource;
-		return resource;
-	}	
 }
