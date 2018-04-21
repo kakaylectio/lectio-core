@@ -50,16 +50,27 @@ public class TestLectioControlTopics {
 		assertNotNull("Archived topic is not null.", archivedTopic);
 		assertEquals("Archived topic is the wrong topic.", topicId, archivedTopic.getId());
 		assertEquals("Archived topic state is wrong.", TopicState.archived, archivedTopic.getTopicState());
+		assertEquals("Archived topic activeOrder should be reset to -1.",-1, archivedTopic.getActiveOrder());
 		
 		List<Topic> activeTopicsAfter = lectioControl.findActiveTopicsAndLessonNotesByNotebook(notebookId);
 		assertEquals("Number of active topics is wrong.", numTopics - 1, activeTopicsAfter.size());
 		boolean isFound = false;
 
 		Iterator<Topic> activeTopicsAfterIterator = activeTopicsAfter.iterator();
-		while(activeTopicsAfterIterator.hasNext() && !isFound ) {
-			isFound = (activeTopicsAfterIterator.next().getId() == topicId);
+		for (Topic activeTopicAfter: activeTopicsAfter) {
+			isFound = (activeTopicAfter.getId() == topicId);
+			if (isFound) {
+				break;
+			}
 		}
 		assertFalse("New active topic list should not include archived topic.", isFound);
+		
+		// Make sure that all the other topics are appropriately ordered.
+		int activeOrder = 0;
+		for(Topic activeTopicAfter:activeTopicsAfter) {
+			assertEquals("Active order was not renumbered.", activeOrder, activeTopicAfter.getActiveOrder()); 
+			activeOrder++;
+		}
 	}
 	
 	@Test

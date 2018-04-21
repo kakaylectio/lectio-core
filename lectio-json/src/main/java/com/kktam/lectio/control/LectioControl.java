@@ -3,6 +3,7 @@ package com.kktam.lectio.control;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -15,7 +16,6 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.jboss.logging.Logger;
 
 import com.kakay.lectio.auth.IdentityAuthenticator;
-import com.kktam.lectio.control.exception.LectioAuthorizationException;
 import com.kktam.lectio.control.exception.LectioConstraintException;
 import com.kktam.lectio.control.exception.LectioException;
 import com.kktam.lectio.control.exception.LectioObjectNotFoundException;
@@ -191,8 +191,7 @@ public class LectioControl {
 	}
 
 	protected void insertTopic(int notebookId, Topic topic, int position)
- {
-		// TODO Add authorization check
+	{
 		List<Topic> musicPiecesList = findActiveTopicsByNotebook(notebookId);
 		topic.setActiveOrder(position);
 		int activeOrder = 0;
@@ -209,6 +208,34 @@ public class LectioControl {
 		}
 	}
 
+	/**
+	 * This method takes all active topics in a notebook in order of
+	 * active order and reassigns consecutive active order numbers to
+	 * each topic.  This method is used when a topic has been removed
+	 * from the list of active topics, and all the topic active orders
+	 * need to be renumbered.
+	 *
+	 * @param notebookId  Notebook owning the topics.
+	 */
+	protected void reorderActiveTopics(int notebookId) {
+		List<Topic> topicList = findActiveTopicsByNotebook(notebookId);
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().begin();
+		}
+		Iterator<Topic> topicIterator = topicList.iterator();
+		int i = 0;
+		while (topicIterator.hasNext()) {
+			Topic topic = topicIterator.next();
+			topic.setActiveOrder(i);
+			em.persist(topic);
+			i++;
+		}
+	
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().commit();
+		}		
+	}
+	
 	public boolean authCheckModifyNotebook(int executorId, int notebookId) {
 		// TODO Auto-generated method stub
 		Role role = findRoleOfUserInNotebook(executorId, notebookId);
@@ -490,16 +517,27 @@ public class LectioControl {
 		return (role.equals(Role.teacher) || role.equals(Role.student) || role.equals(Role.parent) || role.equals(Role.observer));
 	}
 
-	public Topic updateTopicState(int topicId, TopicState archived) throws LectioObjectNotFoundException {
+	/**
+	 * Change the state of a topic.
+	 * 
+	 * @param topicId ID of the topic being changed.
+	 * @param topicState  New state of the topic
+	 * @return The Topic entity with the new state
+	 * @throws LectioObjectNotFoundException Topic ID could not be found.
+	 */
+	public Topic updateTopicState(int topicId, TopicState topicState) throws LectioObjectNotFoundException {
 		em.getTransaction().begin();
 		Topic topic = em.find(Topic.class,  topicId);
 		if (topic == null ) {
 			em.getTransaction().rollback();
 			throw new LectioObjectNotFoundException("Topic with ID " + topicId + " not found.", Topic.class, topicId);
 		}
-		topic.setTopicState(TopicState.archived);
+		topic.setTopicState(topicState);
 		topic.setDateArchived(LocalDateTime.now());
+		topic.setActiveOrder(-1);
 		em.persist(topic);
+		
+		reorderActiveTopics(topic.getNotebook().getId());
 		em.getTransaction().commit();
 		return topic;
 		
