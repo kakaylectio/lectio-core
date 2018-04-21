@@ -506,26 +506,31 @@ public class LectioControl {
 			em.getTransaction().rollback();
 			throw new LectioObjectNotFoundException("Topic with ID " + topicId + " not found.", Topic.class, topicId);
 		}
-		List<Topic> topicList = findActiveTopicsByNotebook(topic.getNotebook().getId());
-		Iterator<Topic> topicIterator = topicList.iterator();
-
-		// Remove topic from the list. 
-		int i = 0;
-		while (topicIterator.hasNext()) {
-			Topic topicInActiveList = topicIterator.next();
-			if (topic.getId() != topicInActiveList.getId()) {
-				topicInActiveList.setActiveOrder(i);
-				em.persist(topicInActiveList);
-				i++;
-			}
-		}
+		try {
+			List<Topic> topicList = findActiveTopicsByNotebook(topic.getNotebook().getId());
+			Iterator<Topic> topicIterator = topicList.iterator();
 	
-		topic.setTopicState(topicState);
-		topic.setDateArchived(LocalDateTime.now());
-		topic.setActiveOrder(-1);
-		em.persist(topic);
+			// Remove topic from active ordering. 
+			int i = 0;
+			while (topicIterator.hasNext()) {
+				Topic topicInActiveList = topicIterator.next();
+				if (topic.getId() != topicInActiveList.getId()) {
+					topicInActiveList.setActiveOrder(i);
+					em.persist(topicInActiveList);
+					i++;
+				}
+			}
 		
-		em.getTransaction().commit();
+			topic.setTopicState(topicState);
+			topic.setDateArchived(LocalDateTime.now());
+			topic.setActiveOrder(-1);
+			em.persist(topic);
+			
+			em.getTransaction().commit();
+		}
+		catch(Exception ex) {
+			em.getTransaction().rollback();
+		}
 		return topic;
 		
 	}
