@@ -1,7 +1,13 @@
 package com.kakay.lectio.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -12,15 +18,50 @@ import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kakay.lectio.test.scenarios.SeedData;
 import com.kktam.lectio.control.LectioControl;
 import com.kktam.lectio.control.LectioPersistence;
-import com.kktam.lectio.control.exception.LectioAuthorizationException;
 import com.kktam.lectio.control.exception.LectioException;
 import com.kktam.lectio.model.LessonNote;
 import com.kktam.lectio.model.Notebook;
 import com.kktam.lectio.model.Topic;
+import com.kktam.lectio.model.TopicState;
 import com.kktam.lectio.model.User;
 
 public class TestLectioControlTopics {
 
+	@Test public void testArchiveTopic() throws Exception {
+		RandomSeedData randomSeedData = new RandomSeedData();
+		randomSeedData.generateSeed(1, 1, 1, 1, 8, 1);
+		SeedData seedData = randomSeedData;
+
+		User teacher = seedData.getTeacher();
+		Notebook notebook = seedData.getNotebook();
+		User student = seedData.getStudent();
+		Topic topic = seedData.getTopic();
+
+		LectioPersistence lectioPersistence = new LectioPersistence();
+		LectioControl lectioControl = lectioPersistence.getLectioControlById();
+		
+		int topicId = topic.getId();
+		int notebookId = notebook.getId();
+
+		List<Topic> activeTopics = lectioControl.findActiveTopicsAndLessonNotesByNotebook(notebookId);
+		int numTopics = activeTopics.size();
+		
+		Topic archivedTopic = lectioControl.updateTopicState(topicId, TopicState.archived);
+		assertNotNull("Archived topic is not null.", archivedTopic);
+		assertEquals("Archived topic is the wrong topic.", topicId, archivedTopic.getId());
+		assertEquals("Archived topic state is wrong.", TopicState.archived, archivedTopic.getTopicState());
+		
+		List<Topic> activeTopicsAfter = lectioControl.findActiveTopicsAndLessonNotesByNotebook(notebookId);
+		assertEquals("Number of active topics is wrong.", numTopics - 1, activeTopicsAfter.size());
+		boolean isFound = false;
+
+		Iterator<Topic> activeTopicsAfterIterator = activeTopicsAfter.iterator();
+		while(activeTopicsAfterIterator.hasNext() && !isFound ) {
+			isFound = (activeTopicsAfterIterator.next().getId() == topicId);
+		}
+		assertFalse("New active topic list should not include archived topic.", isFound);
+	}
+	
 	@Test
 	public void testUpdateTopic() throws Exception {
 		RandomSeedData randomSeedData = new RandomSeedData();

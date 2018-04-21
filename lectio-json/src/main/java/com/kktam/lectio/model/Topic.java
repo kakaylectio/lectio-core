@@ -34,13 +34,13 @@ uniqueConstraints=
 			query="select tp FROM Topic as tp where tp.notebook = :notebook order by tp.activeOrder"
 			),
 	@javax.persistence.NamedQuery(name="Topic.activeByNotebookId",
-	query="select tp FROM Topic as tp where tp.notebook.id = :notebookId order by tp.activeOrder"
+	query="select tp FROM Topic as tp where tp.notebook.id = :notebookId and tp.topicState = 'active' order by tp.activeOrder"
 	),
 	@javax.persistence.NamedQuery(name="TopicAndLessonNote.activeByNotebook",
-	query="select tp FROM Topic as tp LEFT JOIN FETCH tp.lastLessonNote where  tp.notebook = :notebook  order by tp.activeOrder"
+	query="select tp FROM Topic as tp LEFT JOIN FETCH tp.lastLessonNote where  tp.notebook = :notebook and tp.topicState = 'active' order by tp.activeOrder"
 	),
 	@javax.persistence.NamedQuery(name="TopicAndLessonNote.activeByNotebookId",
-	query="select tp FROM Topic as tp LEFT JOIN FETCH tp.lastLessonNote where  tp.notebook.id = :notebookId  order by tp.activeOrder"
+	query="select tp FROM Topic as tp LEFT JOIN FETCH tp.lastLessonNote where  tp.notebook.id = :notebookId and tp.topicState = 'active' order by tp.activeOrder"
 	)
 })
 
@@ -58,12 +58,8 @@ public class Topic
 	public static final String QUERY_COUNTMUSICPIECES_NOTEBOOK = "Notebook.CountTopics";
 	public static final String QUERY_MAXORDER_NOTEBOOK = "Notebook.MaxActiveOrderTopics";
 	public static final String UNIQUE_TOPIC_NAME = "UniqueTopicName";
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
+
+
 	@javax.persistence.Enumerated(javax.persistence.EnumType.STRING) 
 	@javax.persistence.Column(nullable = false) 
 	protected TopicState topicState;
@@ -149,12 +145,8 @@ public class Topic
 	@javax.persistence.Column(nullable = false) 
 	protected LocalDateTime dateCreated;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
+	@javax.persistence.Column(nullable = true) 
+	protected LocalDateTime dateArchived;
 	 
 	@javax.persistence.Column(nullable = true) 
 	protected String information;
@@ -162,12 +154,6 @@ public class Topic
 	@javax.persistence.Column(nullable = true) 
 	protected String graphic;
 	
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	
 	@javax.persistence.ManyToOne 
 	@javax.persistence.JoinColumn(nullable = false) 
@@ -242,34 +228,16 @@ public class Topic
 		this.notebook = null;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	 
 	@javax.persistence.ManyToMany 
 	@javax.persistence.JoinTable 
 	protected Set<Tag> tag;
 
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	@javax.persistence.Id 
 	@javax.persistence.GeneratedValue(strategy=javax.persistence.GenerationType.IDENTITY)
 	protected int id;
 	
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	@JsonProperty 
 	public int getId() {
 		return this.id;
@@ -281,77 +249,37 @@ public class Topic
 	}
 
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 */
 	public Topic(){
 		super();
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	@JsonProperty 
 	public String getName() {
 		return this.name;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	@JsonProperty 
 	public String getShortname() {
 		return this.shortname;
 	}
 
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
+
 	@JsonProperty 
 	public LocalDateTime getDateCreated() {
 		return this.dateCreated;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	@JsonProperty 
 	public String getInformation() {
 		return this.information;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	@JsonProperty 
 	public String getGraphic() {
 		return this.graphic;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	public Set<Tag> getTag() {
 		if(this.tag == null) {
 				this.tag = new HashSet<Tag>();
@@ -359,14 +287,7 @@ public class Topic
 		return (Set<Tag>) this.tag;
 	}
 
-	/**
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	public void addAllTag(Set<Tag> newTag) {
 		if (this.tag == null) {
 			this.tag = new HashSet<Tag>();
@@ -374,13 +295,6 @@ public class Topic
 		this.tag.addAll(newTag);
 	}
 
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	public void removeAllTag(Set<Tag> newTag) {
 		if(this.tag == null) {
 			return;
@@ -390,64 +304,28 @@ public class Topic
 	}
 
 
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
+	
 	public void setName(String myName) {
 		this.name = myName;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	public void setShortname(String myShortname) {
 		this.shortname = myShortname;
 	}
 
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	public void setDateCreated(LocalDateTime myDateCreated) {
 		this.dateCreated = myDateCreated;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	public void setInformation(String myInformation) {
 		this.information = myInformation;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	public void setGraphic(String myGraphic) {
 		this.graphic = myGraphic;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	public void addTag(Tag newTag) {
 		if(this.tag == null) {
 			this.tag = new HashSet<Tag>();
@@ -457,69 +335,20 @@ public class Topic
 	}
 
 
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
-	public void unsetName() {
-		this.name = "";
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
-	public void unsetShortname() {
-		this.shortname = "";
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
-	public void unsetDateCreated() {
-		this.dateCreated = LocalDateTime.MIN;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
-	public void unsetInformation() {
-		this.information = "";
-	}
-
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
-	public void unsetGraphic() {
-		this.graphic = "";
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	public void removeTag(Tag oldTag) {
 		if(this.tag == null)
 			return;
 		
 		this.tag.remove(oldTag);
+	}
+
+	@JsonProperty 
+	public LocalDateTime getDateArchived() {
+		return this.dateArchived;
+	}
+
+	public void setDateArchived(LocalDateTime dateArchived) {
+		this.dateArchived = dateArchived;
 	}
 	
 

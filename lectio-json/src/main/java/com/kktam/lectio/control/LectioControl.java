@@ -490,4 +490,19 @@ public class LectioControl {
 		return (role.equals(Role.teacher) || role.equals(Role.student) || role.equals(Role.parent) || role.equals(Role.observer));
 	}
 
+	public Topic updateTopicState(int topicId, TopicState archived) throws LectioObjectNotFoundException {
+		em.getTransaction().begin();
+		Topic topic = em.find(Topic.class,  topicId);
+		if (topic == null ) {
+			em.getTransaction().rollback();
+			throw new LectioObjectNotFoundException("Topic with ID " + topicId + " not found.", Topic.class, topicId);
+		}
+		topic.setTopicState(TopicState.archived);
+		topic.setDateArchived(LocalDateTime.now());
+		em.persist(topic);
+		em.getTransaction().commit();
+		return topic;
+		
+	}
+
 }
