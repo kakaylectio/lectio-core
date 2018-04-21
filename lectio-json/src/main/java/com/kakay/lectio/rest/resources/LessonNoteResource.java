@@ -17,8 +17,8 @@ import com.kakay.lectio.auth.LectioPrincipal;
 import com.kakay.lectio.control.LectioControl;
 import com.kakay.lectio.control.exception.LectioAuthorizationException;
 import com.kakay.lectio.control.exception.LectioObjectNotFoundException;
+import com.kakay.lectio.model.LessonNote;
 import com.kakay.lectio.rest.resources.views.Views;
-import com.kktam.lectio.model.LessonNote;
 
 import io.dropwizard.auth.Auth;
 

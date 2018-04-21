@@ -16,14 +16,14 @@ import org.junit.Test;
 import com.kakay.lectio.control.LectioControl;
 import com.kakay.lectio.control.LectioPersistence;
 import com.kakay.lectio.control.exception.LectioException;
+import com.kakay.lectio.model.LessonNote;
+import com.kakay.lectio.model.Notebook;
+import com.kakay.lectio.model.Topic;
+import com.kakay.lectio.model.TopicState;
+import com.kakay.lectio.model.User;
 import com.kakay.lectio.test.scenarios.ClearData;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kakay.lectio.test.scenarios.SeedData;
-import com.kktam.lectio.model.LessonNote;
-import com.kktam.lectio.model.Notebook;
-import com.kktam.lectio.model.Topic;
-import com.kktam.lectio.model.TopicState;
-import com.kktam.lectio.model.User;
 
 public class TestLectioControlTopics {
 

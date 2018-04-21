@@ -15,7 +15,7 @@ import com.kakay.lectio.control.LectioControl;
 import com.kakay.lectio.control.LectioPersistence;
 import com.kakay.lectio.control.exception.LectioException;
 import com.kakay.lectio.control.exception.LectioSystemException;
-import com.kktam.lectio.model.User;
+import com.kakay.lectio.model.User;
 
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;

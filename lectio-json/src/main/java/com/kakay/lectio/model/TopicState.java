@@ -3,7 +3,7 @@
  * 
  */
 
-package com.kktam.lectio.model;
+package com.kakay.lectio.model;
 
 
 public enum TopicState {

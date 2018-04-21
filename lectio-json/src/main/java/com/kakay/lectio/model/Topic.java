@@ -1,4 +1,4 @@
-package com.kktam.lectio.model;
+package com.kakay.lectio.model;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;

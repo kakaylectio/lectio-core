@@ -1,4 +1,4 @@
-package com.kktam.lectio.model;
+package com.kakay.lectio.model;
 
 /**
  * <!-- begin-user-doc -->

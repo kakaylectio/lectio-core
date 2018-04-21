@@ -9,9 +9,9 @@ import com.kakay.lectio.control.LectioControl;
 import com.kakay.lectio.control.LectioPersistence;
 import com.kakay.lectio.control.exception.LectioConstraintException;
 import com.kakay.lectio.control.exception.LectioException;
+import com.kakay.lectio.model.User;
 import com.kakay.lectio.test.scenarios.ClearData;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
-import com.kktam.lectio.model.User;
 
 public class TestLectioControlSeedData {
 

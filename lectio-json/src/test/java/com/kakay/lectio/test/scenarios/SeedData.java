@@ -2,11 +2,11 @@ package com.kakay.lectio.test.scenarios;
 
 import java.util.Map;
 
-import com.kktam.lectio.model.LessonNote;
-import com.kktam.lectio.model.Notebook;
-import com.kktam.lectio.model.Studio;
-import com.kktam.lectio.model.Topic;
-import com.kktam.lectio.model.User;
+import com.kakay.lectio.model.LessonNote;
+import com.kakay.lectio.model.Notebook;
+import com.kakay.lectio.model.Studio;
+import com.kakay.lectio.model.Topic;
+import com.kakay.lectio.model.User;
 
 public interface SeedData {
 

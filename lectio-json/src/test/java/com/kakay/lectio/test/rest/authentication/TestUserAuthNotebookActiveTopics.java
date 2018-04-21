@@ -4,11 +4,11 @@ import org.junit.Assert;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kakay.lectio.control.LectioPersistence;
+import com.kakay.lectio.model.Notebook;
 import com.kakay.lectio.rest.representation.NotebookRep;
 import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kakay.lectio.test.scenarios.SeedData;
-import com.kktam.lectio.model.Notebook;
 
 import io.dropwizard.jackson.Jackson;
 

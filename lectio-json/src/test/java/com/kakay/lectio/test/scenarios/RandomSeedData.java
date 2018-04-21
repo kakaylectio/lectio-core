@@ -11,13 +11,12 @@ import org.apache.log4j.Logger;
 import com.kakay.lectio.control.LectioControl;
 import com.kakay.lectio.control.LectioPersistence;
 import com.kakay.lectio.control.exception.LectioException;
-import com.kktam.lectio.model.LessonNote;
-import com.kktam.lectio.model.Notebook;
-import com.kktam.lectio.model.Role;
-import com.kktam.lectio.model.Studio;
-import com.kktam.lectio.model.Topic;
-import com.kktam.lectio.model.User;
-/* This class creates some seed data, and can return one instance of the data. */
+import com.kakay.lectio.model.LessonNote;
+import com.kakay.lectio.model.Notebook;
+import com.kakay.lectio.model.Role;
+import com.kakay.lectio.model.Studio;
+import com.kakay.lectio.model.Topic;
+import com.kakay.lectio.model.User;
 
 public class RandomSeedData implements SeedData {
 	private final static Logger logger = Logger.getLogger(RandomSeedData.class.getName());

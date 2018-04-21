@@ -23,12 +23,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.net.HttpHeaders;
 import com.kakay.lectio.auth.EmailPassword;
 import com.kakay.lectio.auth.LoginResponse;
+import com.kakay.lectio.model.Notebook;
+import com.kakay.lectio.model.User;
 import com.kakay.lectio.rest.LectioRestApplication;
 import com.kakay.lectio.rest.LectioRestConfiguration;
 import com.kakay.lectio.test.scenarios.ClearData;
 import com.kakay.lectio.test.scenarios.SeedData;
-import com.kktam.lectio.model.Notebook;
-import com.kktam.lectio.model.User;
 
 import io.dropwizard.jersey.jackson.JacksonBinder;
 import io.dropwizard.testing.junit.DropwizardAppRule;

@@ -19,14 +19,14 @@ import com.kakay.lectio.auth.LoginResponse;
 import com.kakay.lectio.control.LectioControl;
 import com.kakay.lectio.control.LectioPersistence;
 import com.kakay.lectio.control.exception.LectioConstraintException;
+import com.kakay.lectio.model.LessonNote;
+import com.kakay.lectio.model.Topic;
+import com.kakay.lectio.model.TopicState;
+import com.kakay.lectio.model.User;
 import com.kakay.lectio.rest.resources.LessonNoteResource;
 import com.kakay.lectio.rest.resources.TopicResource;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kakay.lectio.test.scenarios.SeedData;
-import com.kktam.lectio.model.LessonNote;
-import com.kktam.lectio.model.Topic;
-import com.kktam.lectio.model.TopicState;
-import com.kktam.lectio.model.User;
 
 import io.dropwizard.jackson.Jackson;
 

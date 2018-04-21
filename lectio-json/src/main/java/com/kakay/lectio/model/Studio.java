@@ -1,4 +1,4 @@
-package com.kktam.lectio.model;
+package com.kakay.lectio.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.kakay.lectio.rest.resources.views.Views;

@@ -3,9 +3,9 @@ package com.kakay.lectio.rest.representation;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.kktam.lectio.model.Notebook;
-import com.kktam.lectio.model.Role;
-import com.kktam.lectio.model.Topic;
+import com.kakay.lectio.model.Notebook;
+import com.kakay.lectio.model.Role;
+import com.kakay.lectio.model.Topic;
 
 public class NotebookRep {
 	

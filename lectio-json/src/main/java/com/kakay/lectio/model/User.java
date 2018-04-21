@@ -1,4 +1,4 @@
-package com.kktam.lectio.model;
+package com.kakay.lectio.model;
 import javax.persistence.Column;
 import javax.persistence.UniqueConstraint;
 

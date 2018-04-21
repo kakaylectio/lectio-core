@@ -6,7 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.kktam.lectio.model.User;
+import com.kakay.lectio.model.User;
 
 /**
  * DataAccessObject stored in the database containing User ID and password.

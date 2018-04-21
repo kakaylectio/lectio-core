@@ -24,10 +24,10 @@ import com.kakay.lectio.control.exception.LectioException;
 import com.kakay.lectio.control.exception.LectioNotImplementedException;
 import com.kakay.lectio.control.exception.LectioObjectNotFoundException;
 import com.kakay.lectio.control.exception.LectioSystemException;
+import com.kakay.lectio.model.LessonNote;
+import com.kakay.lectio.model.Topic;
+import com.kakay.lectio.model.TopicState;
 import com.kakay.lectio.rest.resources.views.Views;
-import com.kktam.lectio.model.LessonNote;
-import com.kktam.lectio.model.Topic;
-import com.kktam.lectio.model.TopicState;
 
 import io.dropwizard.auth.Auth;
 

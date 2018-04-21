@@ -15,10 +15,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.kakay.lectio.auth.LectioPrincipal;
 import com.kakay.lectio.control.LectioControl;
 import com.kakay.lectio.control.exception.LectioAuthorizationException;
+import com.kakay.lectio.model.Notebook;
+import com.kakay.lectio.model.Role;
 import com.kakay.lectio.rest.representation.NotebookRep;
 import com.kakay.lectio.rest.resources.views.Views;
-import com.kktam.lectio.model.Notebook;
-import com.kktam.lectio.model.Role;
 
 import io.dropwizard.auth.Auth;
 

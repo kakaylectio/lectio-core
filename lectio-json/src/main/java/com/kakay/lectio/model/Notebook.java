@@ -1,4 +1,4 @@
-package com.kktam.lectio.model;
+package com.kakay.lectio.model;
 import java.time.LocalDateTime;
 
 import javax.persistence.UniqueConstraint;
