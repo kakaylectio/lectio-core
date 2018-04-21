@@ -13,6 +13,8 @@ import com.kakay.lectio.auth.LectioAuthorizer;
 import com.kakay.lectio.auth.LectioPrincipal;
 import com.kakay.lectio.auth.TokenAuthenticator;
 import com.kakay.lectio.auth.WebTokenFilter;
+import com.kakay.lectio.control.LectioControl;
+import com.kakay.lectio.control.LectioPersistence;
 import com.kakay.lectio.rest.exceptions.LectioExceptionMappers;
 import com.kakay.lectio.rest.health.BrandNameHealthCheck;
 import com.kakay.lectio.rest.resources.LessonNoteResource;
@@ -20,8 +22,6 @@ import com.kakay.lectio.rest.resources.LoginResource;
 import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
 import com.kakay.lectio.rest.resources.TopicResource;
 import com.kakay.lectio.rest.resources.UserResource;
-import com.kktam.lectio.control.LectioControl;
-import com.kktam.lectio.control.LectioPersistence;
 
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;

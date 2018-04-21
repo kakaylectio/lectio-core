@@ -6,11 +6,11 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.kktam.lectio.control.LectioControl;
-import com.kktam.lectio.control.LectioPersistence;
-import com.kktam.lectio.control.exception.LectioConstraintException;
-import com.kktam.lectio.control.exception.LectioException;
-import com.kktam.lectio.control.exception.LectioObjectNotFoundException;
+import com.kakay.lectio.control.LectioControl;
+import com.kakay.lectio.control.LectioPersistence;
+import com.kakay.lectio.control.exception.LectioConstraintException;
+import com.kakay.lectio.control.exception.LectioException;
+import com.kakay.lectio.control.exception.LectioObjectNotFoundException;
 import com.kktam.lectio.model.LessonNote;
 import com.kktam.lectio.model.Notebook;
 import com.kktam.lectio.model.Role;

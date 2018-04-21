@@ -4,10 +4,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
-import com.kktam.lectio.control.exception.LectioAuthorizationException;
-import com.kktam.lectio.control.exception.LectioConstraintException;
-import com.kktam.lectio.control.exception.LectioNotImplementedException;
-import com.kktam.lectio.control.exception.LectioObjectNotFoundException;
+import com.kakay.lectio.control.exception.LectioAuthorizationException;
+import com.kakay.lectio.control.exception.LectioConstraintException;
+import com.kakay.lectio.control.exception.LectioNotImplementedException;
+import com.kakay.lectio.control.exception.LectioObjectNotFoundException;
 
 public class LectioExceptionMappers  {
 

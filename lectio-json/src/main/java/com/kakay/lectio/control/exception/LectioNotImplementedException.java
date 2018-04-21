@@ -1,4 +1,4 @@
-package com.kktam.lectio.control.exception;
+package com.kakay.lectio.control.exception;
 
 /**
  * An exception that's thrown if a feature has not been implemented.

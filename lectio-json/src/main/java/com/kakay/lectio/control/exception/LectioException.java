@@ -1,4 +1,4 @@
-package com.kktam.lectio.control.exception;
+package com.kakay.lectio.control.exception;
 
 public class LectioException extends Exception {
 

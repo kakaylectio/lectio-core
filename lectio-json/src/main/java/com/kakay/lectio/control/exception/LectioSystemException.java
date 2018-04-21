@@ -1,4 +1,4 @@
-package com.kktam.lectio.control.exception;
+package com.kakay.lectio.control.exception;
 
 public class LectioSystemException extends RuntimeException {
 	public LectioSystemException (String message) {

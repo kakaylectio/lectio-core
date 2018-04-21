@@ -1,4 +1,4 @@
-package com.kktam.lectio.control;
+package com.kakay.lectio.control;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

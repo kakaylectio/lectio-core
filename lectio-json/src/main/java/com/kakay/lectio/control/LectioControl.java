@@ -1,4 +1,4 @@
-package com.kktam.lectio.control;
+package com.kakay.lectio.control;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -16,10 +16,10 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.jboss.logging.Logger;
 
 import com.kakay.lectio.auth.IdentityAuthenticator;
-import com.kktam.lectio.control.exception.LectioConstraintException;
-import com.kktam.lectio.control.exception.LectioException;
-import com.kktam.lectio.control.exception.LectioObjectNotFoundException;
-import com.kktam.lectio.control.exception.LectioSystemException;
+import com.kakay.lectio.control.exception.LectioConstraintException;
+import com.kakay.lectio.control.exception.LectioException;
+import com.kakay.lectio.control.exception.LectioObjectNotFoundException;
+import com.kakay.lectio.control.exception.LectioSystemException;
 import com.kktam.lectio.model.LessonNote;
 import com.kktam.lectio.model.Notebook;
 import com.kktam.lectio.model.NotebookUserRole;
@@ -208,33 +208,7 @@ public class LectioControl {
 		}
 	}
 
-	/**
-	 * This method takes all active topics in a notebook in order of
-	 * active order and reassigns consecutive active order numbers to
-	 * each topic.  This method is used when a topic has been removed
-	 * from the list of active topics, and all the topic active orders
-	 * need to be renumbered.
-	 *
-	 * @param notebookId  Notebook owning the topics.
-	 */
-	protected void reorderActiveTopics(int notebookId) {
-		List<Topic> topicList = findActiveTopicsByNotebook(notebookId);
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
-		}
-		Iterator<Topic> topicIterator = topicList.iterator();
-		int i = 0;
-		while (topicIterator.hasNext()) {
-			Topic topic = topicIterator.next();
-			topic.setActiveOrder(i);
-			em.persist(topic);
-			i++;
-		}
-	
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().commit();
-		}		
-	}
+
 	
 	public boolean authCheckModifyNotebook(int executorId, int notebookId) {
 		// TODO Auto-generated method stub
@@ -532,12 +506,25 @@ public class LectioControl {
 			em.getTransaction().rollback();
 			throw new LectioObjectNotFoundException("Topic with ID " + topicId + " not found.", Topic.class, topicId);
 		}
+		List<Topic> topicList = findActiveTopicsByNotebook(topic.getNotebook().getId());
+		Iterator<Topic> topicIterator = topicList.iterator();
+
+		// Remove topic from the list. 
+		int i = 0;
+		while (topicIterator.hasNext()) {
+			Topic topicInActiveList = topicIterator.next();
+			if (topic.getId() != topicInActiveList.getId()) {
+				topicInActiveList.setActiveOrder(i);
+				em.persist(topicInActiveList);
+				i++;
+			}
+		}
+	
 		topic.setTopicState(topicState);
 		topic.setDateArchived(LocalDateTime.now());
 		topic.setActiveOrder(-1);
 		em.persist(topic);
 		
-		reorderActiveTopics(topic.getNotebook().getId());
 		em.getTransaction().commit();
 		return topic;
 		

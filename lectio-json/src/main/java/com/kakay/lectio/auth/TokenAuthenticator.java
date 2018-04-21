@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.glassfish.jersey.internal.util.Base64;
 import org.jboss.logging.Logger;
 
-import com.kktam.lectio.control.exception.LectioSystemException;
+import com.kakay.lectio.control.exception.LectioSystemException;
 
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;

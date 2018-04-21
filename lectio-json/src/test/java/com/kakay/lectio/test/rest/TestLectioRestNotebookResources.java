@@ -9,12 +9,12 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kakay.lectio.auth.LoginResponse;
+import com.kakay.lectio.control.LectioControl;
+import com.kakay.lectio.control.LectioPersistence;
 import com.kakay.lectio.rest.representation.NotebookRep;
 import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kakay.lectio.test.scenarios.SeedData;
-import com.kktam.lectio.control.LectioControl;
-import com.kktam.lectio.control.LectioPersistence;
 import com.kktam.lectio.model.Notebook;
 import com.kktam.lectio.model.User;
 

@@ -38,7 +38,7 @@ import org.jboss.logging.Logger;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kktam.lectio.control.exception.LectioSystemException;
+import com.kakay.lectio.control.exception.LectioSystemException;
 
 import io.dropwizard.configuration.ConfigurationException;
 import io.dropwizard.configuration.ResourceConfigurationSourceProvider;

@@ -25,13 +25,13 @@ import com.kakay.lectio.auth.IdentityAuthenticator;
 import com.kakay.lectio.auth.LectioAuthorizer;
 import com.kakay.lectio.auth.LectioPrincipal;
 import com.kakay.lectio.auth.LoginResponse;
+import com.kakay.lectio.control.LectioPersistence;
+import com.kakay.lectio.control.exception.LectioException;
 import com.kakay.lectio.rest.resources.LoginResource;
 import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
 import com.kakay.lectio.test.rest.TestRestResources;
 import com.kakay.lectio.test.scenarios.SeedData;
 import com.kakay.lectio.test.scenarios.VorkosiganSeedData;
-import com.kktam.lectio.control.LectioPersistence;
-import com.kktam.lectio.control.exception.LectioException;
 
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;

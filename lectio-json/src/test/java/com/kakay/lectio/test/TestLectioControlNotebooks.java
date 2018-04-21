@@ -7,13 +7,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.kakay.lectio.control.LectioControl;
+import com.kakay.lectio.control.LectioPersistence;
+import com.kakay.lectio.control.exception.LectioAuthorizationException;
+import com.kakay.lectio.control.exception.LectioConstraintException;
+import com.kakay.lectio.control.exception.LectioException;
 import com.kakay.lectio.test.scenarios.ClearData;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
-import com.kktam.lectio.control.LectioControl;
-import com.kktam.lectio.control.LectioPersistence;
-import com.kktam.lectio.control.exception.LectioAuthorizationException;
-import com.kktam.lectio.control.exception.LectioConstraintException;
-import com.kktam.lectio.control.exception.LectioException;
 import com.kktam.lectio.model.Notebook;
 import com.kktam.lectio.model.Topic;
 import com.kktam.lectio.model.TopicState;

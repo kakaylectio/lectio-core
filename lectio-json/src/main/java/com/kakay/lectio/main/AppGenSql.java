@@ -2,7 +2,7 @@
 // Scripts are generated into the file specified with property javax.persistence.schema-generation.scripts.create-target
 // in persistence.xml
 
-package com.kktam.lectio.main;
+package com.kakay.lectio.main;
 
 import java.io.File;
 import java.util.HashMap;

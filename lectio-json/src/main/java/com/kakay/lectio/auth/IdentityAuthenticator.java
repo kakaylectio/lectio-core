@@ -11,10 +11,10 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jboss.logging.Logger;
 
-import com.kktam.lectio.control.LectioControl;
-import com.kktam.lectio.control.LectioPersistence;
-import com.kktam.lectio.control.exception.LectioException;
-import com.kktam.lectio.control.exception.LectioSystemException;
+import com.kakay.lectio.control.LectioControl;
+import com.kakay.lectio.control.LectioPersistence;
+import com.kakay.lectio.control.exception.LectioException;
+import com.kakay.lectio.control.exception.LectioSystemException;
 import com.kktam.lectio.model.User;
 
 import io.dropwizard.auth.AuthenticationException;

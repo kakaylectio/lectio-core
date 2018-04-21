@@ -1,9 +1,9 @@
 package com.kakay.lectio.test.rest.authentication;
 
+import com.kakay.lectio.control.LectioPersistence;
 import com.kakay.lectio.rest.resources.NotebookActiveTopicsResource;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kakay.lectio.test.scenarios.SeedData;
-import com.kktam.lectio.control.LectioPersistence;
 
 public class TestUserAuthNotebookActiveTopicsAndLessons extends TestUserAuth {
 
