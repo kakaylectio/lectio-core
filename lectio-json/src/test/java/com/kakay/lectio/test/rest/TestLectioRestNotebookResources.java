@@ -1,8 +1,13 @@
 package com.kakay.lectio.test.rest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 
 import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,9 +17,9 @@ import com.kakay.lectio.auth.LoginResponse;
 import com.kakay.lectio.control.LectioControl;
 import com.kakay.lectio.control.LectioPersistence;
 import com.kakay.lectio.model.Notebook;
+import com.kakay.lectio.model.Topic;
 import com.kakay.lectio.model.User;
 import com.kakay.lectio.rest.representation.NotebookRep;
-import com.kakay.lectio.rest.resources.NotebookResource;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kakay.lectio.test.scenarios.SeedData;
 
@@ -23,7 +28,17 @@ import io.dropwizard.jackson.Jackson;
 public class TestLectioRestNotebookResources extends TestRestResources {
 	protected int numTopics = 6;
 	
-	
+	@Test
+	public void testCreateNewTopic() throws Exception {
+		int notebookId = notebook.getId();
+		String topicName = "Composer Opus 1 # 3";
+		String targetString = "/lectio/notebook/" + notebookId + "/createtopic";
+		Response response = this.postEndpoint(targetString, topicName);
+		assertEquals("Response status should be okay.", Status.OK.getStatusCode(), response.getStatus());
+		Topic topic = response.readEntity(Topic.class);
+		assertNotNull("Topic should not be null when creating new topic.", topic);
+		assertEquals("Topic name is wrong.", topicName, topic.getName());
+	}
 
 	@Test
 	public void testNotebookActiveTopics() throws IOException {

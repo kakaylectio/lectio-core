@@ -162,7 +162,7 @@ public class LectioControl {
 		return notebook;
 	}
 
-	public Topic addNewTopic(int notebookId, String topicName) throws LectioException {
+	public Topic addNewTopic(int notebookId, String topicName) throws LectioConstraintException {
 		em.getTransaction().begin();
 		try {
 			Topic topic = new Topic();

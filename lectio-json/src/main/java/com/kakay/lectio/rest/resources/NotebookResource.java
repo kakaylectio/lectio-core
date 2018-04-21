@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.kakay.lectio.auth.LectioPrincipal;
 import com.kakay.lectio.control.LectioControl;
 import com.kakay.lectio.control.exception.LectioAuthorizationException;
+import com.kakay.lectio.control.exception.LectioConstraintException;
 import com.kakay.lectio.model.Notebook;
 import com.kakay.lectio.model.Role;
 import com.kakay.lectio.model.Topic;
@@ -39,6 +41,22 @@ public class NotebookResource {
 
 	public void setLectioControl(LectioControl control) {
 		lectioControl = control;
+	}
+	
+	/* Get the active topic names and ids for a notebook.  Does not include all the lesssons associated with the topics. */
+	@PermitAll
+	@POST
+	@Timed
+	@Path("/createtopic")
+	@JsonView(Views.NoDetails.class)
+	public Topic createTopic(@PathParam("notebook-id") int notebookId, @Auth LectioPrincipal principal, String topicName) throws LectioAuthorizationException, LectioConstraintException {
+		if (!lectioControl.authCheckModifyNotebook(principal.getId(), notebookId) ){
+			throw new LectioAuthorizationException(
+					"User " + principal.getId() + " is not authorized to view notebook " + notebookId);
+		}
+		
+		Topic topic = lectioControl.addNewTopic(notebookId,  topicName);
+		return topic;
 	}
 
 	/* Get the active topic names and ids for a notebook.  Does not include all the lesssons associated with the topics. */

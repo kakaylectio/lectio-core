@@ -16,11 +16,13 @@ import com.kakay.lectio.model.NotebookUserRole;
 import com.kakay.lectio.model.Studio;
 import com.kakay.lectio.model.Topic;
 import com.kakay.lectio.model.User;
+import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 
 public class ClearData {
 	public static void main(String[] args) {
 		ClearData clearDataObj = new ClearData();
 		clearDataObj.clearData();
+		
 	}
 	
 	protected static final String PERSISTENCE_UNIT_NAME = "lectio-tests";
@@ -47,17 +49,14 @@ public class ClearData {
 		notesRemover.removeTableRows("LessonNote");
 
 		RemoveTableRows<Topic> topicRemover = new RemoveTableRows<Topic>(Topic.class);
-		;
 		topicRemover.removeTableRows("Topic");
 
 		RemoveTableRows<NotebookUserRole> repUserRoleRemover = new RemoveTableRows<NotebookUserRole>(
 				NotebookUserRole.class);
-		;
 		repUserRoleRemover.removeTableRows("NotebookUserRole");
 
 		RemoveTableRows<Notebook> notebookRemover = new RemoveTableRows<Notebook>(Notebook.class);
 		notebookRemover.removeTableRows("Notebook");
-		;
 
 		RemoveTableRows<Studio> studioRemover = new RemoveTableRows<Studio>(Studio.class);
 		studioRemover.removeTableRows("Studio");
@@ -66,6 +65,7 @@ public class ClearData {
 		userRemover.removeTableRows("User");
 
 		em.getTransaction().commit();
+
 		em.close();
 	
 
