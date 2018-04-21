@@ -1,5 +1,8 @@
 package com.kakay.lectio.test.rest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +22,10 @@ import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kakay.lectio.test.scenarios.SeedData;
 import com.kktam.lectio.control.LectioControl;
 import com.kktam.lectio.control.LectioPersistence;
+import com.kktam.lectio.control.exception.LectioConstraintException;
 import com.kktam.lectio.model.LessonNote;
 import com.kktam.lectio.model.Topic;
+import com.kktam.lectio.model.TopicState;
 import com.kktam.lectio.model.User;
 
 import io.dropwizard.jackson.Jackson;
@@ -41,6 +46,34 @@ public class TestLectioRestTopicResource extends TestRestResources {
 		return new TopicResource(new LectioPersistence().getLectioControlById());
 	}
 	
+	@Test
+	public void testArchiveTopic() {
+		Topic topic = seedData.getTopic();
+		String targetString = "/lectio/topic/" + topic.getId() + "/archive";
+		Response resp = postEndpoint(targetString, null);
+		Assert.assertEquals("Status response of archiving topic should be OK.", 
+				Status.OK.getStatusCode(), resp.getStatus());
+		Topic retrievedTopic = resp.readEntity(Topic.class);
+		assertEquals("Retrieved topic should have correct ID.", topic.getId(), retrievedTopic.getId());
+		assertEquals("Retrieved topic should have correct topic state.", TopicState.archived, retrievedTopic.getTopicState());
+	}
+	
+	@Test
+	public void testArchiveTopicWrongUser() throws LectioConstraintException {
+		Topic topic = seedData.getTopic();
+		String targetString = "/lectio/topic/" + topic.getId() + "/archive";
+
+		LectioControl lectioControl = new LectioPersistence().getLectioControlById();
+		String wrongUserPassword = "pwd";
+		User wrongUser = lectioControl.addNewUser("testWrongUserNewLessonNote Name",  "testWrongUserNewLessonNote@email.com", wrongUserPassword );
+		LoginResponse wrongUserLoginResponse = getLoginResponse(wrongUser.getEmail(), wrongUserPassword, "/login");
+		savedTokenString = wrongUserLoginResponse.getToken();
+
+		Response resp = postEndpoint(targetString, null);
+		Assert.assertEquals("Status response of archiving topic by wrong user should be FORBIDDEN.", 
+				Status.FORBIDDEN.getStatusCode(), resp.getStatus());
+	}
+
 	@Test
 	public void testCreateNewLessonNote() {
 		Topic topic = seedData.getTopic();

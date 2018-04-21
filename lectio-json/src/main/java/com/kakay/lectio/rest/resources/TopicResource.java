@@ -23,9 +23,11 @@ import com.kktam.lectio.control.exception.LectioAuthorizationException;
 import com.kktam.lectio.control.exception.LectioConstraintException;
 import com.kktam.lectio.control.exception.LectioException;
 import com.kktam.lectio.control.exception.LectioNotImplementedException;
+import com.kktam.lectio.control.exception.LectioObjectNotFoundException;
 import com.kktam.lectio.control.exception.LectioSystemException;
 import com.kktam.lectio.model.LessonNote;
 import com.kktam.lectio.model.Topic;
+import com.kktam.lectio.model.TopicState;
 
 import io.dropwizard.auth.Auth;
 
@@ -34,7 +36,7 @@ import io.dropwizard.auth.Auth;
 @Produces(MediaType.APPLICATION_JSON)
 public class TopicResource {
 	LectioControl lectioControl;
-	
+
 	public TopicResource(LectioControl lectioControl) {
 		this.lectioControl = lectioControl;
 	}
@@ -44,22 +46,25 @@ public class TopicResource {
 	@Timed
 	@Path("/findtopicbyid")
 	@JsonView(Views.NoDetails.class)
-	@Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
-	public Topic findTopicById(@Auth LectioPrincipal principal, @PathParam("topic-id") int topicId) 
-			throws LectioAuthorizationException
-	{
+	@Consumes({ MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON })
+	public Topic findTopicById(@Auth LectioPrincipal principal, @PathParam("topic-id") int topicId)
+			throws LectioAuthorizationException {
 		if (!lectioControl.authCheckReadTopic(principal.getId(), topicId)) {
-			throw new LectioAuthorizationException("User " + principal.getId() + 
-					" is not authorized to read lesson notes in topic " + topicId);
+			throw new LectioAuthorizationException(
+					"User " + principal.getId() + " is not authorized to read lesson notes in topic " + topicId);
 		}
 		return lectioControl.findTopicById(topicId);
 	}
 
 	/**
 	 * Gets the lesson note of a topic based on a specific criteria
-	 * @param topicId  ID of the topic to which lesson note belongs
-	 * @param principal  The person working with the client to invoke getLessonNote
-	 * @param criteria  The criteria
+	 * 
+	 * @param topicId
+	 *            ID of the topic to which lesson note belongs
+	 * @param principal
+	 *            The person working with the client to invoke getLessonNote
+	 * @param criteria
+	 *            The criteria
 	 * @return
 	 */
 	@PermitAll
@@ -67,43 +72,44 @@ public class TopicResource {
 	@Timed
 	@Path("/findlessonnote")
 	@JsonView(Views.NoDetails.class)
-	@Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
-	public LessonNote findLessonNote(@Auth LectioPrincipal principal,
-			@QueryParam("afterid") Integer afterId,
+	@Consumes({ MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON })
+	public LessonNote findLessonNote(@Auth LectioPrincipal principal, @QueryParam("afterid") Integer afterId,
 			@PathParam("topic-id") int topicId
-			
-			) throws LectioAuthorizationException {
+
+	) throws LectioAuthorizationException {
 
 		if (!lectioControl.authCheckReadTopic(principal.getId(), topicId)) {
-			throw new LectioAuthorizationException("User " + principal.getId() + 
-					" is not authorized to read lesson notes in topic " + topicId);
+			throw new LectioAuthorizationException(
+					"User " + principal.getId() + " is not authorized to read lesson notes in topic " + topicId);
 		}
 		if (afterId != null) {
 			List<LessonNote> lessonNoteList = lectioControl.findLessonNotesByTopicId(topicId, 2, 0);
 			if (lessonNoteList.size() < 2) {
 				return null;
-			}
-			else {
+			} else {
 				LessonNote lessonNote = lessonNoteList.get(0);
 				if (lessonNote.getId() == afterId.intValue()) {
 					LessonNote foundLessonNote = lessonNoteList.get(1);
 					return foundLessonNote;
-				}
-				else {
-					// TODO:   Iterate to search for Lesson Note.
-					throw new LectioNotImplementedException("Search for deeper than 2 lesson notes in a topic has not been implemented.");
+				} else {
+					// TODO: Iterate to search for Lesson Note.
+					throw new LectioNotImplementedException(
+							"Search for deeper than 2 lesson notes in a topic has not been implemented.");
 				}
 			}
 		}
 		return null;
 	}
 
-	
 	/**
 	 * Gets the lesson notes of a topic based on a specific criteria
-	 * @param topicId  ID of the topic to which lesson note belongs
-	 * @param principal  The person working with the client to invoke getLessonNote
-	 * @param criteria  The criteria
+	 * 
+	 * @param topicId
+	 *            ID of the topic to which lesson note belongs
+	 * @param principal
+	 *            The person working with the client to invoke getLessonNote
+	 * @param criteria
+	 *            The criteria
 	 * @return
 	 */
 	@PermitAll
@@ -111,46 +117,47 @@ public class TopicResource {
 	@Timed
 	@Path("/findlessonnotes")
 	@JsonView(Views.NoDetails.class)
-	@Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
-	public List<LessonNote> findLessonNotes(@Auth LectioPrincipal principal,
-			@QueryParam("afterid") Integer afterId,
-			@QueryParam("startindex") Integer startIndex,
-			@QueryParam("numitems") Integer numItems,
+	@Consumes({ MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON })
+	public List<LessonNote> findLessonNotes(@Auth LectioPrincipal principal, @QueryParam("afterid") Integer afterId,
+			@QueryParam("startindex") Integer startIndex, @QueryParam("numitems") Integer numItems,
 			@PathParam("topic-id") int topicId
-			
-			) throws LectioAuthorizationException {
+
+	) throws LectioAuthorizationException {
 
 		if (!lectioControl.authCheckReadTopic(principal.getId(), topicId)) {
-			throw new LectioAuthorizationException("User " + principal.getId() + 
-					" is not authorized to read lesson notes in topic " + topicId);
+			throw new LectioAuthorizationException(
+					"User " + principal.getId() + " is not authorized to read lesson notes in topic " + topicId);
 		}
 		if (afterId != null) {
 			List<LessonNote> lessonNoteList = lectioControl.findLessonNotesByTopicId(topicId, 2, 0);
 			return lessonNoteList;
-		}
-		else if (numItems != null) {
+		} else if (numItems != null) {
 			int startIndexInt = 0;
 			if (startIndex != null) {
 				startIndexInt = startIndex.intValue();
 			}
-			List<LessonNote> lessonNoteList = lectioControl.findLessonNotesByTopicId(topicId,  numItems.intValue(), startIndexInt);
+			List<LessonNote> lessonNoteList = lectioControl.findLessonNotesByTopicId(topicId, numItems.intValue(),
+					startIndexInt);
 			return lessonNoteList;
-			
+
 		}
 		return null;
 	}
 
 	/**
-	 * Creates a new lesson note. The body of this request is the 
-	 * lesson note content.
-	 * @param topicId  Parent topic ID
-	 * @param principal  User requesting the new lesson note
-	 * @param lessonNoteContent   Content to be added.  This should be a
-	 *      sanitized rich text.
-	 * @return  The Lesson Note information.
+	 * Creates a new lesson note. The body of this request is the lesson note
+	 * content.
 	 * 
-	 * @throws WebApplicationException(Status.FORBIDDEN) if user is not authorized
-	 *      to create a new lesson note here.
+	 * @param topicId
+	 *            Parent topic ID
+	 * @param principal
+	 *            User requesting the new lesson note
+	 * @param lessonNoteContent
+	 *            Content to be added. This should be a sanitized rich text.
+	 * @return The Lesson Note information.
+	 * 
+	 * @throws WebApplicationException(Status.FORBIDDEN)
+	 *             if user is not authorized to create a new lesson note here.
 	 *
 	 */
 	@PermitAll
@@ -158,19 +165,49 @@ public class TopicResource {
 	@Timed
 	@Path("/createlessonnote")
 	@JsonView(Views.NoDetails.class)
-	public LessonNote createLessonNote(@PathParam("topic-id") int topicId, @Auth LectioPrincipal principal, LessonNoteResource.LessonNoteContent lessonNoteContent) {
+	public LessonNote createLessonNote(@PathParam("topic-id") int topicId, @Auth LectioPrincipal principal,
+			LessonNoteResource.LessonNoteContent lessonNoteContent) {
 
 		if (!lectioControl.authCheckModifyTopic(principal.getId(), topicId)) {
-			throw new WebApplicationException("User " + principal.getId() + " is not authorized to modify topic " + topicId, Status.FORBIDDEN);
+			throw new WebApplicationException(
+					"User " + principal.getId() + " is not authorized to modify topic " + topicId, Status.FORBIDDEN);
 		}
 		try {
-			LessonNote lessonNote = lectioControl.addNewLessonNote(principal.getId(), topicId, lessonNoteContent.getContent());
+			LessonNote lessonNote = lectioControl.addNewLessonNote(principal.getId(), topicId,
+					lessonNoteContent.getContent());
 			return lessonNote;
-		}
-		catch(LectioConstraintException exception ) {
+		} catch (LectioConstraintException exception) {
 			throw new LectioSystemException("Lesson notes should not have constraints.");
 		}
 	}
-	
-	
+
+	/**
+	 * Puts a topic into archive state.
+	 * 
+	 * @param topicId
+	 *            Topic ID
+	 * @param principal
+	 *            User requesting the new lesson note
+	 * @return The topic information.
+	 * @throws LectioObjectNotFoundException 
+	 * 
+	 * @throws WebApplicationException(Status.FORBIDDEN)
+	 *             if user is not authorized to archive topics for the notebook.
+	 *
+	 */
+	@PermitAll
+	@POST
+	@Timed
+	@Path("/archive")
+	@JsonView(Views.NoDetails.class)
+	public Topic archiveTopic(@PathParam("topic-id") int topicId, @Auth LectioPrincipal principal) throws LectioObjectNotFoundException {
+
+		if (!lectioControl.authCheckModifyTopic(principal.getId(), topicId)) {
+			throw new WebApplicationException(
+					"User " + principal.getId() + " is not authorized to modify topic " + topicId, Status.FORBIDDEN);
+		}
+		Topic topic = lectioControl.updateTopicState( topicId, TopicState.archived);
+		return topic;
+	}
+
 }
