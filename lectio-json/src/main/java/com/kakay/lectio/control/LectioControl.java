@@ -131,7 +131,7 @@ public class LectioControl {
 			Studio studio = findStudioById( studioId);
 			Notebook notebook = new Notebook();
 			User studioOwner = studio.getOwner();
-			notebook.setName(notebookName);
+			notebook.setName(notebookName.trim().replaceAll("\\s+", " "));
 			notebook.setStudio(studio);
 			notebook.setDateCreated(LocalDateTime.now(clock));
 			notebook.setUiPreference("");
@@ -166,12 +166,12 @@ public class LectioControl {
 		em.getTransaction().begin();
 		try {
 			Topic topic = new Topic();
-			topic.setName(topicName);
+			topic.setName(topicName.trim().replaceAll("\\s+", " "));
 			Notebook notebook = new Notebook();
 			notebook.setId(notebookId);
 			topic.setNotebook(notebook);
 			topic.setDateCreated(LocalDateTime.now(clock));
-			topic.setShortname(topicName);
+			topic.setShortname(topic.getName());
 			topic.setTopicState(TopicState.active);
 			insertTopic(notebookId, topic, 0);
 			em.persist(topic);
