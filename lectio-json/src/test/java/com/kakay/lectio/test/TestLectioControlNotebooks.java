@@ -1,6 +1,8 @@
 package com.kakay.lectio.test;
 
+import java.text.Collator;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -9,7 +11,6 @@ import org.junit.Test;
 
 import com.kakay.lectio.control.LectioControl;
 import com.kakay.lectio.control.LectioPersistence;
-import com.kakay.lectio.control.exception.LectioAuthorizationException;
 import com.kakay.lectio.control.exception.LectioConstraintException;
 import com.kakay.lectio.control.exception.LectioException;
 import com.kakay.lectio.model.Notebook;
@@ -51,7 +52,7 @@ public class TestLectioControlNotebooks  {
 	}
 
 	@Test
-	public void testNotebookData() throws LectioException {
+	public void testNotebookData() throws Exception {
 		RandomSeedData randomSeedData = new RandomSeedData();
 		randomSeedData.generateSeed(1, 1, 5, 1, 0, 0);
 
@@ -60,10 +61,14 @@ public class TestLectioControlNotebooks  {
 
 		LectioPersistence lectioPersistence = new LectioPersistence();
 		LectioControl lectioControl = lectioPersistence.getLectioControlById();
+	
 
 		List<Notebook> notebooksByTeacher = lectioControl.findNotebooksByUser(teacher.getId());
 		boolean notebookFound = false;
-		String lastNotebookName = "";
+		String lastNotebookName = " ";
+//		Collator mysqlRuleCollator = new RuleBasedCollator("< ' ' < A < a < B < b < C < c < D < d < E < e < F < f < G < g < H < h < I < i < J < j < K < k < L < l < M < m < N < n < O < o < P < p < Q < q < R < r < S < s < T < t < U < u < V < v < W < w < X < x < Y < y < Z < z");
+		Collator mysqlRuleCollator = Collator.getInstance(Locale.US);
+		mysqlRuleCollator.setStrength(Collator.TERTIARY);
 		for (Notebook notebookitem : notebooksByTeacher) {
 			if (notebookitem.getId() == notebook.getId() && notebookitem.getName().equals(notebook.getName())) {
 				notebookFound = true;
@@ -71,7 +76,7 @@ public class TestLectioControlNotebooks  {
 			Assert.assertTrue(
 					"Notebooks returned by findNotebooksByUser needs to be in alphabetical order."
 							+ notebookitem.getName() + " should be before " + lastNotebookName,
-					notebookitem.getName().compareToIgnoreCase(lastNotebookName) > 0);
+							mysqlRuleCollator.compare(lastNotebookName, notebookitem.getName()) < 0);
 			lastNotebookName = notebookitem.getName();
 		}
 		Assert.assertTrue("Notebook needs to be in list returned by findNotebooksByUser.", notebookFound);

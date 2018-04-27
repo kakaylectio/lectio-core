@@ -105,6 +105,25 @@ public class TestLectioControlTopics {
 				foundTopic.getName());
 
 	}
+	
+	@Test 
+	public void testDoublespaceTopic() throws Exception {
+		RandomSeedData randomSeedData = new RandomSeedData();
+		randomSeedData.generateSeed(1 , 1, 1, 0, 0, 0);
+		SeedData seedData = randomSeedData;
+		
+		Notebook notebook = seedData.getNotebook();
+		
+		LectioPersistence lectioPersistence = new LectioPersistence();
+		LectioControl lectioControl = lectioPersistence.getLectioControlById();
+		
+		int notebookId = notebook.getId();
+		
+		String nameWithSpaces = "  Name With   Spaces   ";
+		String name = "Name With Spaces";
+		Topic newTopic = lectioControl.addNewTopic(notebookId,  nameWithSpaces);
+		assertEquals("New topic should have spaces trimmed.", name, newTopic.getName());
+	}
 
 	@Test
 	public void testGetLessonNotes() throws LectioException {
@@ -150,7 +169,6 @@ public class TestLectioControlTopics {
 
 
 	}
-
 
 
 	@After
