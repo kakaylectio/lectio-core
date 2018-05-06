@@ -65,6 +65,22 @@ public class TopicResource {
 		}
 		return lectioControl.findTopicById(topicId);
 	}
+	
+	@GET
+	@Timed
+	@Path("/findtopicbyid/withnotebook")
+	@JsonView(Views.OwningElementOnly.class)
+	@Consumes({ MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON })
+	public Topic findTopicByIdWithNotebook(@Auth LectioPrincipal principal, @PathParam("topic-id") int topicId)
+			throws LectioAuthorizationException {
+		if (!lectioControl.authCheckReadTopic(principal.getId(), topicId)) {
+			throw new LectioAuthorizationException(
+					"User " + principal.getId() + " is not authorized to read lesson notes in topic " + topicId);
+		}
+		return lectioControl.findTopicById(topicId);
+	}
+	
+	
 
 	/**
 	 * Gets the lesson note of a topic based on a specific criteria

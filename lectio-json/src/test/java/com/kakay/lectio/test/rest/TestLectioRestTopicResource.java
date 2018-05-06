@@ -1,7 +1,7 @@
 package com.kakay.lectio.test.rest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,11 +20,11 @@ import com.kakay.lectio.control.LectioControl;
 import com.kakay.lectio.control.LectioPersistence;
 import com.kakay.lectio.control.exception.LectioConstraintException;
 import com.kakay.lectio.model.LessonNote;
+import com.kakay.lectio.model.Notebook;
 import com.kakay.lectio.model.Topic;
 import com.kakay.lectio.model.TopicState;
 import com.kakay.lectio.model.User;
 import com.kakay.lectio.rest.resources.LessonNoteResource;
-import com.kakay.lectio.rest.resources.TopicResource;
 import com.kakay.lectio.test.scenarios.RandomSeedData;
 import com.kakay.lectio.test.scenarios.SeedData;
 
@@ -185,6 +185,28 @@ public class TestLectioRestTopicResource extends TestRestResources {
         Assert.assertNotNull("Topic should have been found.", foundTopic);
         Assert.assertEquals("Topic ID should match.", topic.getId(), foundTopic.getId());
         Assert.assertEquals("Topic name should match.", topic.getName(), foundTopic.getName());
+	}
+	
+	@Test
+	public void testFindTopicByIdWithNotebook() throws Exception {
+		Topic topic = seedData.getTopic();
+		Notebook notebook = seedData.getNotebook();
+		
+		String targetString2 = "/lectio/topic/" + topic.getId() + "/findtopicbyid/withnotebook";
+		Map<String, Object> queryParamMap = new HashMap<String, Object>(1);
+		String foundTopicJsonString = hitEndpoint(targetString2);
+		assertNotNull("Topic should have been found.",
+				foundTopicJsonString);
+		ObjectMapper objectMapper = Jackson.newObjectMapper();
+		Topic foundTopic = objectMapper.readValue(foundTopicJsonString,Topic.class);
+        assertNotNull("Topic should have been found.", foundTopic);
+        assertEquals("Topic ID should match.", topic.getId(), foundTopic.getId());
+        assertEquals("Topic name should match.", topic.getName(), foundTopic.getName());
+        assertNotNull("Topic should have notebook.", foundTopic.getNotebook());
+        assertNotNull("Topic notebook should have name.", foundTopic.getNotebook().getName());
+        assertEquals("Topic notebook should have correct name.", notebook.getName(), foundTopic.getNotebook().getName());
+        assertEquals("Topic notebook ID should be correct.", notebook.getId(), foundTopic.getNotebook().getId());
+        
 	}
 
 }

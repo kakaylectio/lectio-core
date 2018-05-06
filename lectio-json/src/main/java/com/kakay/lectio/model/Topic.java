@@ -5,7 +5,6 @@ import java.util.Set;
 
 import javax.persistence.UniqueConstraint;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.kakay.lectio.rest.resources.views.Views;
@@ -215,7 +214,7 @@ public class Topic
 		this.uiPreference = myUiPreference;
 	}
 
-	@JsonIgnore
+	@JsonView(Views.OwningElementOnly.class)
 	public Notebook getNotebook() {
 		return this.notebook;
 	}

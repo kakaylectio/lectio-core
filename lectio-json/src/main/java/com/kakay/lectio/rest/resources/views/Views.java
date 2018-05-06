@@ -19,4 +19,6 @@ public class Views {
 	public class TopicDetails {}
 
 	public class LessonNoteDetails {}
+	
+	public class OwningElementOnly{}
 }
