@@ -5,10 +5,19 @@ allowedOrigins: http://localhost:4200, http://127.0.0.1:4200 # Address and port 
 
 server:
   applicationConnectors:
-    - type: http
-      port: 8888
-      bindHost: 127.0.0.1 # only bind to loopback
+    - type: https
+      port: 8889
+      bindHost: 127.0.0.1
+      keyStorePath: c:/kktam/lectio/workspaces/keys/httpsrest.jks
+      keyStorePassword: lectio
+      validateCerts: false
   adminConnectors:
     - type: http
-      port: 8889
+      port: 8838
       bindHost: 127.0.0.1 # only bind to loopback
+
+#    - type: http
+#      port: 8888
+#      bindHost: 127.0.0.1 # only bind to loopback
+      
+      

@@ -33,11 +33,23 @@ import com.kakay.lectio.test.scenarios.SeedData;
 import io.dropwizard.jersey.jackson.JacksonBinder;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 
+/**
+ * Tests that use Rest Resources must be called
+ * with a client keystore.
+ * Export the certificate from the server httpsrest keystore.
+ * keytool -export -alias server -keystore client/server/server_keystore.jks -storepass secret -file client/server/server.cer
+ * Import the certificate into the unittest client keystore.
+ * keytool -importcert -v -trustcacerts -alias server -keystore client/client_cacerts.jks -storepass secret -keypass secret -file client/server/server.cer
+ * 
+ * Then define the JVM variables:
+ * -Djavax.net.ssl.trustStore=/path/to/client/client_cacerts.jks 
+ * -Djavax.net.ssl.trustStorePassword=secret
+ */
 public abstract class TestRestResources {
 
 	private static final int DEBUG_CONNECT_TIMEOUT_MS = 400000;
 	private static final int DEBUG_READ_TIMEOUT_MS = 400000;
-	protected static String appUri = "http://localhost:8888";
+	protected static String appUri = "https://localhost:8889";
 	@Rule
 	public DropwizardAppRule<LectioRestConfiguration> appRule = 
 	   new DropwizardAppRule<LectioRestConfiguration>(LectioRestApplication.class, "lectio-rest.yml");
@@ -60,7 +72,7 @@ public abstract class TestRestResources {
 	public void setUp() throws Exception {
 		
 
-		appUri = "http://localhost:" + appRule.getPort(0);
+		appUri = "https://localhost:" + appRule.getPort(0);
 
 		seedData = getSeedData();
 
